@@ -73,10 +73,19 @@ flutter run -d windows
 - Test dei repository: traduzione errori (`NotFoundException`,
   `PersistenceException`), mapping end-to-end (`test/data/repositories`).
 
+## Test Implementati (Application Layer)
+
+- Test dei casi d'uso applicativi per catalogo, fornitori, impostazioni,
+  preferiti, preparazione ricerca e cronologia (`test/application/use_cases`).
+- Test delle validazioni applicative: selezione ricerca senza fornitori,
+  componente non compatibile, fornitore non attivo e cronologia senza fornitori.
+- Test di generazione controllata di id e timestamp tramite servizi astratti
+  (`IdGenerator`, `DateTimeProvider`).
+
 ## Test Futuri
 
 - Unit test per value object e generatore URL, quando implementati (Fase 3).
-- Test per casi d'uso applicativi (Fase 2 in poi).
+- Test per provider Riverpod e stato applicativo quando verra introdotta la UI.
 - Widget test per stati UI rilevanti (quando esisteranno schermate reali).
 - Test di migrazione Drift quando lo schema cambiera' (dalla versione 2 in
   poi).
