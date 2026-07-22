@@ -13,8 +13,8 @@ inserire.
   condivise dalle entita'), `utilities` (helper puri) e `services` (contratti
   condivisi per id e tempo); `constants` resta scheletro.
 - `domain`: modello di dominio e contratti astratti. Implementato:
-  `entities` e `repositories`; `services` e `value_objects` restano
-  scheletro (nessun value object e' risultato motivato in Fase 1).
+  `entities`, `repositories` e `services` (generatore URL da template);
+  `value_objects` resta scheletro.
 - `application`: casi d'uso, DTO e stato applicativo. Implementato:
   `use_cases` e `dto`; `state` resta scheletro finche non esiste integrazione
   Riverpod/UI.

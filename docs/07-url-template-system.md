@@ -1,7 +1,9 @@
 # URL Template System
 
-Il sistema dei template URL sara responsabile della generazione sicura e
-testabile degli URL dei fornitori. Non e' implementato in questa fase.
+Il sistema dei template URL e' responsabile della generazione sicura e
+testabile degli URL dei fornitori. E' implementato come servizio di dominio
+puro in `lib/domain/services/url_template_generator.dart`: non apre il browser,
+non dipende dalla UI e non conosce `url_launcher`.
 
 ## Placeholder Supportati
 
@@ -34,9 +36,30 @@ https://supplier.example/search?brand={brand}&model={model}&part={component}
 - Il generatore URL deve essere indipendente dal browser service.
 - Deve essere possibile testare la generazione senza aprire il browser.
 
+## Implementazione
+
+File principali:
+
+- `url_template_placeholder.dart`: definisce i placeholder centralizzati.
+- `url_template_values.dart`: raccoglie i valori disponibili per la
+  sostituzione.
+- `url_template_generator.dart`: valida template e genera l'URL finale.
+
+Il generatore:
+
+- rimuove spazi esterni dal template e dai valori;
+- sostituisce tutte le occorrenze dei placeholder supportati;
+- usa `Uri.encodeComponent` sui valori;
+- rifiuta placeholder sconosciuti o malformati;
+- rifiuta template senza placeholder supportati;
+- rifiuta schemi diversi da `http` e `https`;
+- rifiuta valori mancanti o vuoti per placeholder usati;
+- restituisce un `Uri` gia' validato.
+
 ## Validazione
 
-La validazione futura dovra restituire errori applicativi chiari, per esempio:
+La validazione restituisce errori applicativi chiari tramite
+`ValidationException`, per esempio:
 
 - schema non consentito;
 - URL non valido;
@@ -47,8 +70,22 @@ La validazione futura dovra restituire errori applicativi chiari, per esempio:
 
 ## Responsabilita
 
-Il generatore URL appartiene al livello `application` o a un servizio di dominio
-se contiene regole indipendenti dai casi d'uso. Il servizio di apertura browser
-deve essere astratto in `core` o `domain` e implementato fuori dalla UI.
+Il generatore URL appartiene al livello `domain/services` perche contiene regole
+indipendenti da casi d'uso specifici, UI e browser service. Il servizio di
+apertura browser deve essere astratto in `core` o `domain` e implementato fuori
+dalla UI.
 
 `url_launcher` non deve comparire nei widget.
+
+## Test
+
+I test unitari sono in
+`test/domain/services/url_template_generator_test.dart` e coprono:
+
+- generazione con uno o piu placeholder;
+- URL encoding;
+- trim di template e valori;
+- valori mancanti;
+- placeholder sconosciuti o malformati;
+- blocco di `file:` e `javascript:`;
+- URL relativi, host assente e spazi grezzi.

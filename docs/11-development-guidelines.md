@@ -82,9 +82,16 @@ flutter run -d windows
 - Test di generazione controllata di id e timestamp tramite servizi astratti
   (`IdGenerator`, `DateTimeProvider`).
 
+## Test Implementati (URL Template System)
+
+- Unit test per generazione URL con placeholder supportati
+  (`test/domain/services/url_template_generator_test.dart`).
+- Test per URL encoding, trim, placeholder sconosciuti o malformati, valori
+  mancanti e schemi non sicuri (`file:`, `javascript:`).
+
 ## Test Futuri
 
-- Unit test per value object e generatore URL, quando implementati (Fase 3).
+- Unit test per value object, quando saranno introdotti.
 - Test per provider Riverpod e stato applicativo quando verra introdotta la UI.
 - Widget test per stati UI rilevanti (quando esisteranno schermate reali).
 - Test di migrazione Drift quando lo schema cambiera' (dalla versione 2 in
