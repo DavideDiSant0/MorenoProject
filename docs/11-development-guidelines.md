@@ -99,10 +99,17 @@ flutter run -d windows
 - Test per `OpenExternalUrlUseCase`, che delega al contratto astratto senza
   conoscere `url_launcher`.
 
+## Test Implementati (UI Shell)
+
+- Widget test per bootstrap della shell desktop con `MaterialApp.router` e
+  `NavigationRail`.
+- Widget test per navigazione da `/search` a `/catalog` tramite GoRouter.
+
 ## Test Futuri
 
 - Unit test per value object, quando saranno introdotti.
 - Test per provider Riverpod e stato applicativo quando verra introdotta la UI.
-- Widget test per stati UI rilevanti (quando esisteranno schermate reali).
+- Widget test per stati UI rilevanti quando le schermate tecniche diventeranno
+  schermate operative.
 - Test di migrazione Drift quando lo schema cambiera' (dalla versione 2 in
   poi).

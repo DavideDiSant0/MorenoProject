@@ -8,6 +8,7 @@ inserire.
 ## Convenzione
 
 - `app`: composizione dell'app, routing, tema e configurazione. *(scheletro)*
+  Implementato: routing GoRouter e tema base.
 - `core`: elementi condivisi indipendenti dalle feature. Contiene
   `errors` (gerarchia eccezioni applicative) e `validation` (invarianti
   condivise dalle entita'), `utilities` (helper puri) e `services` (contratti
@@ -22,7 +23,9 @@ inserire.
   Implementato: `database` (tabelle, DAO, `app_database.dart`,
   `database_connection.dart`), `mappers`, `repositories` e `services`
   infrastrutturali come l'adapter `url_launcher`.
-- `presentation`: schermate, widget, controller e provider UI. *(scheletro)*
+- `presentation`: schermate, widget, controller e provider UI. Implementato:
+  shell desktop con `NavigationRail` e schermate tecniche; `controllers` e
+  `providers` restano scheletro.
 - `features`: raggruppamento funzionale futuro. *(scheletro)*
 
 Non creare classi vuote solo per occupare cartelle. Inserire codice solo quando

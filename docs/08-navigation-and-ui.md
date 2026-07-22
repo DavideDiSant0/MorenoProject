@@ -1,7 +1,9 @@
 # Navigation And UI
 
-La navigazione futura sara gestita da GoRouter. In questa fase non sono state
-create schermate applicative definitive.
+La navigazione e' gestita da GoRouter. Lo stato attuale include una shell
+desktop tecnica con `NavigationRail` laterale e schermate minime per le sezioni
+principali. Non sono ancora presenti CRUD, form definitivi o logica
+applicativa nella UI.
 
 ## Route Future
 
@@ -19,6 +21,15 @@ create schermate applicative definitive.
 - Le route non accedono direttamente al database.
 - Eventuali redirect devono essere semplici e motivati.
 
+## Implementato
+
+- `MaterialApp.router` in `lib/main.dart`.
+- Configurazione GoRouter in `lib/app/routing/app_router.dart`.
+- Destinazioni centralizzate in `lib/app/routing/app_destination.dart`.
+- Shell desktop in `lib/presentation/widgets/app_shell.dart`.
+- Schermate tecniche in `lib/presentation/screens`.
+- Redirect tecnico da `/` a `/search`.
+
 ## Regole UI
 
 - I widget mostrano stato e raccolgono input.
@@ -28,6 +39,8 @@ create schermate applicative definitive.
 - I widget non eseguono query SQL.
 - La UI deve gestire stati di caricamento, vuoto, errore e conferma quando il
   relativo flusso verra implementato.
+- Le schermate tecniche attuali possono mostrare solo struttura e sezioni
+  previste; non devono simulare dati reali.
 
 ## Browser Esterno
 
