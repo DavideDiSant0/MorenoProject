@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repair_parts_finder/application/use_cases/app_settings_use_cases.dart';
 import 'package:repair_parts_finder/application/use_cases/catalog_use_cases.dart';
+import 'package:repair_parts_finder/application/use_cases/favorite_use_cases.dart';
 import 'package:repair_parts_finder/application/use_cases/open_external_url_use_case.dart';
 import 'package:repair_parts_finder/application/use_cases/prepare_search_use_case.dart';
 import 'package:repair_parts_finder/application/use_cases/search_history_use_cases.dart';
@@ -17,6 +18,7 @@ import 'package:repair_parts_finder/data/repositories/drift_brand_repository.dar
 import 'package:repair_parts_finder/data/repositories/drift_component_repository.dart';
 import 'package:repair_parts_finder/data/repositories/drift_device_model_repository.dart';
 import 'package:repair_parts_finder/data/repositories/drift_device_type_repository.dart';
+import 'package:repair_parts_finder/data/repositories/drift_favorite_repository.dart';
 import 'package:repair_parts_finder/data/repositories/drift_search_history_repository.dart';
 import 'package:repair_parts_finder/data/repositories/drift_supplier_repository.dart';
 import 'package:repair_parts_finder/data/services/url_launcher_external_browser_service.dart';
@@ -79,6 +81,15 @@ final searchHistoryUseCasesProvider = FutureProvider<SearchHistoryUseCases>((
   final database = await ref.watch(appDatabaseProvider.future);
   return SearchHistoryUseCases(
     repository: DriftSearchHistoryRepository(database.searchHistoryDao),
+    idGenerator: ref.watch(idGeneratorProvider),
+    dateTimeProvider: ref.watch(dateTimeProvider),
+  );
+});
+
+final favoriteUseCasesProvider = FutureProvider<FavoriteUseCases>((ref) async {
+  final database = await ref.watch(appDatabaseProvider.future);
+  return FavoriteUseCases(
+    repository: DriftFavoriteRepository(database.favoriteDao),
     idGenerator: ref.watch(idGeneratorProvider),
     dateTimeProvider: ref.watch(dateTimeProvider),
   );

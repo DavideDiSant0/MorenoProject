@@ -70,11 +70,21 @@ Regole:
 
 ## Favorites
 
-Responsabilita future:
+Implementato:
 
 - salvataggio delle combinazioni frequenti;
 - associazione dei fornitori preferiti;
 - ripetizione rapida della ricerca.
+
+Regole:
+
+- un preferito salva ID di catalogo e fornitori preferiti;
+- il rilancio ricostruisce la ricerca tramite `PrepareSearchUseCase`;
+- se catalogo o fornitori non sono piu attivi/compatibili, il rilancio viene
+  bloccato da validazioni applicative;
+- l'apertura passa da `OpenExternalUrlUseCase`;
+- limite massimo pagine, conferma e cronologia rispettano `AppSettings`;
+- la UI non genera URL direttamente e non importa `url_launcher`.
 
 ## History
 

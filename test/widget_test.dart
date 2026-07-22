@@ -75,6 +75,25 @@ void main() {
     expect(find.text('Saved searches'), findsOneWidget);
     expect(find.text('No saved searches yet.'), findsOneWidget);
   });
+
+  testWidgets('Navigation rail opens favorites route', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(1280, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Favorites').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Favorites'), findsWidgets);
+    expect(find.text('Saved combinations'), findsOneWidget);
+    expect(find.text('No favorites yet.'), findsOneWidget);
+  });
 }
 
 Widget buildTestApp() {

@@ -54,7 +54,7 @@ e salvataggio cronologia.
 - filtri;
 - preferiti.
 
-Stato: cronologia operativa implementata; preferiti ancora da completare.
+Stato: cronologia e preferiti operativi implementati.
 
 ## Fase 6 - Impostazioni E Backup
 

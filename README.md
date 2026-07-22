@@ -33,13 +33,15 @@ Questo repository contiene:
   anteprima URL, conferma, apertura browser esterno e salvataggio cronologia;
 - cronologia operativa in `/history` per vedere ricerche salvate, ripetere
   l'apertura URL, eliminare una voce e svuotare tutto;
+- preferiti operativi in `/favorites` per salvare combinazioni frequenti con
+  fornitori preferiti e rilanciarle;
 - gestione errori di persistenza (`lib/core/errors`);
 - test per entita, mapper, database, DAO, repository, casi d'uso, servizi URL,
   browser service e smoke test UI;
 - documentazione tecnica e regole operative per agenti AI.
 
-Non sono ancora state implementate la UI operativa di preferiti, impostazioni,
-dati demo, scraping o integrazioni remote.
+Non sono ancora state implementate la UI operativa di impostazioni, dati demo,
+scraping o integrazioni remote.
 
 ## Tecnologie
 

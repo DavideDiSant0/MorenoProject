@@ -2,7 +2,8 @@
 
 La navigazione e' gestita da GoRouter. Lo stato attuale include una shell
 desktop con `NavigationRail` laterale, schermate tecniche per le sezioni
-principali e UI operative per ricerca, catalogo, fornitori e cronologia.
+principali e UI operative per ricerca, catalogo, fornitori, cronologia e
+preferiti.
 
 ## Route Future
 
@@ -36,6 +37,7 @@ principali e UI operative per ricerca, catalogo, fornitori e cronologia.
   apertura browser e salvataggio cronologia.
 - Schermata `/history` con elenco ricerche salvate, dettaglio, ripetizione,
   eliminazione e svuotamento.
+- Schermata `/favorites` con salvataggio combinazioni frequenti e rilancio.
 
 ## Regole UI
 
@@ -125,6 +127,26 @@ La schermata espone:
 
 La ripetizione non ricostruisce le selezioni originali: usa gli URL registrati
 nella cronologia, cosi' funziona anche se catalogo o fornitori sono cambiati.
+
+## Preferiti
+
+`/favorites` usa `FavoriteController` in
+`lib/presentation/providers/favorite_controller.dart` e lo stato in
+`lib/application/state/favorite_state.dart`.
+
+La schermata espone:
+
+- lista delle combinazioni salvate;
+- builder con selezioni dipendenti di catalogo;
+- selezione fornitori preferiti compatibili;
+- salvataggio di una nuova combinazione;
+- dettaglio del preferito selezionato;
+- rilancio tramite ricostruzione della ricerca e apertura URL;
+- eliminazione del preferito.
+
+Il rilancio usa gli ID salvati e passa da `PrepareSearchUseCase`: se la
+combinazione non e' piu valida, viene mostrato un errore applicativo invece di
+aprire URL non coerenti.
 
 ## Browser Esterno
 
