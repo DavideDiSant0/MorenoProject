@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repair_parts_finder/application/state/catalog_state.dart';
-import 'package:repair_parts_finder/core/errors/app_exception.dart';
 import 'package:repair_parts_finder/domain/entities/brand.dart';
 import 'package:repair_parts_finder/domain/entities/component.dart';
 import 'package:repair_parts_finder/domain/entities/device_model.dart';
 import 'package:repair_parts_finder/domain/entities/device_type.dart';
 import 'package:repair_parts_finder/presentation/providers/catalog_controller.dart';
+import 'package:repair_parts_finder/presentation/widgets/app_error_view.dart';
+import 'package:repair_parts_finder/presentation/widgets/confirm_and_run.dart';
+import 'package:repair_parts_finder/presentation/widgets/error_message.dart';
+import 'package:repair_parts_finder/presentation/widgets/header_metric_chip.dart';
 
 class CatalogScreen extends ConsumerWidget {
   const CatalogScreen({super.key});
@@ -20,7 +23,10 @@ class CatalogScreen extends ConsumerWidget {
     return catalogState.when(
       data: (state) => _CatalogContent(state: state),
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => _CatalogErrorView(error: error),
+      error: (error, stackTrace) => AppErrorView(
+        message: describeError(error),
+        onRetry: () => ref.invalidate(catalogControllerProvider),
+      ),
     );
   }
 }
@@ -82,34 +88,23 @@ class _CatalogHeader extends StatelessWidget {
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           Text('Catalog', style: textTheme.headlineSmall),
-          _Metric(label: 'Types', value: state.deviceTypes.length),
-          _Metric(label: 'Brands', value: state.brands.length),
-          _Metric(label: 'Models', value: state.deviceModels.length),
-          _Metric(label: 'Components', value: state.components.length),
+          HeaderMetricChip(
+            icon: Icons.devices_other,
+            label: '${state.deviceTypes.length} types',
+          ),
+          HeaderMetricChip(
+            icon: Icons.sell_outlined,
+            label: '${state.brands.length} brands',
+          ),
+          HeaderMetricChip(
+            icon: Icons.phone_iphone,
+            label: '${state.deviceModels.length} models',
+          ),
+          HeaderMetricChip(
+            icon: Icons.construction,
+            label: '${state.components.length} components',
+          ),
         ],
-      ),
-    );
-  }
-}
-
-class _Metric extends StatelessWidget {
-  const _Metric({required this.label, required this.value});
-
-  final String label;
-  final int value;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border.all(color: colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Text('$label $value'),
       ),
     );
   }
@@ -133,14 +128,17 @@ class _DeviceTypesTab extends ConsumerWidget {
         subtitleBuilder: (item) => item.description ?? 'No description',
         isActive: (item) => item.isActive,
         onEdit: (item) => _showDeviceTypeDialog(context, ref, existing: item),
-        onDelete: (item) => _confirmAndRun(
+        onDelete: (item) => confirmAndRun(
           context,
-          ref,
           title: 'Delete device type',
           message: 'Delete ${item.name}?',
-          action: () => ref
-              .read(catalogControllerProvider.notifier)
-              .deleteDeviceType(item.id),
+          action: () => _runCatalogAction(
+            context,
+            ref,
+            () => ref
+                .read(catalogControllerProvider.notifier)
+                .deleteDeviceType(item.id),
+          ),
         ),
       ),
     );
@@ -165,13 +163,17 @@ class _BrandsTab extends ConsumerWidget {
         subtitleBuilder: (item) => item.id,
         isActive: (item) => item.isActive,
         onEdit: (item) => _showBrandDialog(context, ref, existing: item),
-        onDelete: (item) => _confirmAndRun(
+        onDelete: (item) => confirmAndRun(
           context,
-          ref,
           title: 'Delete brand',
           message: 'Delete ${item.name}?',
-          action: () =>
-              ref.read(catalogControllerProvider.notifier).deleteBrand(item.id),
+          action: () => _runCatalogAction(
+            context,
+            ref,
+            () => ref
+                .read(catalogControllerProvider.notifier)
+                .deleteBrand(item.id),
+          ),
         ),
       ),
     );
@@ -211,14 +213,17 @@ class _ModelsTab extends ConsumerWidget {
         isActive: (item) => item.isActive,
         onEdit: (item) =>
             _showDeviceModelDialog(context, ref, state: state, existing: item),
-        onDelete: (item) => _confirmAndRun(
+        onDelete: (item) => confirmAndRun(
           context,
-          ref,
           title: 'Delete model',
           message: 'Delete ${item.name}?',
-          action: () => ref
-              .read(catalogControllerProvider.notifier)
-              .deleteDeviceModel(item.id),
+          action: () => _runCatalogAction(
+            context,
+            ref,
+            () => ref
+                .read(catalogControllerProvider.notifier)
+                .deleteDeviceModel(item.id),
+          ),
         ),
       ),
     );
@@ -243,14 +248,17 @@ class _ComponentsTab extends ConsumerWidget {
         subtitleBuilder: (item) => item.description ?? 'No description',
         isActive: (item) => item.isActive,
         onEdit: (item) => _showComponentDialog(context, ref, existing: item),
-        onDelete: (item) => _confirmAndRun(
+        onDelete: (item) => confirmAndRun(
           context,
-          ref,
           title: 'Delete component',
           message: 'Delete ${item.name}?',
-          action: () => ref
-              .read(catalogControllerProvider.notifier)
-              .deleteComponent(item.id),
+          action: () => _runCatalogAction(
+            context,
+            ref,
+            () => ref
+                .read(catalogControllerProvider.notifier)
+                .deleteComponent(item.id),
+          ),
         ),
       ),
     );
@@ -283,10 +291,7 @@ class _CompatibilityTab extends ConsumerWidget {
             constraints: const BoxConstraints(maxWidth: 420),
             child: DropdownButtonFormField<String>(
               initialValue: selectedId,
-              decoration: const InputDecoration(
-                labelText: 'Device type',
-                border: OutlineInputBorder(),
-              ),
+              decoration: const InputDecoration(labelText: 'Device type'),
               items: [
                 for (final item in state.deviceTypes)
                   DropdownMenuItem(value: item.id, child: Text(item.name)),
@@ -435,32 +440,6 @@ class _EntityList<T> extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _CatalogErrorView extends ConsumerWidget {
-  const _CatalogErrorView({required this.error});
-
-  final Object error;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.error_outline, size: 36),
-          const SizedBox(height: 12),
-          Text(_messageFor(error)),
-          const SizedBox(height: 16),
-          FilledButton.icon(
-            onPressed: () => ref.invalidate(catalogControllerProvider),
-            icon: const Icon(Icons.refresh),
-            label: const Text('Retry'),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -717,39 +696,6 @@ Future<void> _showEntityDialog(
   );
 }
 
-Future<void> _confirmAndRun(
-  BuildContext context,
-  WidgetRef ref, {
-  required String title,
-  required String message,
-  required Future<void> Function() action,
-}) async {
-  final confirmed = await showDialog<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text(title),
-      content: Text(message),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Cancel'),
-        ),
-        FilledButton.icon(
-          onPressed: () => Navigator.of(context).pop(true),
-          icon: const Icon(Icons.delete_outline),
-          label: const Text('Delete'),
-        ),
-      ],
-    ),
-  );
-  if (confirmed ?? false) {
-    if (!context.mounted) {
-      return;
-    }
-    await _runCatalogAction(context, ref, action);
-  }
-}
-
 Future<void> _runCatalogAction(
   BuildContext context,
   WidgetRef ref,
@@ -766,7 +712,7 @@ Future<void> _runCatalogAction(
     if (context.mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(_messageFor(error))));
+      ).showSnackBar(SnackBar(content: Text(describeError(error))));
     }
   }
 }
@@ -777,8 +723,4 @@ List<String> _splitTerms(String value) {
       .map((term) => term.trim())
       .where((term) => term.isNotEmpty)
       .toList();
-}
-
-String _messageFor(Object error) {
-  return error is AppException ? error.message : error.toString();
 }

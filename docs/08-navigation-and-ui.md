@@ -175,6 +175,30 @@ basata su `url_launcher` si trova in
 La UI deve passare da `OpenExternalUrlUseCase` o dal contratto astratto, mai
 chiamare direttamente `url_launcher`.
 
+## Design
+
+Rifinitura visiva applicata a tema e schermate, senza cambiare route,
+controller o casi d'uso.
+
+- Sistema di raggi coerente: 8px per pannelli/input/bottoni/snackbar, 12px
+  per i dialog (superfici modali/flottanti). Configurato in
+  `lib/app/theme/app_theme.dart`.
+- `scaffoldBackgroundColor` non e' piu' impostato esplicitamente: usa il
+  default di `ThemeData`, gia' derivato da `ColorScheme.surface`.
+- Widget condivisi in `lib/presentation/widgets/`, ognuno sostituisce una
+  duplicazione che prima esisteva in piu' schermate:
+  - `AppPanel`: riquadro bordato per contenuti raggruppati (query generata,
+    template fornitore, snapshot, impostazioni).
+  - `HeaderMetricChip`: indicatore icona+testo nelle intestazioni.
+  - `AppErrorView`: vista di errore con azione di retry.
+  - `confirmAndRun`: dialogo di conferma per azioni distruttive. Esegue solo
+    il dialogo; il wrapper `_run*Action` di ogni schermata (che decide se
+    mostrare una notifica di successo, comportamento che varia da schermata
+    a schermata) resta privato e per-schermata, non condiviso.
+  - `describeError` / `formatDateTime`: estrazione messaggio errore e
+    formattazione data, prima duplicate identicamente in piu' file.
+- Nessun tema scuro: l'app resta a tema chiaro fisso per scelta esplicita.
+
 ## Stato Della Ricerca
 
 Ordine delle selezioni:

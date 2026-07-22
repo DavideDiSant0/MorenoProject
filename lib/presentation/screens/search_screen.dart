@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repair_parts_finder/application/state/search_state.dart';
-import 'package:repair_parts_finder/core/errors/app_exception.dart';
 import 'package:repair_parts_finder/presentation/providers/search_controller.dart';
+import 'package:repair_parts_finder/presentation/widgets/app_error_view.dart';
+import 'package:repair_parts_finder/presentation/widgets/app_panel.dart';
+import 'package:repair_parts_finder/presentation/widgets/error_message.dart';
+import 'package:repair_parts_finder/presentation/widgets/header_metric_chip.dart';
 
 class SearchScreen extends ConsumerWidget {
   const SearchScreen({super.key});
@@ -14,7 +17,10 @@ class SearchScreen extends ConsumerWidget {
     return searchState.when(
       data: (state) => _SearchContent(state: state),
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => _SearchErrorView(error: error),
+      error: (error, stackTrace) => AppErrorView(
+        message: describeError(error),
+        onRetry: () => ref.invalidate(searchControllerProvider),
+      ),
     );
   }
 }
@@ -66,15 +72,15 @@ class _SearchHeader extends ConsumerWidget {
                   'Search',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
-                _HeaderMetric(
+                HeaderMetricChip(
                   icon: Icons.devices_other,
                   label: '${state.deviceTypes.length} device types',
                 ),
-                _HeaderMetric(
+                HeaderMetricChip(
                   icon: Icons.storefront,
                   label: '${state.suppliers.length} compatible suppliers',
                 ),
-                _HeaderMetric(
+                HeaderMetricChip(
                   icon: Icons.open_in_browser,
                   label: 'max ${state.settings.maxPagesToOpen} pages',
                 ),
@@ -89,25 +95,6 @@ class _SearchHeader extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _HeaderMetric extends StatelessWidget {
-  const _HeaderMetric({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(width: 6),
-        Text(label),
-      ],
     );
   }
 }
@@ -240,10 +227,7 @@ class _DropdownField extends StatelessWidget {
     return DropdownButtonFormField<String>(
       initialValue: value,
       isExpanded: true,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
-      ),
+      decoration: InputDecoration(labelText: label),
       items: items,
       onChanged: onChanged,
     );
@@ -336,13 +320,7 @@ class _QueryPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(8),
-      ),
+    return AppPanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -368,32 +346,6 @@ class _InlineEmptyText extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Text(value),
-    );
-  }
-}
-
-class _SearchErrorView extends ConsumerWidget {
-  const _SearchErrorView({required this.error});
-
-  final Object error;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.error_outline, size: 36),
-          const SizedBox(height: 12),
-          Text(_messageFor(error)),
-          const SizedBox(height: 16),
-          FilledButton.icon(
-            onPressed: () => ref.invalidate(searchControllerProvider),
-            icon: const Icon(Icons.refresh),
-            label: const Text('Retry'),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -445,13 +397,9 @@ Future<void> _runSearchAction(
     if (context.mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(_messageFor(error))));
+      ).showSnackBar(SnackBar(content: Text(describeError(error))));
     }
   }
-}
-
-String _messageFor(Object error) {
-  return error is AppException ? error.message : error.toString();
 }
 
 IconData _iconForOpenResult(String? openResult) {

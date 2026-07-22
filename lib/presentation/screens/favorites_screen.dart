@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repair_parts_finder/application/state/favorite_state.dart';
-import 'package:repair_parts_finder/core/errors/app_exception.dart';
 import 'package:repair_parts_finder/domain/entities/brand.dart';
 import 'package:repair_parts_finder/domain/entities/component.dart';
 import 'package:repair_parts_finder/domain/entities/device_model.dart';
@@ -9,6 +8,12 @@ import 'package:repair_parts_finder/domain/entities/device_type.dart';
 import 'package:repair_parts_finder/domain/entities/favorite.dart';
 import 'package:repair_parts_finder/domain/entities/supplier.dart';
 import 'package:repair_parts_finder/presentation/providers/favorite_controller.dart';
+import 'package:repair_parts_finder/presentation/widgets/app_error_view.dart';
+import 'package:repair_parts_finder/presentation/widgets/app_panel.dart';
+import 'package:repair_parts_finder/presentation/widgets/confirm_and_run.dart';
+import 'package:repair_parts_finder/presentation/widgets/date_formatting.dart';
+import 'package:repair_parts_finder/presentation/widgets/error_message.dart';
+import 'package:repair_parts_finder/presentation/widgets/header_metric_chip.dart';
 
 class FavoritesScreen extends ConsumerWidget {
   const FavoritesScreen({super.key});
@@ -20,7 +25,10 @@ class FavoritesScreen extends ConsumerWidget {
     return favoriteState.when(
       data: (state) => _FavoritesContent(state: state),
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => _FavoritesErrorView(error: error),
+      error: (error, stackTrace) => AppErrorView(
+        message: describeError(error),
+        onRetry: () => ref.invalidate(favoriteControllerProvider),
+      ),
     );
   }
 }
@@ -99,15 +107,15 @@ class _FavoritesHeader extends ConsumerWidget {
                   'Favorites',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
-                _HeaderMetric(
+                HeaderMetricChip(
                   icon: Icons.star,
                   label: '${state.favorites.length} saved',
                 ),
-                _HeaderMetric(
+                HeaderMetricChip(
                   icon: Icons.storefront,
                   label: '${state.suppliers.length} compatible suppliers',
                 ),
-                _HeaderMetric(
+                HeaderMetricChip(
                   icon: Icons.open_in_browser,
                   label: 'max ${state.settings.maxPagesToOpen} pages',
                 ),
@@ -122,25 +130,6 @@ class _FavoritesHeader extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _HeaderMetric extends StatelessWidget {
-  const _HeaderMetric({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(width: 6),
-        Text(label),
-      ],
     );
   }
 }
@@ -209,13 +198,7 @@ class _FavoriteBuilderPane extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(8),
-      ),
+    return AppPanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -351,10 +334,7 @@ class _SizedDropdownField extends StatelessWidget {
       child: DropdownButtonFormField<String>(
         initialValue: value,
         isExpanded: true,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-        ),
+        decoration: InputDecoration(labelText: label),
         items: items,
         onChanged: onChanged,
       ),
@@ -390,7 +370,7 @@ class _FavoriteDetailsPane extends ConsumerWidget {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 6),
-                  Text('Saved ${_formatDateTime(favorite.createdAt)}'),
+                  Text('Saved ${formatDateTime(favorite.createdAt)}'),
                 ],
               ),
             ),
@@ -401,14 +381,17 @@ class _FavoriteDetailsPane extends ConsumerWidget {
             ),
             IconButton(
               tooltip: 'Delete',
-              onPressed: () => _confirmAndRun(
+              onPressed: () => confirmAndRun(
                 context,
-                ref,
                 title: 'Delete favorite',
                 message: 'Delete ${favorite.name}?',
-                action: () => ref
-                    .read(favoriteControllerProvider.notifier)
-                    .deleteFavorite(favorite.id),
+                action: () => _runFavoriteAction(
+                  context,
+                  ref,
+                  () => ref
+                      .read(favoriteControllerProvider.notifier)
+                      .deleteFavorite(favorite.id),
+                ),
               ),
               icon: const Icon(Icons.delete_outline),
             ),
@@ -465,13 +448,7 @@ class _FavoriteSnapshotPanel extends StatelessWidget {
       _nameForId(state.allComponents, favorite.componentId),
     ];
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(8),
-      ),
+    return AppPanel(
       child: Wrap(
         spacing: 8,
         runSpacing: 8,
@@ -488,32 +465,6 @@ class _EmptyFavoriteDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Center(
       child: Text('Save or select a favorite to see details.'),
-    );
-  }
-}
-
-class _FavoritesErrorView extends ConsumerWidget {
-  const _FavoritesErrorView({required this.error});
-
-  final Object error;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.error_outline, size: 36),
-          const SizedBox(height: 12),
-          Text(_messageFor(error)),
-          const SizedBox(height: 16),
-          FilledButton.icon(
-            onPressed: () => ref.invalidate(favoriteControllerProvider),
-            icon: const Icon(Icons.refresh),
-            label: const Text('Retry'),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -593,39 +544,6 @@ Future<void> _confirmLaunch(
   );
 }
 
-Future<void> _confirmAndRun(
-  BuildContext context,
-  WidgetRef ref, {
-  required String title,
-  required String message,
-  required Future<void> Function() action,
-}) async {
-  final confirmed = await showDialog<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text(title),
-      content: Text(message),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Cancel'),
-        ),
-        FilledButton.icon(
-          onPressed: () => Navigator.of(context).pop(true),
-          icon: const Icon(Icons.delete_outline),
-          label: const Text('Delete'),
-        ),
-      ],
-    ),
-  );
-  if (confirmed ?? false) {
-    if (!context.mounted) {
-      return;
-    }
-    await _runFavoriteAction(context, ref, action);
-  }
-}
-
 Future<void> _runFavoriteAction(
   BuildContext context,
   WidgetRef ref,
@@ -637,7 +555,7 @@ Future<void> _runFavoriteAction(
     if (context.mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(_messageFor(error))));
+      ).showSnackBar(SnackBar(content: Text(describeError(error))));
     }
   }
 }
@@ -664,19 +582,4 @@ String _nameForId<T extends Object>(List<T> items, String id) {
     }
   }
   return id;
-}
-
-String _formatDateTime(DateTime value) {
-  final day = _twoDigits(value.day);
-  final month = _twoDigits(value.month);
-  final year = value.year;
-  final hour = _twoDigits(value.hour);
-  final minute = _twoDigits(value.minute);
-  return '$day/$month/$year $hour:$minute';
-}
-
-String _twoDigits(int value) => value.toString().padLeft(2, '0');
-
-String _messageFor(Object error) {
-  return error is AppException ? error.message : error.toString();
 }

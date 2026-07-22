@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repair_parts_finder/application/state/history_state.dart';
-import 'package:repair_parts_finder/core/errors/app_exception.dart';
 import 'package:repair_parts_finder/domain/entities/search_history.dart';
 import 'package:repair_parts_finder/presentation/providers/history_controller.dart';
+import 'package:repair_parts_finder/presentation/widgets/app_error_view.dart';
+import 'package:repair_parts_finder/presentation/widgets/app_panel.dart';
+import 'package:repair_parts_finder/presentation/widgets/confirm_and_run.dart';
+import 'package:repair_parts_finder/presentation/widgets/date_formatting.dart';
+import 'package:repair_parts_finder/presentation/widgets/error_message.dart';
+import 'package:repair_parts_finder/presentation/widgets/header_metric_chip.dart';
 
 class HistoryScreen extends ConsumerWidget {
   const HistoryScreen({super.key});
@@ -15,7 +20,10 @@ class HistoryScreen extends ConsumerWidget {
     return historyState.when(
       data: (state) => _HistoryContent(state: state),
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => _HistoryErrorView(error: error),
+      error: (error, stackTrace) => AppErrorView(
+        message: describeError(error),
+        onRetry: () => ref.invalidate(historyControllerProvider),
+      ),
     );
   }
 }
@@ -84,12 +92,12 @@ class _HistoryHeader extends ConsumerWidget {
                   'History',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
-                _HeaderMetric(
+                HeaderMetricChip(
                   icon: Icons.history,
                   label: '${state.entries.length} searches',
                 ),
-                _HeaderMetric(icon: Icons.link, label: '$urlCount URLs'),
-                _HeaderMetric(
+                HeaderMetricChip(icon: Icons.link, label: '$urlCount URLs'),
+                HeaderMetricChip(
                   icon: Icons.open_in_browser,
                   label: 'max ${state.settings.maxPagesToOpen} pages',
                 ),
@@ -106,38 +114,22 @@ class _HistoryHeader extends ConsumerWidget {
             tooltip: 'Clear history',
             onPressed: state.entries.isEmpty
                 ? null
-                : () => _confirmAndRun(
+                : () => confirmAndRun(
                     context,
-                    ref,
                     title: 'Clear history',
                     message: 'Delete all saved searches?',
-                    action: () => ref
-                        .read(historyControllerProvider.notifier)
-                        .clearHistory(),
+                    action: () => _runHistoryAction(
+                      context,
+                      ref,
+                      () => ref
+                          .read(historyControllerProvider.notifier)
+                          .clearHistory(),
+                    ),
                   ),
             icon: const Icon(Icons.delete_sweep_outlined),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _HeaderMetric extends StatelessWidget {
-  const _HeaderMetric({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(width: 6),
-        Text(label),
-      ],
     );
   }
 }
@@ -180,7 +172,7 @@ class _HistoryListPane extends ConsumerWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         subtitle: Text(
-                          '${_formatDateTime(entry.searchedAt)}  ·  '
+                          '${formatDateTime(entry.searchedAt)}  ·  '
                           '${entry.suppliers.length} suppliers',
                         ),
                         leading: const Icon(Icons.manage_search),
@@ -224,7 +216,7 @@ class _HistoryDetailsPane extends ConsumerWidget {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 6),
-                    Text(_formatDateTime(entry.searchedAt)),
+                    Text(formatDateTime(entry.searchedAt)),
                   ],
                 ),
               ),
@@ -235,14 +227,17 @@ class _HistoryDetailsPane extends ConsumerWidget {
               ),
               IconButton(
                 tooltip: 'Delete',
-                onPressed: () => _confirmAndRun(
+                onPressed: () => confirmAndRun(
                   context,
-                  ref,
                   title: 'Delete search',
                   message: 'Delete this saved search?',
-                  action: () => ref
-                      .read(historyControllerProvider.notifier)
-                      .deleteEntry(entry.id),
+                  action: () => _runHistoryAction(
+                    context,
+                    ref,
+                    () => ref
+                        .read(historyControllerProvider.notifier)
+                        .deleteEntry(entry.id),
+                  ),
                 ),
                 icon: const Icon(Icons.delete_outline),
               ),
@@ -299,13 +294,7 @@ class _SnapshotPanel extends StatelessWidget {
       entry.component,
     ];
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(8),
-      ),
+    return AppPanel(
       child: Wrap(
         spacing: 8,
         runSpacing: 8,
@@ -321,32 +310,6 @@ class _EmptyHistoryDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(child: Text('Open a saved search to see details.'));
-  }
-}
-
-class _HistoryErrorView extends ConsumerWidget {
-  const _HistoryErrorView({required this.error});
-
-  final Object error;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.error_outline, size: 36),
-          const SizedBox(height: 12),
-          Text(_messageFor(error)),
-          const SizedBox(height: 16),
-          FilledButton.icon(
-            onPressed: () => ref.invalidate(historyControllerProvider),
-            icon: const Icon(Icons.refresh),
-            label: const Text('Retry'),
-          ),
-        ],
-      ),
-    );
   }
 }
 
@@ -387,39 +350,6 @@ Future<void> _confirmRepeat(
   );
 }
 
-Future<void> _confirmAndRun(
-  BuildContext context,
-  WidgetRef ref, {
-  required String title,
-  required String message,
-  required Future<void> Function() action,
-}) async {
-  final confirmed = await showDialog<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text(title),
-      content: Text(message),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Cancel'),
-        ),
-        FilledButton.icon(
-          onPressed: () => Navigator.of(context).pop(true),
-          icon: const Icon(Icons.delete_outline),
-          label: const Text('Delete'),
-        ),
-      ],
-    ),
-  );
-  if (confirmed ?? false) {
-    if (!context.mounted) {
-      return;
-    }
-    await _runHistoryAction(context, ref, action);
-  }
-}
-
 Future<void> _runHistoryAction(
   BuildContext context,
   WidgetRef ref,
@@ -431,22 +361,7 @@ Future<void> _runHistoryAction(
     if (context.mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(_messageFor(error))));
+      ).showSnackBar(SnackBar(content: Text(describeError(error))));
     }
   }
-}
-
-String _formatDateTime(DateTime value) {
-  final day = _twoDigits(value.day);
-  final month = _twoDigits(value.month);
-  final year = value.year;
-  final hour = _twoDigits(value.hour);
-  final minute = _twoDigits(value.minute);
-  return '$day/$month/$year $hour:$minute';
-}
-
-String _twoDigits(int value) => value.toString().padLeft(2, '0');
-
-String _messageFor(Object error) {
-  return error is AppException ? error.message : error.toString();
 }

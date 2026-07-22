@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:repair_parts_finder/core/errors/app_exception.dart';
 import 'package:repair_parts_finder/domain/entities/app_settings.dart';
 import 'package:repair_parts_finder/presentation/providers/settings_controller.dart';
+import 'package:repair_parts_finder/presentation/widgets/app_error_view.dart';
+import 'package:repair_parts_finder/presentation/widgets/app_panel.dart';
+import 'package:repair_parts_finder/presentation/widgets/error_message.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -14,7 +16,10 @@ class SettingsScreen extends ConsumerWidget {
     return settingsState.when(
       data: (settings) => _SettingsContent(settings: settings),
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => _SettingsErrorView(error: error),
+      error: (error, stackTrace) => AppErrorView(
+        message: describeError(error),
+        onRetry: () => ref.invalidate(settingsControllerProvider),
+      ),
     );
   }
 }
@@ -100,14 +105,8 @@ class _SettingsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      constraints: const BoxConstraints(maxWidth: 760),
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(8),
-      ),
+    return AppPanel(
+      maxWidth: 760,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -163,32 +162,6 @@ class _MaxPagesControl extends ConsumerWidget {
   }
 }
 
-class _SettingsErrorView extends ConsumerWidget {
-  const _SettingsErrorView({required this.error});
-
-  final Object error;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.error_outline, size: 36),
-          const SizedBox(height: 12),
-          Text(_messageFor(error)),
-          const SizedBox(height: 16),
-          FilledButton.icon(
-            onPressed: () => ref.invalidate(settingsControllerProvider),
-            icon: const Icon(Icons.refresh),
-            label: const Text('Retry'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 Future<void> _runSettingsAction(
   BuildContext context,
   WidgetRef ref,
@@ -200,11 +173,7 @@ Future<void> _runSettingsAction(
     if (context.mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(_messageFor(error))));
+      ).showSnackBar(SnackBar(content: Text(describeError(error))));
     }
   }
-}
-
-String _messageFor(Object error) {
-  return error is AppException ? error.message : error.toString();
 }
