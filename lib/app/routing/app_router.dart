@@ -28,30 +28,40 @@ GoRouter buildAppRouter() {
         routes: [
           GoRoute(
             path: AppDestination.search.path,
-            builder: (context, state) => const SearchScreen(),
+            pageBuilder: (context, state) =>
+                _sectionPage(state, const SearchScreen()),
           ),
           GoRoute(
             path: AppDestination.catalog.path,
-            builder: (context, state) => const CatalogScreen(),
+            pageBuilder: (context, state) =>
+                _sectionPage(state, const CatalogScreen()),
           ),
           GoRoute(
             path: AppDestination.suppliers.path,
-            builder: (context, state) => const SuppliersScreen(),
+            pageBuilder: (context, state) =>
+                _sectionPage(state, const SuppliersScreen()),
           ),
           GoRoute(
             path: AppDestination.history.path,
-            builder: (context, state) => const HistoryScreen(),
+            pageBuilder: (context, state) =>
+                _sectionPage(state, const HistoryScreen()),
           ),
           GoRoute(
             path: AppDestination.favorites.path,
-            builder: (context, state) => const FavoritesScreen(),
+            pageBuilder: (context, state) =>
+                _sectionPage(state, const FavoritesScreen()),
           ),
           GoRoute(
             path: AppDestination.settings.path,
-            builder: (context, state) => const SettingsScreen(),
+            pageBuilder: (context, state) =>
+                _sectionPage(state, const SettingsScreen()),
           ),
         ],
       ),
     ],
   );
+}
+
+Page<void> _sectionPage(GoRouterState state, Widget child) {
+  return NoTransitionPage<void>(key: state.pageKey, child: child);
 }

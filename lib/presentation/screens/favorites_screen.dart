@@ -61,19 +61,16 @@ class _FavoritesContent extends ConsumerWidget {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(28),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                  child: ListView(
                     children: [
                       _FavoriteBuilderPane(state: state),
                       const SizedBox(height: 22),
-                      Expanded(
-                        child: selectedFavorite == null
-                            ? const _EmptyFavoriteDetails()
-                            : _FavoriteDetailsPane(
-                                favorite: selectedFavorite,
-                                state: state,
-                              ),
-                      ),
+                      selectedFavorite == null
+                          ? const _EmptyFavoriteDetails()
+                          : _FavoriteDetailsPane(
+                              favorite: selectedFavorite,
+                              state: state,
+                            ),
                     ],
                   ),
                 ),
@@ -405,25 +402,26 @@ class _FavoriteDetailsPane extends ConsumerWidget {
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
-        Expanded(
-          child: favorite.supplierIds.isEmpty
-              ? const Center(
-                  child: Text('No suppliers saved in this favorite.'),
-                )
-              : ListView.separated(
-                  itemCount: favorite.supplierIds.length,
-                  separatorBuilder: (context, index) =>
-                      const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final supplierId = favorite.supplierIds[index];
-                    return ListTile(
-                      leading: const Icon(Icons.storefront_outlined),
-                      title: Text(_nameForId(state.allSuppliers, supplierId)),
-                      subtitle: Text(supplierId),
-                    );
-                  },
-                ),
-        ),
+        if (favorite.supplierIds.isEmpty)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 14),
+            child: Text('No suppliers saved in this favorite.'),
+          )
+        else
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: favorite.supplierIds.length,
+            separatorBuilder: (context, index) => const Divider(height: 1),
+            itemBuilder: (context, index) {
+              final supplierId = favorite.supplierIds[index];
+              return ListTile(
+                leading: const Icon(Icons.storefront_outlined),
+                title: Text(_nameForId(state.allSuppliers, supplierId)),
+                subtitle: Text(supplierId),
+              );
+            },
+          ),
         if (state.lastResultMessage != null) ...[
           const SizedBox(height: 12),
           Text(state.lastResultMessage!),

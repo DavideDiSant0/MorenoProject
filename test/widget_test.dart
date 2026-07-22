@@ -88,12 +88,30 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Favorites').first);
+    await tester.tap(find.byIcon(Icons.star_border).first);
     await tester.pumpAndSettle();
 
     expect(find.text('Favorites'), findsWidgets);
     expect(find.text('Saved combinations'), findsOneWidget);
     expect(find.text('iPhone 13 display'), findsWidgets);
+  });
+
+  testWidgets('Favorites route fits in compact desktop viewport', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(800, 600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.star_border).first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Favorites'), findsWidgets);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('Navigation rail opens settings route', (
