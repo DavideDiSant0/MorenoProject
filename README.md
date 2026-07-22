@@ -10,7 +10,7 @@ credenziali e non gestira pagamenti.
 
 ## Stato Attuale
 
-Fase 1 - Dominio e Database.
+Fase tecnica 5 - Catalogo operativo.
 
 Questo repository contiene:
 
@@ -19,13 +19,21 @@ Questo repository contiene:
   repository in `lib/domain/repositories`;
 - persistenza locale implementata: schema Drift (12 tabelle) in
   `lib/data/database`, DAO, mapper e repository concreti in `lib/data`;
+- casi d'uso applicativi per catalogo, fornitori, ricerca, preferiti,
+  cronologia e impostazioni;
+- URL Template System con placeholder, validazione, blocco schemi non sicuri e
+  URL encoding;
+- Browser Service astratto con adapter `url_launcher` confinato nel layer data;
+- shell desktop GoRouter con `NavigationRail`;
+- catalogo operativo in `/catalog` per tipi dispositivo, marche, modelli,
+  componenti e compatibilita dispositivo/componente;
 - gestione errori di persistenza (`lib/core/errors`);
-- test per entita, mapper, database, DAO e repository;
+- test per entita, mapper, database, DAO, repository, casi d'uso, servizi URL,
+  browser service e smoke test UI;
 - documentazione tecnica e regole operative per agenti AI.
 
-Non sono ancora state implementate funzionalita applicative, casi d'uso,
-provider applicativi, schermate definitive, dati demo, scraping o
-integrazioni remote.
+Non sono ancora state implementate la UI operativa di ricerca, fornitori,
+cronologia, preferiti, impostazioni, dati demo, scraping o integrazioni remote.
 
 ## Tecnologie
 

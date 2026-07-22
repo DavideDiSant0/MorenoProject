@@ -25,6 +25,8 @@
 - componenti;
 - compatibilita.
 
+Stato: dominio, persistenza, casi d'uso e prima UI operativa implementati.
+
 ## Fase 3 - Fornitori
 
 - CRUD;

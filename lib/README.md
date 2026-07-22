@@ -1,14 +1,14 @@
 # Struttura `lib`
 
-`domain`, `data`, `application` e parte di `core` contengono codice reale.
-Le altre sottocartelle restano lo scheletro iniziale, predisposte per le fasi
-successive e mantenute con file `.gitkeep` finche non esiste codice reale da
-inserire.
+`domain`, `data`, `application`, `app`, `presentation` e parte di `core`
+contengono codice reale. Le sottocartelle non ancora usate restano lo
+scheletro iniziale, predisposte per le fasi successive e mantenute con file
+`.gitkeep` finche non esiste codice reale da inserire.
 
 ## Convenzione
 
-- `app`: composizione dell'app, routing, tema e configurazione. *(scheletro)*
-  Implementato: routing GoRouter e tema base.
+- `app`: composizione dell'app, routing, tema e configurazione. Implementato:
+  routing GoRouter, tema base e provider applicativi condivisi.
 - `core`: elementi condivisi indipendenti dalle feature. Contiene
   `errors` (gerarchia eccezioni applicative) e `validation` (invarianti
   condivise dalle entita'), `utilities` (helper puri) e `services` (contratti
@@ -17,15 +17,14 @@ inserire.
   `entities`, `repositories` e `services` (generatore URL da template);
   `value_objects` resta scheletro.
 - `application`: casi d'uso, DTO e stato applicativo. Implementato:
-  `use_cases` e `dto`; `state` resta scheletro finche non esiste integrazione
-  Riverpod/UI.
+  `use_cases`, `dto` e stato catalogo usato dalla UI Riverpod.
 - `data`: persistenza locale, Drift, mapper e implementazioni repository.
   Implementato: `database` (tabelle, DAO, `app_database.dart`,
   `database_connection.dart`), `mappers`, `repositories` e `services`
   infrastrutturali come l'adapter `url_launcher`.
 - `presentation`: schermate, widget, controller e provider UI. Implementato:
-  shell desktop con `NavigationRail` e schermate tecniche; `controllers` e
-  `providers` restano scheletro.
+  shell desktop con `NavigationRail`, schermate tecniche e provider/controller
+  operativi per il catalogo.
 - `features`: raggruppamento funzionale futuro. *(scheletro)*
 
 Non creare classi vuote solo per occupare cartelle. Inserire codice solo quando

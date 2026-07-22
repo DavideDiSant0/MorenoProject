@@ -1,9 +1,8 @@
 # Navigation And UI
 
 La navigazione e' gestita da GoRouter. Lo stato attuale include una shell
-desktop tecnica con `NavigationRail` laterale e schermate minime per le sezioni
-principali. Non sono ancora presenti CRUD, form definitivi o logica
-applicativa nella UI.
+desktop con `NavigationRail` laterale, schermate tecniche per le sezioni
+principali e una prima UI operativa per il catalogo.
 
 ## Route Future
 
@@ -29,6 +28,8 @@ applicativa nella UI.
 - Shell desktop in `lib/presentation/widgets/app_shell.dart`.
 - Schermate tecniche in `lib/presentation/screens`.
 - Redirect tecnico da `/` a `/search`.
+- Schermata `/catalog` con gestione operativa di tipi dispositivo, marche,
+  modelli, componenti e compatibilita.
 
 ## Regole UI
 
@@ -38,9 +39,27 @@ applicativa nella UI.
 - I widget non aprono direttamente il browser e non importano `url_launcher`.
 - I widget non eseguono query SQL.
 - La UI deve gestire stati di caricamento, vuoto, errore e conferma quando il
-  relativo flusso verra implementato.
-- Le schermate tecniche attuali possono mostrare solo struttura e sezioni
+  relativo flusso viene implementato.
+- Le schermate tecniche non operative possono mostrare solo struttura e sezioni
   previste; non devono simulare dati reali.
+
+## Catalogo
+
+`/catalog` usa `CatalogController` in
+`lib/presentation/providers/catalog_controller.dart` e i provider di
+composizione in `lib/app/configuration/app_providers.dart`.
+
+La schermata espone cinque tab:
+
+- tipi dispositivo;
+- marche;
+- modelli;
+- componenti;
+- compatibilita.
+
+Le operazioni di creazione, modifica, eliminazione e assegnazione
+compatibilita passano dai casi d'uso applicativi. Gli errori di dominio o
+persistenza vengono mostrati come messaggi UI senza bypassare i layer.
 
 ## Browser Esterno
 

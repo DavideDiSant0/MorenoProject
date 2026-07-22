@@ -30,6 +30,10 @@ dall'applicazione e sara completato nel sito ufficiale del fornitore.
 
 ## Stato Della Fase Corrente
 
-Questa fase inizializza il progetto e documenta le regole tecniche. Non
-implementa logica applicativa, database reale, schermate definitive, CRUD,
-generatore URL o accesso a fornitori.
+Il progetto include dominio, persistenza locale Drift, casi d'uso applicativi,
+generatore URL, browser service astratto, shell GoRouter e una prima schermata
+catalogo operativa.
+
+La sezione `/catalog` permette di gestire tipi dispositivo, marche, modelli,
+componenti e compatibilita dispositivo/componente. Le altre sezioni UI sono
+ancora schermate tecniche pronte per le fasi successive.
