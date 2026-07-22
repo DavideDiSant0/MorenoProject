@@ -54,6 +54,8 @@ e salvataggio cronologia.
 - filtri;
 - preferiti.
 
+Stato: cronologia operativa implementata; preferiti ancora da completare.
+
 ## Fase 6 - Impostazioni E Backup
 
 - limite pagine;

@@ -2,7 +2,7 @@
 
 La navigazione e' gestita da GoRouter. Lo stato attuale include una shell
 desktop con `NavigationRail` laterale, schermate tecniche per le sezioni
-principali e UI operative per ricerca, catalogo e fornitori.
+principali e UI operative per ricerca, catalogo, fornitori e cronologia.
 
 ## Route Future
 
@@ -34,6 +34,8 @@ principali e UI operative per ricerca, catalogo e fornitori.
   ordinamento e compatibilita con tipi dispositivo.
 - Schermata `/search` con selezioni dipendenti, preview URL, conferma,
   apertura browser e salvataggio cronologia.
+- Schermata `/history` con elenco ricerche salvate, dettaglio, ripetizione,
+  eliminazione e svuotamento.
 
 ## Regole UI
 
@@ -105,6 +107,24 @@ La schermata espone:
 Il controller orchestra casi d'uso applicativi e servizi astratti. I widget
 mostrano stato e raccolgono input, ma non generano URL, non aprono il browser
 e non accedono al database.
+
+## Cronologia
+
+`/history` usa `HistoryController` in
+`lib/presentation/providers/history_controller.dart` e lo stato in
+`lib/application/state/history_state.dart`.
+
+La schermata espone:
+
+- lista delle ricerche salvate ordinate dalla piu recente;
+- dettaglio dello snapshot salvato;
+- URL generati per ogni fornitore;
+- ripetizione della ricerca tramite riapertura degli URL salvati;
+- eliminazione della voce selezionata;
+- svuotamento completo.
+
+La ripetizione non ricostruisce le selezioni originali: usa gli URL registrati
+nella cronologia, cosi' funziona anche se catalogo o fornitori sono cambiati.
 
 ## Browser Esterno
 

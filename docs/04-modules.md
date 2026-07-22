@@ -78,13 +78,27 @@ Responsabilita future:
 
 ## History
 
-Responsabilita future:
+Implementato:
 
 - salvataggio delle ricerche;
 - visualizzazione cronologica;
-- ripetizione;
-- eliminazione;
+- dettaglio di query, snapshot catalogo e URL fornitori;
+- ripetizione tramite riapertura degli URL salvati;
+- eliminazione singola voce;
+- svuotamento cronologia.
+
+Responsabilita future:
+
 - conversione in preferito.
+
+Regole:
+
+- la cronologia mostra snapshot testuali, quindi resta leggibile anche se
+  catalogo o fornitori cambiano;
+- ripetere una ricerca riapre gli URL salvati, non ricostruisce le selezioni;
+- l'apertura passa da `OpenExternalUrlUseCase`;
+- limite massimo pagine e conferma rispettano `AppSettings`;
+- la UI non accede direttamente al database e non importa `url_launcher`.
 
 ## Settings
 

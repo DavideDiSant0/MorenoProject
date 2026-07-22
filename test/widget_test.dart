@@ -56,6 +56,25 @@ void main() {
     expect(find.text('Supplier list'), findsOneWidget);
     expect(find.text('No suppliers yet.'), findsOneWidget);
   });
+
+  testWidgets('Navigation rail opens history route', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(1280, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('History').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('History'), findsWidgets);
+    expect(find.text('Saved searches'), findsOneWidget);
+    expect(find.text('No saved searches yet.'), findsOneWidget);
+  });
 }
 
 Widget buildTestApp() {

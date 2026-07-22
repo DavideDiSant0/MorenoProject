@@ -110,15 +110,16 @@ flutter run -d windows
 - Smoke test per schermata `/search` operativa con selezioni e anteprima vuota.
 - Widget test per navigazione da `/search` a `/catalog` tramite GoRouter.
 - Widget test per navigazione da `/search` a `/suppliers` tramite GoRouter.
+- Widget test per navigazione da `/search` a `/history` tramite GoRouter.
 - Override del database Drift in memoria nei widget test tramite Riverpod.
-- Smoke test aggiornati per le schermate ricerca, catalogo e fornitori
-  operative.
+- Smoke test aggiornati per le schermate ricerca, catalogo, fornitori e
+  cronologia operative.
 
 ## Test Futuri
 
 - Unit test per value object, quando saranno introdotti.
 - Test dedicati per provider Riverpod e stato applicativo dei controller UI.
-- Widget test CRUD per catalogo, fornitori, ricerca completa e future
-  schermate operative.
+- Widget test CRUD per catalogo, fornitori, cronologia, ricerca completa e
+  future schermate operative.
 - Test di migrazione Drift quando lo schema cambiera' (dalla versione 2 in
   poi).
