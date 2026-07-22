@@ -83,6 +83,8 @@ flutter run -d windows
 - Test di generazione controllata di id e timestamp tramite servizi astratti
   (`IdGenerator`, `DateTimeProvider`).
 - Test di generazione URL di prova tramite `SupplierUseCases.testTemplate`.
+- Test di preparazione ricerca per selezioni valide, componenti incompatibili
+  e fornitori non attivi/compatibili.
 
 ## Test Implementati (URL Template System)
 
@@ -105,15 +107,18 @@ flutter run -d windows
 
 - Widget test per bootstrap della shell desktop con `MaterialApp.router` e
   `NavigationRail`.
+- Smoke test per schermata `/search` operativa con selezioni e anteprima vuota.
 - Widget test per navigazione da `/search` a `/catalog` tramite GoRouter.
 - Widget test per navigazione da `/search` a `/suppliers` tramite GoRouter.
 - Override del database Drift in memoria nei widget test tramite Riverpod.
-- Smoke test aggiornati per le schermate catalogo e fornitori operative.
+- Smoke test aggiornati per le schermate ricerca, catalogo e fornitori
+  operative.
 
 ## Test Futuri
 
 - Unit test per value object, quando saranno introdotti.
 - Test dedicati per provider Riverpod e stato applicativo dei controller UI.
-- Widget test CRUD per catalogo, fornitori e future schermate operative.
+- Widget test CRUD per catalogo, fornitori, ricerca completa e future
+  schermate operative.
 - Test di migrazione Drift quando lo schema cambiera' (dalla versione 2 in
   poi).

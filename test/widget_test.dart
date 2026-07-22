@@ -16,6 +16,8 @@ void main() {
     expect(find.byType(MaterialApp), findsOneWidget);
     expect(find.byType(NavigationRail), findsOneWidget);
     expect(find.text('Search'), findsWidgets);
+    expect(find.text('Selection'), findsOneWidget);
+    expect(find.text('No URL preview generated.'), findsOneWidget);
   });
 
   testWidgets('Navigation rail opens catalog route', (

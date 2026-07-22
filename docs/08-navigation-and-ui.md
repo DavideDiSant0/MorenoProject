@@ -2,7 +2,7 @@
 
 La navigazione e' gestita da GoRouter. Lo stato attuale include una shell
 desktop con `NavigationRail` laterale, schermate tecniche per le sezioni
-principali e UI operative per catalogo e fornitori.
+principali e UI operative per ricerca, catalogo e fornitori.
 
 ## Route Future
 
@@ -32,6 +32,8 @@ principali e UI operative per catalogo e fornitori.
   modelli, componenti e compatibilita.
 - Schermata `/suppliers` con gestione operativa di fornitori, template URL,
   ordinamento e compatibilita con tipi dispositivo.
+- Schermata `/search` con selezioni dipendenti, preview URL, conferma,
+  apertura browser e salvataggio cronologia.
 
 ## Regole UI
 
@@ -81,6 +83,29 @@ Le operazioni passano da `SupplierUseCases`. Il salvataggio valida il template
 URL prima di toccare il repository, mentre il test template genera solo un
 `Uri` e non apre il browser.
 
+## Ricerca
+
+`/search` usa `SearchController` in
+`lib/presentation/providers/search_controller.dart` e lo stato in
+`lib/application/state/search_state.dart`.
+
+La schermata espone:
+
+- selezione tipo dispositivo;
+- selezione marca;
+- selezione modello filtrata per tipo e marca;
+- selezione componente compatibile;
+- selezione fornitori attivi e compatibili;
+- query generata;
+- anteprima URL per fornitore;
+- conferma prima dell'apertura quando richiesta dalle impostazioni;
+- apertura nel browser esterno tramite caso d'uso;
+- salvataggio in cronologia quando abilitato.
+
+Il controller orchestra casi d'uso applicativi e servizi astratti. I widget
+mostrano stato e raccolgono input, ma non generano URL, non aprono il browser
+e non accedono al database.
+
 ## Browser Esterno
 
 L'apertura del browser e' esposta tramite `ExternalBrowserService` in
@@ -89,8 +114,8 @@ basata su `url_launcher` si trova in
 `lib/data/services/url_launcher_external_browser_service.dart` e forza
 `LaunchMode.externalApplication`.
 
-La UI futura deve passare da `OpenExternalUrlUseCase` o dal contratto astratto,
-mai chiamare direttamente `url_launcher`.
+La UI deve passare da `OpenExternalUrlUseCase` o dal contratto astratto, mai
+chiamare direttamente `url_launcher`.
 
 ## Stato Della Ricerca
 

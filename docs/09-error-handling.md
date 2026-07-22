@@ -36,6 +36,15 @@ tecniche di `url_launcher` in questo errore applicativo. URL con schema non
 consentito o host assente vengono rifiutati con `ValidationException` prima di
 chiamare `url_launcher`.
 
+## Implementato: Errori Ricerca
+
+La ricerca usa `ValidationException` per selezioni incomplete, componenti non
+compatibili, fornitori non attivi o non compatibili e superamento del limite
+massimo di pagine da aprire. Durante l'apertura multipla, il risultato di ogni
+fornitore viene conservato per la cronologia; un fallimento di apertura viene
+registrato come risultato del singolo URL senza accedere direttamente al
+browser dalla UI.
+
 ## Regole
 
 - Non mostrare messaggi tecnici grezzi all'utente finale.

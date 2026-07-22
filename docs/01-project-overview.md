@@ -32,10 +32,12 @@ dall'applicazione e sara completato nel sito ufficiale del fornitore.
 
 Il progetto include dominio, persistenza locale Drift, casi d'uso applicativi,
 generatore URL, browser service astratto, shell GoRouter e prime schermate
-operative per catalogo e fornitori.
+operative per ricerca, catalogo e fornitori.
 
 La sezione `/catalog` permette di gestire tipi dispositivo, marche, modelli,
 componenti e compatibilita dispositivo/componente. La sezione `/suppliers`
 permette di gestire fornitori, template URL, test template, ordinamento e
-compatibilita con i tipi dispositivo. Le altre sezioni UI sono ancora schermate
+compatibilita con i tipi dispositivo. La sezione `/search` permette di
+comporre una ricerca, generare query e URL, confermare l'apertura nel browser
+esterno e salvare la cronologia. Le altre sezioni UI sono ancora schermate
 tecniche pronte per le fasi successive.

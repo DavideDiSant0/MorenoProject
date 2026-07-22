@@ -46,6 +46,8 @@ File principali:
 - `url_template_generator.dart`: valida template e genera l'URL finale.
 - `SupplierUseCases.testTemplate`: usa il generatore per provare un template
   fornitore senza aprire il browser.
+- `SearchController.generatePreview`: usa il generatore con i dati della
+  ricerca preparata per produrre l'anteprima URL.
 
 Il generatore:
 

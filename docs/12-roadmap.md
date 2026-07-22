@@ -44,6 +44,9 @@ Stato: dominio, persistenza, casi d'uso e prima UI operativa implementati.
 - anteprima;
 - browser service.
 
+Stato: prima UI operativa implementata con preview, conferma, apertura browser
+e salvataggio cronologia.
+
 ## Fase 5 - Cronologia E Preferiti
 
 - salvataggio;

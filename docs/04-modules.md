@@ -2,7 +2,7 @@
 
 ## Search
 
-Responsabilita future:
+Implementato:
 
 - selezione progressiva del dispositivo;
 - selezione marca;
@@ -14,6 +14,18 @@ Responsabilita future:
 - anteprima;
 - apertura delle pagine;
 - salvataggio della cronologia.
+
+Regole:
+
+- le opzioni dipendenti vengono ricalcolate dal controller tramite casi d'uso;
+- i modelli dipendono da tipo dispositivo e marca;
+- componenti e fornitori dipendono dalla compatibilita del tipo dispositivo;
+- la UI non costruisce URL e non importa `url_launcher`;
+- l'apertura passa da `OpenExternalUrlUseCase`;
+- il limite massimo pagine, la conferma e la cronologia rispettano
+  `AppSettings`;
+- ogni apertura registra URL e risultato in cronologia quando la cronologia e'
+  abilitata.
 
 ## Catalog
 
