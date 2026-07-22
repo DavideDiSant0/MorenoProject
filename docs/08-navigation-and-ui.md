@@ -24,10 +24,21 @@ create schermate applicative definitive.
 - I widget mostrano stato e raccolgono input.
 - I widget delegano azioni a controller, provider o casi d'uso.
 - I widget non costruiscono URL dei fornitori.
-- I widget non aprono direttamente il browser.
+- I widget non aprono direttamente il browser e non importano `url_launcher`.
 - I widget non eseguono query SQL.
 - La UI deve gestire stati di caricamento, vuoto, errore e conferma quando il
   relativo flusso verra implementato.
+
+## Browser Esterno
+
+L'apertura del browser e' esposta tramite `ExternalBrowserService` in
+`lib/core/services/external_browser_service.dart`. L'implementazione concreta
+basata su `url_launcher` si trova in
+`lib/data/services/url_launcher_external_browser_service.dart` e forza
+`LaunchMode.externalApplication`.
+
+La UI futura deve passare da `OpenExternalUrlUseCase` o dal contratto astratto,
+mai chiamare direttamente `url_launcher`.
 
 ## Stato Della Ricerca
 

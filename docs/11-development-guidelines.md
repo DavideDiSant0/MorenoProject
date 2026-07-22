@@ -89,6 +89,16 @@ flutter run -d windows
 - Test per URL encoding, trim, placeholder sconosciuti o malformati, valori
   mancanti e schemi non sicuri (`file:`, `javascript:`).
 
+## Test Implementati (Browser Service)
+
+- Unit test per `UrlLauncherExternalBrowserService`
+  (`test/data/services/url_launcher_external_browser_service_test.dart`).
+- Test che verificano `LaunchMode.externalApplication`, blocco di schemi non
+  sicuri, host assente e conversione dei fallimenti in
+  `BrowserLaunchException`.
+- Test per `OpenExternalUrlUseCase`, che delega al contratto astratto senza
+  conoscere `url_launcher`.
+
 ## Test Futuri
 
 - Unit test per value object, quando saranno introdotti.

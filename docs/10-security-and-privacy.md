@@ -28,6 +28,10 @@ esecuzione di codice o comandi locali.
 Il browser esterno riduce la responsabilita dell'app: login, carrello,
 pagamento e conferma ordine restano sul sito del fornitore.
 
+L'apertura e' confinata in `UrlLauncherExternalBrowserService`, che accetta solo
+URL `http` e `https`, richiede un host valido e usa `LaunchMode.externalApplication`.
+La UI non deve importare `url_launcher` ne aprire direttamente URL.
+
 ## Dati Locali
 
 Il database locale dovra contenere catalogo, impostazioni, cronologia e

@@ -11,7 +11,7 @@ inserire.
 - `core`: elementi condivisi indipendenti dalle feature. Contiene
   `errors` (gerarchia eccezioni applicative) e `validation` (invarianti
   condivise dalle entita'), `utilities` (helper puri) e `services` (contratti
-  condivisi per id e tempo); `constants` resta scheletro.
+  condivisi per id, tempo e browser esterno); `constants` resta scheletro.
 - `domain`: modello di dominio e contratti astratti. Implementato:
   `entities`, `repositories` e `services` (generatore URL da template);
   `value_objects` resta scheletro.
@@ -20,7 +20,8 @@ inserire.
   Riverpod/UI.
 - `data`: persistenza locale, Drift, mapper e implementazioni repository.
   Implementato: `database` (tabelle, DAO, `app_database.dart`,
-  `database_connection.dart`), `mappers`, `repositories`.
+  `database_connection.dart`), `mappers`, `repositories` e `services`
+  infrastrutturali come l'adapter `url_launcher`.
 - `presentation`: schermate, widget, controller e provider UI. *(scheletro)*
 - `features`: raggruppamento funzionale futuro. *(scheletro)*
 

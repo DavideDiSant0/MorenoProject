@@ -9,7 +9,7 @@ prima di arrivare alla UI.
 - errori di template URL;
 - errori di persistenza locale (implementato: vedi sotto);
 - errori di migrazione database;
-- errori di apertura browser;
+- errori di apertura browser (implementato: vedi sotto);
 - errori di stato incoerente;
 - errori inattesi.
 
@@ -27,6 +27,14 @@ DAO possono lasciar propagare eccezioni Drift grezze. Non esiste ancora una
 `ConstraintViolationException` dedicata: distinguere "nome duplicato" da
 "riferimento ancora in uso" richiede di ispezionare i dettagli della
 `SqliteException`, rimandato a quando un caso d'uso reale lo richieda.
+
+## Implementato: Errori Browser Esterno
+
+`BrowserLaunchException` rappresenta il fallimento dell'apertura del browser
+esterno. `UrlLauncherExternalBrowserService` converte esiti `false` o eccezioni
+tecniche di `url_launcher` in questo errore applicativo. URL con schema non
+consentito o host assente vengono rifiutati con `ValidationException` prima di
+chiamare `url_launcher`.
 
 ## Regole
 
@@ -53,4 +61,5 @@ Quando i moduli verranno implementati, i test dovranno coprire almeno:
 - conversione degli errori tecnici;
 - stato dipendente della ricerca;
 - migrazioni database rilevanti;
-- generazione URL senza apertura browser.
+- generazione URL senza apertura browser;
+- apertura browser tramite servizio finto, senza avviare davvero il browser.
