@@ -60,12 +60,23 @@ flutter run -d windows
 
 `flutter run -d windows` richiede una macchina Windows configurata.
 
+## Test Implementati (Fase 1)
+
+- Unit test per le entita' di dominio: costruzione, invarianti, `==`,
+  `copyWith` (`test/domain/entities`).
+- Test dei mapper entita' <-> Drift, incluso il round-trip dei termini
+  alternativi (`test/data/mappers`).
+- Test del database Drift: versione schema, tabelle attese, foreign key
+  attive (`test/data/database`).
+- Test dei DAO: CRUD, join di compatibilita', comportamento
+  cascade/restrict/set-null, vincolo unique (`test/data/database/daos`).
+- Test dei repository: traduzione errori (`NotFoundException`,
+  `PersistenceException`), mapping end-to-end (`test/data/repositories`).
+
 ## Test Futuri
 
-- Unit test per value object, validazioni e generatore URL.
-- Test per casi d'uso applicativi.
-- Test per mapper e repository con database locale controllato.
-- Widget test per stati UI rilevanti.
-- Test di migrazione Drift quando lo schema cambia.
-
-In questa fase sono predisposti solo i test Flutter generati dal bootstrap.
+- Unit test per value object e generatore URL, quando implementati (Fase 3).
+- Test per casi d'uso applicativi (Fase 2 in poi).
+- Widget test per stati UI rilevanti (quando esisteranno schermate reali).
+- Test di migrazione Drift quando lo schema cambiera' (dalla versione 2 in
+  poi).

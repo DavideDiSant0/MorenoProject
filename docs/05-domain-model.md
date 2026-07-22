@@ -1,7 +1,12 @@
 # Domain Model
 
-Questo documento descrive il modello concettuale previsto. In questa fase non
-sono state create entita Dart, tabelle Drift o repository.
+Questo documento descrive il modello di dominio. Le entita Dart sono
+implementate in `lib/domain/entities`, le tabelle Drift in
+`lib/data/database/tables` e i repository in `lib/domain/repositories`
+(contratti) e `lib/data/repositories` (implementazioni). Vedi anche
+[docs/06-data-model.md](06-data-model.md) per lo schema fisico e
+[ADR-008](decisions/ADR-008-identifiers-as-uuid-strings.md) per la strategia
+di identificazione.
 
 ## DeviceType
 
@@ -72,6 +77,8 @@ fornitori compatibili.
 - `deviceType`;
 - `brand`;
 - `deviceModel`;
+- `deviceModelCode` (snapshot del codice modello, utile per ritrovare la
+  ricerca anche solo dal codice);
 - `component`;
 - `generatedQuery`.
 

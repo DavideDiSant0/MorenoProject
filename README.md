@@ -10,19 +10,22 @@ credenziali e non gestira pagamenti.
 
 ## Stato Attuale
 
-Fase 0 - Bootstrap.
+Fase 1 - Dominio e Database.
 
-Questo repository contiene solamente:
+Questo repository contiene:
 
 - progetto Flutter desktop inizializzato;
-- dipendenze previste per le fasi successive;
-- struttura architetturale delle cartelle;
-- documentazione tecnica;
-- regole operative per agenti AI.
+- dominio implementato: entita in `lib/domain/entities`, contratti
+  repository in `lib/domain/repositories`;
+- persistenza locale implementata: schema Drift (12 tabelle) in
+  `lib/data/database`, DAO, mapper e repository concreti in `lib/data`;
+- gestione errori di persistenza (`lib/core/errors`);
+- test per entita, mapper, database, DAO e repository;
+- documentazione tecnica e regole operative per agenti AI.
 
-Non sono state implementate funzionalita applicative, tabelle Drift,
-repository, casi d'uso, provider applicativi, schermate definitive, dati demo,
-scraping o integrazioni remote.
+Non sono ancora state implementate funzionalita applicative, casi d'uso,
+provider applicativi, schermate definitive, dati demo, scraping o
+integrazioni remote.
 
 ## Tecnologie
 
@@ -159,6 +162,7 @@ ADR iniziali:
 - [ADR-005 Browser esterno](docs/decisions/ADR-005-external-browser.md)
 - [ADR-006 Riverpod](docs/decisions/ADR-006-riverpod.md)
 - [ADR-007 Template URL configurabili](docs/decisions/ADR-007-configurable-url-templates.md)
+- [ADR-008 Identificativi come stringhe UUID](docs/decisions/ADR-008-identifiers-as-uuid-strings.md)
 
 ## Funzionalita Escluse Dall'MVP
 

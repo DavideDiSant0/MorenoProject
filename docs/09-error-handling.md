@@ -7,11 +7,26 @@ prima di arrivare alla UI.
 
 - errori di validazione input;
 - errori di template URL;
-- errori di persistenza locale;
+- errori di persistenza locale (implementato: vedi sotto);
 - errori di migrazione database;
 - errori di apertura browser;
 - errori di stato incoerente;
 - errori inattesi.
+
+## Implementato: Errori Di Persistenza
+
+`lib/core/errors` definisce una gerarchia minima: `AppException` (base,
+`abstract base class` per restare estendibile da altri file pur non essendo
+un'interfaccia pubblica arbitraria), `PersistenceException` e
+`NotFoundException`. L'helper `guardPersistence` (in
+`lib/core/errors/persistence_guard.dart`) converte qualunque eccezione
+tecnica imprevista (es. `SqliteException`) in `PersistenceException`,
+lasciando passare le `AppException` gia' tipizzate. I repository Drift in
+`lib/data/repositories` sono l'unico punto che applica questa conversione; i
+DAO possono lasciar propagare eccezioni Drift grezze. Non esiste ancora una
+`ConstraintViolationException` dedicata: distinguere "nome duplicato" da
+"riferimento ancora in uso" richiede di ispezionare i dettagli della
+`SqliteException`, rimandato a quando un caso d'uso reale lo richieda.
 
 ## Regole
 

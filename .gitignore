@@ -20,6 +20,7 @@ windows/flutter/ephemeral/
 # IDE files not shared by this VS Code workspace
 .idea/
 *.iml
+.claude/
 
 # Local environment files
 .env
