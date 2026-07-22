@@ -17,14 +17,14 @@ scheletro iniziale, predisposte per le fasi successive e mantenute con file
   `entities`, `repositories` e `services` (generatore URL da template);
   `value_objects` resta scheletro.
 - `application`: casi d'uso, DTO e stato applicativo. Implementato:
-  `use_cases`, `dto` e stato catalogo usato dalla UI Riverpod.
+  `use_cases`, `dto` e stato catalogo/fornitori usato dalla UI Riverpod.
 - `data`: persistenza locale, Drift, mapper e implementazioni repository.
   Implementato: `database` (tabelle, DAO, `app_database.dart`,
   `database_connection.dart`), `mappers`, `repositories` e `services`
   infrastrutturali come l'adapter `url_launcher`.
 - `presentation`: schermate, widget, controller e provider UI. Implementato:
   shell desktop con `NavigationRail`, schermate tecniche e provider/controller
-  operativi per il catalogo.
+  operativi per catalogo e fornitori.
 - `features`: raggruppamento funzionale futuro. *(scheletro)*
 
 Non creare classi vuote solo per occupare cartelle. Inserire codice solo quando

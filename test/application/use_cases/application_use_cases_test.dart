@@ -27,6 +27,7 @@ import 'package:repair_parts_finder/domain/repositories/device_type_repository.d
 import 'package:repair_parts_finder/domain/repositories/favorite_repository.dart';
 import 'package:repair_parts_finder/domain/repositories/search_history_repository.dart';
 import 'package:repair_parts_finder/domain/repositories/supplier_repository.dart';
+import 'package:repair_parts_finder/domain/services/url_template_values.dart';
 
 void main() {
   group('CatalogUseCases', () {
@@ -57,6 +58,38 @@ void main() {
       );
 
       expect(result, [buildSupplier('s1')]);
+    });
+
+    test('rifiuta la creazione con template URL non sicuro', () async {
+      final repository = FakeSupplierRepository(const []);
+      final useCases = SupplierUseCases(repository);
+
+      expect(
+        () => useCases.createSupplier(
+          Supplier(
+            id: 'bad',
+            name: 'Bad Supplier',
+            baseUrl: 'https://supplier.example',
+            urlTemplate: 'javascript:alert({query})',
+          ),
+        ),
+        throwsA(isA<ValidationException>()),
+      );
+      expect(repository.items, isEmpty);
+    });
+
+    test('genera un URL di prova dal template del fornitore', () {
+      final useCases = SupplierUseCases(FakeSupplierRepository(const []));
+
+      final uri = useCases.testTemplate(
+        'https://supplier.example/search?q={query}&brand={brand}',
+        const UrlTemplateValues(query: 'iPhone 12 screen', brand: 'Apple'),
+      );
+
+      expect(
+        uri.toString(),
+        'https://supplier.example/search?q=iPhone%2012%20screen&brand=Apple',
+      );
     });
   });
 

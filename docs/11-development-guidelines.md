@@ -78,9 +78,11 @@ flutter run -d windows
 - Test dei casi d'uso applicativi per catalogo, fornitori, impostazioni,
   preferiti, preparazione ricerca e cronologia (`test/application/use_cases`).
 - Test delle validazioni applicative: selezione ricerca senza fornitori,
-  componente non compatibile, fornitore non attivo e cronologia senza fornitori.
+  componente non compatibile, fornitore non attivo, template fornitore non
+  sicuro e cronologia senza fornitori.
 - Test di generazione controllata di id e timestamp tramite servizi astratti
   (`IdGenerator`, `DateTimeProvider`).
+- Test di generazione URL di prova tramite `SupplierUseCases.testTemplate`.
 
 ## Test Implementati (URL Template System)
 
@@ -104,13 +106,14 @@ flutter run -d windows
 - Widget test per bootstrap della shell desktop con `MaterialApp.router` e
   `NavigationRail`.
 - Widget test per navigazione da `/search` a `/catalog` tramite GoRouter.
+- Widget test per navigazione da `/search` a `/suppliers` tramite GoRouter.
 - Override del database Drift in memoria nei widget test tramite Riverpod.
-- Smoke test aggiornati per la schermata catalogo operativa.
+- Smoke test aggiornati per le schermate catalogo e fornitori operative.
 
 ## Test Futuri
 
 - Unit test per value object, quando saranno introdotti.
 - Test dedicati per provider Riverpod e stato applicativo dei controller UI.
-- Widget test CRUD per catalogo e future schermate operative.
+- Widget test CRUD per catalogo, fornitori e future schermate operative.
 - Test di migrazione Drift quando lo schema cambiera' (dalla versione 2 in
   poi).

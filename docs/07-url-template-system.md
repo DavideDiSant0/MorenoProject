@@ -44,6 +44,8 @@ File principali:
 - `url_template_values.dart`: raccoglie i valori disponibili per la
   sostituzione.
 - `url_template_generator.dart`: valida template e genera l'URL finale.
+- `SupplierUseCases.testTemplate`: usa il generatore per provare un template
+  fornitore senza aprire il browser.
 
 Il generatore:
 

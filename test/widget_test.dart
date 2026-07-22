@@ -35,6 +35,25 @@ void main() {
     expect(find.text('Catalog'), findsWidgets);
     expect(find.text('Device types'), findsWidgets);
   });
+
+  testWidgets('Navigation rail opens suppliers route', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(1280, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Suppliers').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Suppliers'), findsWidgets);
+    expect(find.text('Supplier list'), findsOneWidget);
+    expect(find.text('No suppliers yet.'), findsOneWidget);
+  });
 }
 
 Widget buildTestApp() {

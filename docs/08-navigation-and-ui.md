@@ -2,7 +2,7 @@
 
 La navigazione e' gestita da GoRouter. Lo stato attuale include una shell
 desktop con `NavigationRail` laterale, schermate tecniche per le sezioni
-principali e una prima UI operativa per il catalogo.
+principali e UI operative per catalogo e fornitori.
 
 ## Route Future
 
@@ -30,6 +30,8 @@ principali e una prima UI operativa per il catalogo.
 - Redirect tecnico da `/` a `/search`.
 - Schermata `/catalog` con gestione operativa di tipi dispositivo, marche,
   modelli, componenti e compatibilita.
+- Schermata `/suppliers` con gestione operativa di fornitori, template URL,
+  ordinamento e compatibilita con tipi dispositivo.
 
 ## Regole UI
 
@@ -60,6 +62,24 @@ La schermata espone cinque tab:
 Le operazioni di creazione, modifica, eliminazione e assegnazione
 compatibilita passano dai casi d'uso applicativi. Gli errori di dominio o
 persistenza vengono mostrati come messaggi UI senza bypassare i layer.
+
+## Fornitori
+
+`/suppliers` usa `SupplierController` in
+`lib/presentation/providers/supplier_controller.dart` e i provider di
+composizione in `lib/app/configuration/app_providers.dart`.
+
+La schermata espone:
+
+- lista fornitori ordinata per `displayOrder`;
+- dialog CRUD per nome, base URL, template URL, ordine, note e stato attivo;
+- test template con URL generato da valori di prova;
+- controlli di spostamento su/giu;
+- compatibilita con i tipi dispositivo tramite checkbox.
+
+Le operazioni passano da `SupplierUseCases`. Il salvataggio valida il template
+URL prima di toccare il repository, mentre il test template genera solo un
+`Uri` e non apre il browser.
 
 ## Browser Esterno
 

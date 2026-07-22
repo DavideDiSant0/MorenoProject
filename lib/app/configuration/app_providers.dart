@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repair_parts_finder/application/use_cases/catalog_use_cases.dart';
+import 'package:repair_parts_finder/application/use_cases/supplier_use_cases.dart';
 import 'package:repair_parts_finder/core/services/id_generator.dart';
 import 'package:repair_parts_finder/data/database/app_database.dart';
 import 'package:repair_parts_finder/data/database/database_connection.dart';
@@ -9,8 +10,14 @@ import 'package:repair_parts_finder/data/repositories/drift_brand_repository.dar
 import 'package:repair_parts_finder/data/repositories/drift_component_repository.dart';
 import 'package:repair_parts_finder/data/repositories/drift_device_model_repository.dart';
 import 'package:repair_parts_finder/data/repositories/drift_device_type_repository.dart';
+import 'package:repair_parts_finder/data/repositories/drift_supplier_repository.dart';
+import 'package:repair_parts_finder/domain/services/url_template_generator.dart';
 
 final idGeneratorProvider = Provider<IdGenerator>((ref) => UuidIdGenerator());
+
+final urlTemplateGeneratorProvider = Provider<UrlTemplateGenerator>(
+  (ref) => const UrlTemplateGenerator(),
+);
 
 final appDatabaseProvider = FutureProvider<AppDatabase>((ref) async {
   final database = AppDatabase(await openConnection());
@@ -27,5 +34,15 @@ final catalogUseCasesProvider = FutureProvider<CatalogUseCases>((ref) async {
     brandRepository: DriftBrandRepository(catalogDao),
     deviceModelRepository: DriftDeviceModelRepository(catalogDao),
     componentRepository: DriftComponentRepository(catalogDao),
+  );
+});
+
+final supplierUseCasesProvider = FutureProvider<SupplierUseCases>((ref) async {
+  final database = await ref.watch(appDatabaseProvider.future);
+  final urlTemplateGenerator = ref.watch(urlTemplateGeneratorProvider);
+
+  return SupplierUseCases(
+    DriftSupplierRepository(database.supplierDao),
+    urlTemplateGenerator: urlTemplateGenerator,
   );
 });

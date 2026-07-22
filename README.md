@@ -10,7 +10,7 @@ credenziali e non gestira pagamenti.
 
 ## Stato Attuale
 
-Fase tecnica 5 - Catalogo operativo.
+Fase tecnica 6 - Fornitori operativi.
 
 Questo repository contiene:
 
@@ -27,13 +27,15 @@ Questo repository contiene:
 - shell desktop GoRouter con `NavigationRail`;
 - catalogo operativo in `/catalog` per tipi dispositivo, marche, modelli,
   componenti e compatibilita dispositivo/componente;
+- fornitori operativi in `/suppliers` con CRUD, template URL, test template,
+  ordinamento e compatibilita con i tipi dispositivo;
 - gestione errori di persistenza (`lib/core/errors`);
 - test per entita, mapper, database, DAO, repository, casi d'uso, servizi URL,
   browser service e smoke test UI;
 - documentazione tecnica e regole operative per agenti AI.
 
-Non sono ancora state implementate la UI operativa di ricerca, fornitori,
-cronologia, preferiti, impostazioni, dati demo, scraping o integrazioni remote.
+Non sono ancora state implementate la UI operativa di ricerca, cronologia,
+preferiti, impostazioni, dati demo, scraping o integrazioni remote.
 
 ## Tecnologie
 

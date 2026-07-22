@@ -31,9 +31,11 @@ dall'applicazione e sara completato nel sito ufficiale del fornitore.
 ## Stato Della Fase Corrente
 
 Il progetto include dominio, persistenza locale Drift, casi d'uso applicativi,
-generatore URL, browser service astratto, shell GoRouter e una prima schermata
-catalogo operativa.
+generatore URL, browser service astratto, shell GoRouter e prime schermate
+operative per catalogo e fornitori.
 
 La sezione `/catalog` permette di gestire tipi dispositivo, marche, modelli,
-componenti e compatibilita dispositivo/componente. Le altre sezioni UI sono
-ancora schermate tecniche pronte per le fasi successive.
+componenti e compatibilita dispositivo/componente. La sezione `/suppliers`
+permette di gestire fornitori, template URL, test template, ordinamento e
+compatibilita con i tipi dispositivo. Le altre sezioni UI sono ancora schermate
+tecniche pronte per le fasi successive.

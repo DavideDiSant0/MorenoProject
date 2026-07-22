@@ -37,15 +37,24 @@ Regole:
 
 ## Suppliers
 
-Responsabilita future:
+Implementato:
 
-- aggiunta fornitore;
-- modifica fornitore;
+- aggiunta, modifica ed eliminazione fornitore;
 - attivazione e disattivazione;
 - ordinamento;
 - compatibilita con i tipi di dispositivo;
 - configurazione template URL;
-- test del template.
+- validazione template URL in create/update;
+- test del template con URL generato da valori di prova;
+- caricamento stato tramite Riverpod, casi d'uso e repository Drift.
+
+Regole:
+
+- la UI non usa direttamente il generatore URL;
+- la UI non apre il browser durante il test template;
+- `SupplierUseCases` valida il template prima di salvare;
+- gli schemi non sicuri continuano a essere bloccati dal generatore URL;
+- l'ordinamento e' persistito tramite `displayOrder`.
 
 ## Favorites
 

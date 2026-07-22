@@ -34,6 +34,8 @@ Stato: dominio, persistenza, casi d'uso e prima UI operativa implementati.
 - validazione;
 - test template.
 
+Stato: dominio, persistenza, casi d'uso e prima UI operativa implementati.
+
 ## Fase 4 - Ricerca
 
 - selezioni dipendenti;
