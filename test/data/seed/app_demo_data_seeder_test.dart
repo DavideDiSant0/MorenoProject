@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repair_parts_finder/data/database/app_database.dart';
+import 'package:repair_parts_finder/data/database/daos/app_settings_dao.dart';
 import 'package:repair_parts_finder/data/seed/app_demo_data_seeder.dart';
 import 'package:repair_parts_finder/domain/services/url_template_generator.dart';
 import 'package:repair_parts_finder/domain/services/url_template_values.dart';
@@ -27,6 +28,10 @@ void main() {
     expect(await database.select(database.components).get(), hasLength(7));
     expect(await database.select(database.suppliers).get(), hasLength(3));
     expect(await database.select(database.favorites).get(), hasLength(1));
+    expect(
+      await database.appSettingsDao.getDemoSeedVersion(),
+      currentDemoSeedVersion,
+    );
 
     final phoneComponents = await database.catalogDao.getCompatibleComponents(
       demoDeviceTypeSmartphoneId,
@@ -80,6 +85,31 @@ void main() {
 
     expect(seeded, isFalse);
     expect(await database.select(database.deviceTypes).get(), hasLength(1));
+    expect(await database.select(database.suppliers).get(), isEmpty);
+    expect(
+      await database.appSettingsDao.getDemoSeedVersion(),
+      currentDemoSeedVersion,
+    );
+  });
+
+  test('non reinserisce demo data dopo che il seed e stato marcato', () async {
+    await database
+        .into(database.deviceTypes)
+        .insert(
+          DeviceTypesCompanion.insert(
+            id: 'custom-phone',
+            name: 'Custom phone',
+            description: Value('Voce creata manualmente.'),
+          ),
+        );
+
+    final seeder = AppDemoDataSeeder(database);
+
+    expect(await seeder.seedIfEmpty(), isFalse);
+    await database.catalogDao.deleteDeviceType('custom-phone');
+    expect(await seeder.seedIfEmpty(), isFalse);
+
+    expect(await database.select(database.deviceTypes).get(), isEmpty);
     expect(await database.select(database.suppliers).get(), isEmpty);
   });
 

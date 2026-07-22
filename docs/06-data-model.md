@@ -72,11 +72,10 @@ ricerche passate.
 
 ## Migrazioni
 
-Lo schema attuale e' la versione 1 (`schemaVersion` in
-`lib/data/database/app_database.dart`), creata tramite `onCreate`. Non
-essendoci ancora una versione precedente, `onUpgrade` e' vuoto e documentato
-con un commento che spiega come aggiungere il primo step quando
-`schemaVersion` verra' incrementato.
+Lo schema attuale e' la versione 2 (`schemaVersion` in
+`lib/data/database/app_database.dart`). La versione 2 aggiunge
+`app_settings.demo_seed_version`, usato come marker persistente per il seed
+demo iniziale.
 
 Nota tooling: la generazione dello snapshot JSON dello schema
 (`dart run drift_dev schema dump`), la convenzione ufficiale Drift per
@@ -93,8 +92,13 @@ Il seed demo e' implementato in
 
 Non fa parte della migration Drift: lo schema resta testabile come database
 vuoto nei test DAO e il seed resta logica applicativa di bootstrap. Il seeder
-inserisce dati solo se catalogo e fornitori non contengono ancora righe
-visibili all'utente.
+inserisce dati solo se il marker `demo_seed_version` non e' gia applicato e se
+catalogo e fornitori non contengono ancora righe visibili all'utente.
+
+Se il database contiene gia dati utente ma il marker non e' ancora presente
+(per esempio dopo una migrazione da una versione precedente), il seeder marca
+il seed come gestito senza inserire dati demo. In questo modo i dati demo non
+ricompaiono se l'utente svuota volontariamente catalogo e fornitori.
 
 Contenuto attuale:
 

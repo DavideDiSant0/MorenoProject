@@ -14,6 +14,7 @@ class AppSettingsTable extends Table {
       boolean().withDefault(const Constant(true))();
   BoolColumn get historyEnabled =>
       boolean().withDefault(const Constant(true))();
+  IntColumn get demoSeedVersion => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column> get primaryKey => {id};

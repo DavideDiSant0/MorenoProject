@@ -24,6 +24,7 @@ void main() {
     expect(row.maxPagesToOpen, 5);
     expect(row.requireConfirmation, isTrue);
     expect(row.historyEnabled, isTrue);
+    expect(row.demoSeedVersion, 0);
   });
 
   test(
@@ -52,6 +53,18 @@ void main() {
     final row = await dao.getOrCreate();
     expect(row.maxPagesToOpen, 10);
     expect(row.requireConfirmation, isFalse);
+
+    final allRows = await database.select(database.appSettingsTable).get();
+    expect(allRows, hasLength(1));
+  });
+
+  test('markDemoSeedApplied salva il marker senza duplicare la riga', () async {
+    await dao.getOrCreate();
+
+    await dao.markDemoSeedApplied();
+
+    final row = await dao.getOrCreate();
+    expect(row.demoSeedVersion, currentDemoSeedVersion);
 
     final allRows = await database.select(database.appSettingsTable).get();
     expect(allRows, hasLength(1));

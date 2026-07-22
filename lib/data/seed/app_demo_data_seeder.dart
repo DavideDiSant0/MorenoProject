@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import 'package:repair_parts_finder/data/database/app_database.dart';
+import 'package:repair_parts_finder/data/database/daos/app_settings_dao.dart';
 
 /// Seed iniziale per rendere utilizzabile un database appena creato.
 ///
@@ -12,12 +13,25 @@ final class AppDemoDataSeeder {
   final AppDatabase _database;
 
   Future<bool> seedIfEmpty() async {
-    if (await _hasUserVisibleData()) {
+    if (await _isDemoSeedAlreadyHandled()) {
       return false;
     }
 
-    await _database.transaction(_insertDemoData);
+    if (await _hasUserVisibleData()) {
+      await _database.appSettingsDao.markDemoSeedApplied();
+      return false;
+    }
+
+    await _database.transaction(() async {
+      await _insertDemoData();
+      await _database.appSettingsDao.markDemoSeedApplied();
+    });
     return true;
+  }
+
+  Future<bool> _isDemoSeedAlreadyHandled() async {
+    final seedVersion = await _database.appSettingsDao.getDemoSeedVersion();
+    return seedVersion >= currentDemoSeedVersion;
   }
 
   Future<bool> _hasUserVisibleData() async {

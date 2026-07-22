@@ -47,15 +47,18 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (migrator) async => migrator.createAll(),
     onUpgrade: (migrator, from, to) async {
-      // Nessuna versione precedente alla 1. Al primo incremento di
-      // schemaVersion, aggiungere qui uno step esplicito per ogni salto,
-      // ad esempio: if (from < 2) { await migrator.addColumn(...); }
+      if (from < 2) {
+        await migrator.addColumn(
+          appSettingsTable,
+          appSettingsTable.demoSeedVersion,
+        );
+      }
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');

@@ -282,9 +282,10 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
         selectedDeviceModelId: current.selectedDeviceModelId,
         selectedComponentId: current.selectedComponentId,
         supplierIds: current.selectedSupplierIds,
-        lastResultMessage: current.settings.historyEnabled
-            ? 'Favorite launched and saved to history'
-            : 'Favorite launched',
+        lastResultMessage: _openResultMessage(
+          openedItems,
+          historyEnabled: current.settings.historyEnabled,
+        ),
       ),
     );
   }
@@ -469,7 +470,23 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
   String _messageFor(Object error) {
     return error is AppException ? error.message : error.toString();
   }
+
+  String _openResultMessage(
+    List<_OpenedFavoriteUrl> openedItems, {
+    required bool historyEnabled,
+  }) {
+    final openedCount = openedItems
+        .where((item) => item.openResult == _openedResult)
+        .length;
+    final failedCount = openedItems.length - openedCount;
+    final baseMessage = failedCount == 0
+        ? 'Favorite launched: opened $openedCount URL'
+        : 'Favorite launched: opened $openedCount URL, $failedCount failed';
+    return historyEnabled ? '$baseMessage and saved to history' : baseMessage;
+  }
 }
+
+const _openedResult = 'opened';
 
 final class _OpenedFavoriteUrl {
   const _OpenedFavoriteUrl({

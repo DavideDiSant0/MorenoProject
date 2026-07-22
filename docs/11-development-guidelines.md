@@ -109,7 +109,18 @@ flutter run -d windows
 - Verifica di catalogo, fornitori, compatibilita e preferito demo.
 - Verifica idempotenza: richiamare il seed due volte non duplica righe.
 - Verifica che il seed non parta quando esistono gia dati utente.
+- Verifica del marker `demo_seed_version`, per evitare reinserimenti futuri
+  dopo una pulizia manuale del catalogo.
 - Verifica che i template URL demo siano validi e generabili.
+
+## Test Implementati (Provider UI)
+
+- Test dei controller Riverpod in
+  `test/presentation/providers/controller_integration_test.dart`.
+- Verifica propagazione delle impostazioni verso ricerca, cronologia e
+  preferiti.
+- Verifica che refresh catalogo e fornitori preservino selezioni valide.
+- Verifica del messaggio di ricerca quando alcune aperture URL falliscono.
 
 ## Test Implementati (UI Shell)
 
@@ -130,8 +141,7 @@ flutter run -d windows
 ## Test Futuri
 
 - Unit test per value object, quando saranno introdotti.
-- Test dedicati per provider Riverpod e stato applicativo dei controller UI.
 - Widget test CRUD per catalogo, fornitori, cronologia, preferiti e ricerca
   completa.
-- Test di migrazione Drift quando lo schema cambiera' (dalla versione 2 in
+- Test di migrazione Drift quando lo schema cambiera' (dalla versione 3 in
   poi).

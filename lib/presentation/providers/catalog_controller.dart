@@ -25,8 +25,13 @@ class CatalogController extends AsyncNotifier<CatalogState> {
   }
 
   Future<void> refresh() async {
+    final current = _currentState;
     state = const AsyncLoading();
-    state = await AsyncValue.guard(_loadCatalogState);
+    state = await AsyncValue.guard(
+      () => _loadCatalogState(
+        selectedDeviceTypeId: current?.selectedCompatibilityDeviceTypeId,
+      ),
+    );
   }
 
   Future<void> selectCompatibilityDeviceType(String? deviceTypeId) async {
@@ -159,23 +164,35 @@ class CatalogController extends AsyncNotifier<CatalogState> {
   }
 
   Future<CatalogState> _loadCatalogState({String? selectedDeviceTypeId}) async {
-    final deviceTypes = await _useCases.getDeviceTypes();
-    final brands = await _useCases.getBrands();
-    final deviceModels = await _useCases.getDeviceModels();
-    final components = await _useCases.getComponents();
-    final selectedId =
-        selectedDeviceTypeId ??
-        _currentState?.selectedCompatibilityDeviceTypeId ??
-        (deviceTypes.isEmpty ? null : deviceTypes.first.id);
+    final deviceTypes = _sortByName(
+      await _useCases.getDeviceTypes(),
+      (item) => item.name,
+    );
+    final brands = _sortByName(
+      await _useCases.getBrands(),
+      (item) => item.name,
+    );
+    final deviceModels = _sortByName(
+      await _useCases.getDeviceModels(),
+      (item) => item.name,
+    );
+    final components = _sortByName(
+      await _useCases.getComponents(),
+      (item) => item.name,
+    );
+    final selectedId = _resolveSelectedDeviceTypeId(
+      deviceTypes,
+      selectedDeviceTypeId ?? _currentState?.selectedCompatibilityDeviceTypeId,
+    );
     final compatibleComponents = selectedId == null
         ? <Component>[]
         : await _useCases.getCompatibleComponents(selectedId);
 
     return CatalogState(
-      deviceTypes: _sortByName(deviceTypes, (item) => item.name),
-      brands: _sortByName(brands, (item) => item.name),
-      deviceModels: _sortByName(deviceModels, (item) => item.name),
-      components: _sortByName(components, (item) => item.name),
+      deviceTypes: deviceTypes,
+      brands: brands,
+      deviceModels: deviceModels,
+      components: components,
       compatibleComponents: _sortByName(
         compatibleComponents,
         (item) => item.name,
@@ -195,6 +212,17 @@ class CatalogController extends AsyncNotifier<CatalogState> {
       (a, b) => getName(a).toLowerCase().compareTo(getName(b).toLowerCase()),
     );
     return sorted;
+  }
+
+  String? _resolveSelectedDeviceTypeId(
+    List<DeviceType> deviceTypes,
+    String? requestedId,
+  ) {
+    if (requestedId != null &&
+        deviceTypes.any((deviceType) => deviceType.id == requestedId)) {
+      return requestedId;
+    }
+    return deviceTypes.isEmpty ? null : deviceTypes.first.id;
   }
 
   String? _blankToNull(String? value) {

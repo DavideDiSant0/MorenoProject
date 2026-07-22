@@ -227,9 +227,10 @@ class SearchController extends AsyncNotifier<SearchState> {
     state = AsyncData(
       current.copyWith(
         previewItems: openedItems,
-        lastResultMessage: current.settings.historyEnabled
-            ? 'Opened and saved to history'
-            : 'Opened',
+        lastResultMessage: _openResultMessage(
+          openedItems,
+          historyEnabled: current.settings.historyEnabled,
+        ),
       ),
     );
   }
@@ -414,4 +415,20 @@ class SearchController extends AsyncNotifier<SearchState> {
   String _messageFor(Object error) {
     return error is AppException ? error.message : error.toString();
   }
+
+  String _openResultMessage(
+    List<SearchPreviewItem> openedItems, {
+    required bool historyEnabled,
+  }) {
+    final openedCount = openedItems
+        .where((item) => item.openResult == _openedResult)
+        .length;
+    final failedCount = openedItems.length - openedCount;
+    final baseMessage = failedCount == 0
+        ? 'Opened $openedCount URL'
+        : 'Opened $openedCount URL, $failedCount failed';
+    return historyEnabled ? '$baseMessage and saved to history' : baseMessage;
+  }
 }
+
+const _openedResult = 'opened';

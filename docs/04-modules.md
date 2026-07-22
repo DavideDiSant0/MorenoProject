@@ -144,6 +144,8 @@ Regole:
 
 - il seed viene applicato dal provider del database reale, non dalla migration;
 - i test DAO possono continuare a creare database vuoti;
-- il seed parte solo se catalogo e fornitori sono vuoti, cosi' non mescola
-  dati demo con dati gia inseriti dall'utente;
+- il seed parte solo se non e' gia stato marcato e catalogo/fornitori sono
+  vuoti, cosi' non mescola dati demo con dati gia inseriti dall'utente;
+- se il database contiene gia dati utente, il seed viene marcato come gestito
+  senza inserire dati demo;
 - gli ID demo usano prefisso `demo-` e sono stabili.

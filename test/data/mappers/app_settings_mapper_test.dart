@@ -11,6 +11,7 @@ void main() {
       maxPagesToOpen: 3,
       requireConfirmation: false,
       historyEnabled: true,
+      demoSeedVersion: 0,
     );
 
     final entity = appSettingsFromRow(row);

@@ -309,11 +309,7 @@ class _PreviewPane extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       final item = state.previewItems[index];
                       return ListTile(
-                        leading: Icon(
-                          item.openResult == null
-                              ? Icons.link
-                              : Icons.check_circle_outline,
-                        ),
+                        leading: Icon(_iconForOpenResult(item.openResult)),
                         title: Text(item.supplierName),
                         subtitle: SelectableText(item.url.toString()),
                         trailing: item.openResult == null
@@ -456,4 +452,13 @@ Future<void> _runSearchAction(
 
 String _messageFor(Object error) {
   return error is AppException ? error.message : error.toString();
+}
+
+IconData _iconForOpenResult(String? openResult) {
+  if (openResult == null) {
+    return Icons.link;
+  }
+  return openResult == 'opened'
+      ? Icons.check_circle_outline
+      : Icons.error_outline;
 }

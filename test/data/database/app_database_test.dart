@@ -13,8 +13,8 @@ void main() {
     await database.close();
   });
 
-  test('la versione dello schema e\' 1', () {
-    expect(database.schemaVersion, 1);
+  test('la versione dello schema e\' 2', () {
+    expect(database.schemaVersion, 2);
   });
 
   test('tutte le 12 tabelle previste esistono', () async {

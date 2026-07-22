@@ -4091,12 +4091,25 @@ class $AppSettingsTableTable extends AppSettingsTable
     ),
     defaultValue: const Constant(true),
   );
+  static const VerificationMeta _demoSeedVersionMeta = const VerificationMeta(
+    'demoSeedVersion',
+  );
+  @override
+  late final GeneratedColumn<int> demoSeedVersion = GeneratedColumn<int>(
+    'demo_seed_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     maxPagesToOpen,
     requireConfirmation,
     historyEnabled,
+    demoSeedVersion,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -4142,6 +4155,15 @@ class $AppSettingsTableTable extends AppSettingsTable
         ),
       );
     }
+    if (data.containsKey('demo_seed_version')) {
+      context.handle(
+        _demoSeedVersionMeta,
+        demoSeedVersion.isAcceptableOrUnknown(
+          data['demo_seed_version']!,
+          _demoSeedVersionMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -4167,6 +4189,10 @@ class $AppSettingsTableTable extends AppSettingsTable
         DriftSqlType.bool,
         data['${effectivePrefix}history_enabled'],
       )!,
+      demoSeedVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}demo_seed_version'],
+      )!,
     );
   }
 
@@ -4181,11 +4207,13 @@ class AppSettingsRow extends DataClass implements Insertable<AppSettingsRow> {
   final int maxPagesToOpen;
   final bool requireConfirmation;
   final bool historyEnabled;
+  final int demoSeedVersion;
   const AppSettingsRow({
     required this.id,
     required this.maxPagesToOpen,
     required this.requireConfirmation,
     required this.historyEnabled,
+    required this.demoSeedVersion,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4194,6 +4222,7 @@ class AppSettingsRow extends DataClass implements Insertable<AppSettingsRow> {
     map['max_pages_to_open'] = Variable<int>(maxPagesToOpen);
     map['require_confirmation'] = Variable<bool>(requireConfirmation);
     map['history_enabled'] = Variable<bool>(historyEnabled);
+    map['demo_seed_version'] = Variable<int>(demoSeedVersion);
     return map;
   }
 
@@ -4203,6 +4232,7 @@ class AppSettingsRow extends DataClass implements Insertable<AppSettingsRow> {
       maxPagesToOpen: Value(maxPagesToOpen),
       requireConfirmation: Value(requireConfirmation),
       historyEnabled: Value(historyEnabled),
+      demoSeedVersion: Value(demoSeedVersion),
     );
   }
 
@@ -4218,6 +4248,7 @@ class AppSettingsRow extends DataClass implements Insertable<AppSettingsRow> {
         json['requireConfirmation'],
       ),
       historyEnabled: serializer.fromJson<bool>(json['historyEnabled']),
+      demoSeedVersion: serializer.fromJson<int>(json['demoSeedVersion']),
     );
   }
   @override
@@ -4228,6 +4259,7 @@ class AppSettingsRow extends DataClass implements Insertable<AppSettingsRow> {
       'maxPagesToOpen': serializer.toJson<int>(maxPagesToOpen),
       'requireConfirmation': serializer.toJson<bool>(requireConfirmation),
       'historyEnabled': serializer.toJson<bool>(historyEnabled),
+      'demoSeedVersion': serializer.toJson<int>(demoSeedVersion),
     };
   }
 
@@ -4236,11 +4268,13 @@ class AppSettingsRow extends DataClass implements Insertable<AppSettingsRow> {
     int? maxPagesToOpen,
     bool? requireConfirmation,
     bool? historyEnabled,
+    int? demoSeedVersion,
   }) => AppSettingsRow(
     id: id ?? this.id,
     maxPagesToOpen: maxPagesToOpen ?? this.maxPagesToOpen,
     requireConfirmation: requireConfirmation ?? this.requireConfirmation,
     historyEnabled: historyEnabled ?? this.historyEnabled,
+    demoSeedVersion: demoSeedVersion ?? this.demoSeedVersion,
   );
   AppSettingsRow copyWithCompanion(AppSettingsTableCompanion data) {
     return AppSettingsRow(
@@ -4254,6 +4288,9 @@ class AppSettingsRow extends DataClass implements Insertable<AppSettingsRow> {
       historyEnabled: data.historyEnabled.present
           ? data.historyEnabled.value
           : this.historyEnabled,
+      demoSeedVersion: data.demoSeedVersion.present
+          ? data.demoSeedVersion.value
+          : this.demoSeedVersion,
     );
   }
 
@@ -4263,14 +4300,20 @@ class AppSettingsRow extends DataClass implements Insertable<AppSettingsRow> {
           ..write('id: $id, ')
           ..write('maxPagesToOpen: $maxPagesToOpen, ')
           ..write('requireConfirmation: $requireConfirmation, ')
-          ..write('historyEnabled: $historyEnabled')
+          ..write('historyEnabled: $historyEnabled, ')
+          ..write('demoSeedVersion: $demoSeedVersion')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, maxPagesToOpen, requireConfirmation, historyEnabled);
+  int get hashCode => Object.hash(
+    id,
+    maxPagesToOpen,
+    requireConfirmation,
+    historyEnabled,
+    demoSeedVersion,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -4278,7 +4321,8 @@ class AppSettingsRow extends DataClass implements Insertable<AppSettingsRow> {
           other.id == this.id &&
           other.maxPagesToOpen == this.maxPagesToOpen &&
           other.requireConfirmation == this.requireConfirmation &&
-          other.historyEnabled == this.historyEnabled);
+          other.historyEnabled == this.historyEnabled &&
+          other.demoSeedVersion == this.demoSeedVersion);
 }
 
 class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsRow> {
@@ -4286,12 +4330,14 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsRow> {
   final Value<int> maxPagesToOpen;
   final Value<bool> requireConfirmation;
   final Value<bool> historyEnabled;
+  final Value<int> demoSeedVersion;
   final Value<int> rowid;
   const AppSettingsTableCompanion({
     this.id = const Value.absent(),
     this.maxPagesToOpen = const Value.absent(),
     this.requireConfirmation = const Value.absent(),
     this.historyEnabled = const Value.absent(),
+    this.demoSeedVersion = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   AppSettingsTableCompanion.insert({
@@ -4299,6 +4345,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsRow> {
     this.maxPagesToOpen = const Value.absent(),
     this.requireConfirmation = const Value.absent(),
     this.historyEnabled = const Value.absent(),
+    this.demoSeedVersion = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id);
   static Insertable<AppSettingsRow> custom({
@@ -4306,6 +4353,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsRow> {
     Expression<int>? maxPagesToOpen,
     Expression<bool>? requireConfirmation,
     Expression<bool>? historyEnabled,
+    Expression<int>? demoSeedVersion,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -4314,6 +4362,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsRow> {
       if (requireConfirmation != null)
         'require_confirmation': requireConfirmation,
       if (historyEnabled != null) 'history_enabled': historyEnabled,
+      if (demoSeedVersion != null) 'demo_seed_version': demoSeedVersion,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4323,6 +4372,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsRow> {
     Value<int>? maxPagesToOpen,
     Value<bool>? requireConfirmation,
     Value<bool>? historyEnabled,
+    Value<int>? demoSeedVersion,
     Value<int>? rowid,
   }) {
     return AppSettingsTableCompanion(
@@ -4330,6 +4380,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsRow> {
       maxPagesToOpen: maxPagesToOpen ?? this.maxPagesToOpen,
       requireConfirmation: requireConfirmation ?? this.requireConfirmation,
       historyEnabled: historyEnabled ?? this.historyEnabled,
+      demoSeedVersion: demoSeedVersion ?? this.demoSeedVersion,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4349,6 +4400,9 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsRow> {
     if (historyEnabled.present) {
       map['history_enabled'] = Variable<bool>(historyEnabled.value);
     }
+    if (demoSeedVersion.present) {
+      map['demo_seed_version'] = Variable<int>(demoSeedVersion.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -4362,6 +4416,7 @@ class AppSettingsTableCompanion extends UpdateCompanion<AppSettingsRow> {
           ..write('maxPagesToOpen: $maxPagesToOpen, ')
           ..write('requireConfirmation: $requireConfirmation, ')
           ..write('historyEnabled: $historyEnabled, ')
+          ..write('demoSeedVersion: $demoSeedVersion, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -9626,6 +9681,7 @@ typedef $$AppSettingsTableTableCreateCompanionBuilder =
       Value<int> maxPagesToOpen,
       Value<bool> requireConfirmation,
       Value<bool> historyEnabled,
+      Value<int> demoSeedVersion,
       Value<int> rowid,
     });
 typedef $$AppSettingsTableTableUpdateCompanionBuilder =
@@ -9634,6 +9690,7 @@ typedef $$AppSettingsTableTableUpdateCompanionBuilder =
       Value<int> maxPagesToOpen,
       Value<bool> requireConfirmation,
       Value<bool> historyEnabled,
+      Value<int> demoSeedVersion,
       Value<int> rowid,
     });
 
@@ -9663,6 +9720,11 @@ class $$AppSettingsTableTableFilterComposer
 
   ColumnFilters<bool> get historyEnabled => $composableBuilder(
     column: $table.historyEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get demoSeedVersion => $composableBuilder(
+    column: $table.demoSeedVersion,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -9695,6 +9757,11 @@ class $$AppSettingsTableTableOrderingComposer
     column: $table.historyEnabled,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get demoSeedVersion => $composableBuilder(
+    column: $table.demoSeedVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableTableAnnotationComposer
@@ -9721,6 +9788,11 @@ class $$AppSettingsTableTableAnnotationComposer
 
   GeneratedColumn<bool> get historyEnabled => $composableBuilder(
     column: $table.historyEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get demoSeedVersion => $composableBuilder(
+    column: $table.demoSeedVersion,
     builder: (column) => column,
   );
 }
@@ -9766,12 +9838,14 @@ class $$AppSettingsTableTableTableManager
                 Value<int> maxPagesToOpen = const Value.absent(),
                 Value<bool> requireConfirmation = const Value.absent(),
                 Value<bool> historyEnabled = const Value.absent(),
+                Value<int> demoSeedVersion = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsTableCompanion(
                 id: id,
                 maxPagesToOpen: maxPagesToOpen,
                 requireConfirmation: requireConfirmation,
                 historyEnabled: historyEnabled,
+                demoSeedVersion: demoSeedVersion,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -9780,12 +9854,14 @@ class $$AppSettingsTableTableTableManager
                 Value<int> maxPagesToOpen = const Value.absent(),
                 Value<bool> requireConfirmation = const Value.absent(),
                 Value<bool> historyEnabled = const Value.absent(),
+                Value<int> demoSeedVersion = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsTableCompanion.insert(
                 id: id,
                 maxPagesToOpen: maxPagesToOpen,
                 requireConfirmation: requireConfirmation,
                 historyEnabled: historyEnabled,
+                demoSeedVersion: demoSeedVersion,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

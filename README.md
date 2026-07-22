@@ -38,7 +38,7 @@ Questo repository contiene:
 - impostazioni operative in `/settings` per limite pagine, conferma apertura e
   salvataggio cronologia;
 - dati demo iniziali per catalogo, fornitori, compatibilita e un preferito,
-  applicati solo quando il database visibile all'utente e' vuoto;
+  applicati una sola volta tramite marker locale;
 - gestione errori di persistenza (`lib/core/errors`);
 - test per entita, mapper, database, DAO, repository, casi d'uso, servizi URL,
   browser service e smoke test UI;

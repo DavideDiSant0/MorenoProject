@@ -8,6 +8,7 @@ part 'app_settings_dao.g.dart';
 /// Id fisso della singola riga di impostazioni: la tabella non ha un
 /// concetto di identita' utente, esiste sempre e solo una riga.
 const appSettingsRowId = 'app_settings';
+const currentDemoSeedVersion = 1;
 
 /// Raggruppa l'accesso ai dati del modulo Impostazioni (`docs/04-modules.md`).
 @DriftAccessor(tables: [AppSettingsTable])
@@ -31,4 +32,16 @@ class AppSettingsDao extends DatabaseAccessor<AppDatabase>
 
   Future<void> save(AppSettingsTableCompanion entry) =>
       into(appSettingsTable).insertOnConflictUpdate(entry);
+
+  Future<int> getDemoSeedVersion() async {
+    final row = await getOrCreate();
+    return row.demoSeedVersion;
+  }
+
+  Future<void> markDemoSeedApplied() => save(
+    AppSettingsTableCompanion.insert(
+      id: appSettingsRowId,
+      demoSeedVersion: const Value(currentDemoSeedVersion),
+    ),
+  );
 }
