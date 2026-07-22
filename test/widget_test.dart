@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repair_parts_finder/app/configuration/app_providers.dart';
 import 'package:repair_parts_finder/data/database/app_database.dart';
+import 'package:repair_parts_finder/data/seed/app_demo_data_seeder.dart';
 import 'package:repair_parts_finder/main.dart';
 
 void main() {
@@ -54,7 +55,7 @@ void main() {
 
     expect(find.text('Suppliers'), findsWidgets);
     expect(find.text('Supplier list'), findsOneWidget);
-    expect(find.text('No suppliers yet.'), findsOneWidget);
+    expect(find.text('iFixit'), findsWidgets);
   });
 
   testWidgets('Navigation rail opens history route', (
@@ -92,7 +93,7 @@ void main() {
 
     expect(find.text('Favorites'), findsWidgets);
     expect(find.text('Saved combinations'), findsOneWidget);
-    expect(find.text('No favorites yet.'), findsOneWidget);
+    expect(find.text('iPhone 13 display'), findsWidgets);
   });
 
   testWidgets('Navigation rail opens settings route', (
@@ -153,6 +154,7 @@ Widget buildTestApp() {
     overrides: [
       appDatabaseProvider.overrideWith((ref) async {
         final database = AppDatabase(NativeDatabase.memory());
+        await AppDemoDataSeeder(database).seedIfEmpty();
         ref.onDispose(() => unawaited(database.close()));
         return database;
       }),

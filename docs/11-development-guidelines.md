@@ -103,6 +103,14 @@ flutter run -d windows
 - Test per `OpenExternalUrlUseCase`, che delega al contratto astratto senza
   conoscere `url_launcher`.
 
+## Test Implementati (Demo Data)
+
+- Test del seed iniziale in `test/data/seed/app_demo_data_seeder_test.dart`.
+- Verifica di catalogo, fornitori, compatibilita e preferito demo.
+- Verifica idempotenza: richiamare il seed due volte non duplica righe.
+- Verifica che il seed non parta quando esistono gia dati utente.
+- Verifica che i template URL demo siano validi e generabili.
+
 ## Test Implementati (UI Shell)
 
 - Widget test per bootstrap della shell desktop con `MaterialApp.router` e
@@ -115,6 +123,7 @@ flutter run -d windows
 - Widget test per navigazione da `/search` a `/settings` tramite GoRouter.
 - Widget test per aggiornamento preferenza cronologia in `/settings`.
 - Override del database Drift in memoria nei widget test tramite Riverpod.
+- Widget test avviati con seed demo, come il provider reale.
 - Smoke test aggiornati per le schermate ricerca, catalogo, fornitori,
   cronologia, preferiti e impostazioni operative.
 

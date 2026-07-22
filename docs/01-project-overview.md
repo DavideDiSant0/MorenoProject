@@ -33,7 +33,8 @@ dall'applicazione e sara completato nel sito ufficiale del fornitore.
 Il progetto include dominio, persistenza locale Drift, casi d'uso applicativi,
 generatore URL, browser service astratto, shell GoRouter e prime schermate
 operative per ricerca, catalogo, fornitori, cronologia, preferiti e
-impostazioni.
+impostazioni. Un seed demo iniziale popola un database nuovo con catalogo,
+fornitori, compatibilita e un preferito dimostrativo.
 
 La sezione `/catalog` permette di gestire tipi dispositivo, marche, modelli,
 componenti e compatibilita dispositivo/componente. La sezione `/suppliers`

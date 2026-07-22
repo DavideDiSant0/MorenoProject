@@ -21,6 +21,7 @@ import 'package:repair_parts_finder/data/repositories/drift_device_type_reposito
 import 'package:repair_parts_finder/data/repositories/drift_favorite_repository.dart';
 import 'package:repair_parts_finder/data/repositories/drift_search_history_repository.dart';
 import 'package:repair_parts_finder/data/repositories/drift_supplier_repository.dart';
+import 'package:repair_parts_finder/data/seed/app_demo_data_seeder.dart';
 import 'package:repair_parts_finder/data/services/url_launcher_external_browser_service.dart';
 import 'package:repair_parts_finder/domain/services/url_template_generator.dart';
 
@@ -40,6 +41,7 @@ final urlTemplateGeneratorProvider = Provider<UrlTemplateGenerator>(
 
 final appDatabaseProvider = FutureProvider<AppDatabase>((ref) async {
   final database = AppDatabase(await openConnection());
+  await AppDemoDataSeeder(database).seedIfEmpty();
   ref.onDispose(() => unawaited(database.close()));
   return database;
 });

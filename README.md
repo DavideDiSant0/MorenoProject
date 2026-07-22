@@ -37,12 +37,14 @@ Questo repository contiene:
   fornitori preferiti e rilanciarle;
 - impostazioni operative in `/settings` per limite pagine, conferma apertura e
   salvataggio cronologia;
+- dati demo iniziali per catalogo, fornitori, compatibilita e un preferito,
+  applicati solo quando il database visibile all'utente e' vuoto;
 - gestione errori di persistenza (`lib/core/errors`);
 - test per entita, mapper, database, DAO, repository, casi d'uso, servizi URL,
   browser service e smoke test UI;
 - documentazione tecnica e regole operative per agenti AI.
 
-Non sono ancora stati implementati dati demo, backup/export-import, scraping o
+Non sono ancora stati implementati backup/export-import, scraping o
 integrazioni remote.
 
 ## Tecnologie

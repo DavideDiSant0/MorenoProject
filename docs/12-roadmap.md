@@ -64,7 +64,9 @@ Stato: cronologia e preferiti operativi implementati.
 - importazione.
 
 Stato: impostazioni operative implementate per limite pagine, conferma apertura
-e salvataggio cronologia. Backup, esportazione e importazione restano futuri.
+e salvataggio cronologia. Seed demo iniziale implementato per catalogo,
+fornitori, compatibilita e un preferito. Backup, esportazione e importazione
+restano futuri.
 
 ## Fase 7 - Qualita E Distribuzione
 

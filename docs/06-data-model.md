@@ -85,6 +85,28 @@ attualmente pinnate (`drift 2.34.2` / `drift_dev 2.34.0`) per un problema
 interno del generatore non legato allo schema di questo progetto. Da
 rivalutare quando le versioni verranno aggiornate.
 
+## Seed Demo Iniziale
+
+Il seed demo e' implementato in
+`lib/data/seed/app_demo_data_seeder.dart` e viene chiamato da
+`appDatabaseProvider` dopo l'apertura del database.
+
+Non fa parte della migration Drift: lo schema resta testabile come database
+vuoto nei test DAO e il seed resta logica applicativa di bootstrap. Il seeder
+inserisce dati solo se catalogo e fornitori non contengono ancora righe
+visibili all'utente.
+
+Contenuto attuale:
+
+- tipi dispositivo: smartphone, tablet, laptop;
+- marche: Apple, Samsung, Xiaomi;
+- modelli dimostrativi;
+- componenti riparabili comuni;
+- compatibilita dispositivo/componente;
+- fornitori con template URL validi;
+- compatibilita fornitore/tipo dispositivo;
+- un preferito demo.
+
 ## Indici E Vincoli
 
 Gli indici sono introdotti solo quando motivati dai flussi di ricerca o da

@@ -129,3 +129,21 @@ Regole:
 - le impostazioni restano locali e non contengono dati sensibili;
 - la UI chiama `SettingsController`, che delega ai casi d'uso;
 - ricerca, cronologia e preferiti devono rispettare sempre `AppSettings`.
+
+## Demo Data
+
+Implementato:
+
+- seed iniziale per tipi dispositivo, marche, modelli e componenti;
+- compatibilita dispositivo/componente;
+- fornitori demo con template URL validi;
+- compatibilita fornitori/tipi dispositivo;
+- un preferito dimostrativo.
+
+Regole:
+
+- il seed viene applicato dal provider del database reale, non dalla migration;
+- i test DAO possono continuare a creare database vuoti;
+- il seed parte solo se catalogo e fornitori sono vuoti, cosi' non mescola
+  dati demo con dati gia inseriti dall'utente;
+- gli ID demo usano prefisso `demo-` e sono stabili.

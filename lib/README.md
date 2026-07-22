@@ -21,8 +21,8 @@ scheletro iniziale, predisposte per le fasi successive e mantenute con file
   usato dalla UI Riverpod, piu casi d'uso impostazioni.
 - `data`: persistenza locale, Drift, mapper e implementazioni repository.
   Implementato: `database` (tabelle, DAO, `app_database.dart`,
-  `database_connection.dart`), `mappers`, `repositories` e `services`
-  infrastrutturali come l'adapter `url_launcher`.
+  `database_connection.dart`), `mappers`, `repositories`, `seed` con dati demo
+  iniziali e `services` infrastrutturali come l'adapter `url_launcher`.
 - `presentation`: schermate, widget, controller e provider UI. Implementato:
   shell desktop con `NavigationRail`, schermate tecniche e provider/controller
   operativi per ricerca, catalogo, fornitori, cronologia, preferiti e
