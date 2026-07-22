@@ -63,6 +63,9 @@ Stato: cronologia e preferiti operativi implementati.
 - esportazione;
 - importazione.
 
+Stato: impostazioni operative implementate per limite pagine, conferma apertura
+e salvataggio cronologia. Backup, esportazione e importazione restano futuri.
+
 ## Fase 7 - Qualita E Distribuzione
 
 - test;

@@ -1,6 +1,6 @@
 # Project Overview
 
-Repair Parts Finder e' una futura applicazione desktop locale per la ricerca
+Repair Parts Finder e' una applicazione desktop locale per la ricerca
 rapida di ricambi destinata a un riparatore di dispositivi elettronici.
 
 ## Problema
@@ -32,12 +32,15 @@ dall'applicazione e sara completato nel sito ufficiale del fornitore.
 
 Il progetto include dominio, persistenza locale Drift, casi d'uso applicativi,
 generatore URL, browser service astratto, shell GoRouter e prime schermate
-operative per ricerca, catalogo e fornitori.
+operative per ricerca, catalogo, fornitori, cronologia, preferiti e
+impostazioni.
 
 La sezione `/catalog` permette di gestire tipi dispositivo, marche, modelli,
 componenti e compatibilita dispositivo/componente. La sezione `/suppliers`
 permette di gestire fornitori, template URL, test template, ordinamento e
 compatibilita con i tipi dispositivo. La sezione `/search` permette di
 comporre una ricerca, generare query e URL, confermare l'apertura nel browser
-esterno e salvare la cronologia. Le altre sezioni UI sono ancora schermate
-tecniche pronte per le fasi successive.
+esterno e salvare la cronologia. Le sezioni `/history` e `/favorites`
+permettono di ripetere ricerche salvate o combinazioni frequenti. La sezione
+`/settings` permette di configurare limite pagine, conferma di apertura e
+salvataggio della cronologia.

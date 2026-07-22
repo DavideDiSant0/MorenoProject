@@ -112,15 +112,17 @@ flutter run -d windows
 - Widget test per navigazione da `/search` a `/suppliers` tramite GoRouter.
 - Widget test per navigazione da `/search` a `/history` tramite GoRouter.
 - Widget test per navigazione da `/search` a `/favorites` tramite GoRouter.
+- Widget test per navigazione da `/search` a `/settings` tramite GoRouter.
+- Widget test per aggiornamento preferenza cronologia in `/settings`.
 - Override del database Drift in memoria nei widget test tramite Riverpod.
 - Smoke test aggiornati per le schermate ricerca, catalogo, fornitori,
-  cronologia e preferiti operative.
+  cronologia, preferiti e impostazioni operative.
 
 ## Test Futuri
 
 - Unit test per value object, quando saranno introdotti.
 - Test dedicati per provider Riverpod e stato applicativo dei controller UI.
-- Widget test CRUD per catalogo, fornitori, cronologia, preferiti, ricerca
-  completa e future schermate operative.
+- Widget test CRUD per catalogo, fornitori, cronologia, preferiti e ricerca
+  completa.
 - Test di migrazione Drift quando lo schema cambiera' (dalla versione 2 in
   poi).

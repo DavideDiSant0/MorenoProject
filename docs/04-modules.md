@@ -112,10 +112,20 @@ Regole:
 
 ## Settings
 
-Responsabilita future:
+Implementato:
 
 - limite massimo di pagine da aprire;
 - conferma prima dell'apertura multipla;
-- gestione della cronologia;
-- configurazioni locali;
+- gestione del salvataggio cronologia;
+- lettura e aggiornamento persistente tramite `AppSettingsUseCases`;
+- caricamento stato tramite Riverpod e repository Drift.
+
+Responsabilita future:
+
 - futuro backup ed esportazione.
+
+Regole:
+
+- le impostazioni restano locali e non contengono dati sensibili;
+- la UI chiama `SettingsController`, che delega ai casi d'uso;
+- ricerca, cronologia e preferiti devono rispettare sempre `AppSettings`.

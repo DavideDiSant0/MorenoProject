@@ -3,14 +3,14 @@
 Repair Parts Finder e' un progetto desktop locale per velocizzare la ricerca
 di ricambi destinato a un riparatore di dispositivi elettronici.
 
-La futura applicazione guidera l'utente nella selezione di dispositivo, marca,
-modello, componente e fornitori, generera query/URL e aprira le pagine dei
+L'applicazione guida l'utente nella selezione di dispositivo, marca,
+modello, componente e fornitori, genera query/URL e apre le pagine dei
 fornitori nel browser esterno. L'app non effettuera acquisti, non salvera
 credenziali e non gestira pagamenti.
 
 ## Stato Attuale
 
-Fase tecnica 7 - Ricerca operativa.
+Fase tecnica 7 - UI operative principali.
 
 Questo repository contiene:
 
@@ -35,13 +35,15 @@ Questo repository contiene:
   l'apertura URL, eliminare una voce e svuotare tutto;
 - preferiti operativi in `/favorites` per salvare combinazioni frequenti con
   fornitori preferiti e rilanciarle;
+- impostazioni operative in `/settings` per limite pagine, conferma apertura e
+  salvataggio cronologia;
 - gestione errori di persistenza (`lib/core/errors`);
 - test per entita, mapper, database, DAO, repository, casi d'uso, servizi URL,
   browser service e smoke test UI;
 - documentazione tecnica e regole operative per agenti AI.
 
-Non sono ancora state implementate la UI operativa di impostazioni, dati demo,
-scraping o integrazioni remote.
+Non sono ancora stati implementati dati demo, backup/export-import, scraping o
+integrazioni remote.
 
 ## Tecnologie
 

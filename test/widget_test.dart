@@ -94,6 +94,58 @@ void main() {
     expect(find.text('Saved combinations'), findsOneWidget);
     expect(find.text('No favorites yet.'), findsOneWidget);
   });
+
+  testWidgets('Navigation rail opens settings route', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(1280, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Settings').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Settings'), findsWidgets);
+    expect(find.text('Maximum pages to open'), findsOneWidget);
+    expect(find.text('Require confirmation'), findsOneWidget);
+    expect(find.text('Save search history'), findsOneWidget);
+  });
+
+  testWidgets('Settings route updates history preference', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(1280, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Settings').first);
+    await tester.pumpAndSettle();
+
+    final historySwitch = find.widgetWithText(
+      SwitchListTile,
+      'Save search history',
+    );
+
+    expect(tester.widget<SwitchListTile>(historySwitch).value, isTrue);
+
+    await tester.tap(find.text('Save search history'));
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<SwitchListTile>(historySwitch).value, isFalse);
+
+    await tester.tap(find.byTooltip('Refresh'));
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<SwitchListTile>(historySwitch).value, isFalse);
+  });
 }
 
 Widget buildTestApp() {

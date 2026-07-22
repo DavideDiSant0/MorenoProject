@@ -1,9 +1,8 @@
 # Navigation And UI
 
 La navigazione e' gestita da GoRouter. Lo stato attuale include una shell
-desktop con `NavigationRail` laterale, schermate tecniche per le sezioni
-principali e UI operative per ricerca, catalogo, fornitori, cronologia e
-preferiti.
+desktop con `NavigationRail` laterale e UI operative per ricerca, catalogo,
+fornitori, cronologia, preferiti e impostazioni.
 
 ## Route Future
 
@@ -38,6 +37,8 @@ preferiti.
 - Schermata `/history` con elenco ricerche salvate, dettaglio, ripetizione,
   eliminazione e svuotamento.
 - Schermata `/favorites` con salvataggio combinazioni frequenti e rilancio.
+- Schermata `/settings` con limite pagine, conferma apertura e cronologia
+  attiva/disattiva.
 
 ## Regole UI
 
@@ -147,6 +148,21 @@ La schermata espone:
 Il rilancio usa gli ID salvati e passa da `PrepareSearchUseCase`: se la
 combinazione non e' piu valida, viene mostrato un errore applicativo invece di
 aprire URL non coerenti.
+
+## Impostazioni
+
+`/settings` usa `SettingsController` in
+`lib/presentation/providers/settings_controller.dart` e `AppSettings`.
+
+La schermata espone:
+
+- limite massimo di pagine fornitore da aprire;
+- conferma prima dell'apertura;
+- salvataggio cronologia attivo/disattivo;
+- refresh delle impostazioni persistite.
+
+Le modifiche passano da `AppSettingsUseCases`. I flussi di ricerca, cronologia
+e preferiti leggono `AppSettings` e applicano gli stessi limiti.
 
 ## Browser Esterno
 
