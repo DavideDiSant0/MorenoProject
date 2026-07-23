@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repair_parts_finder/application/state/catalog_state.dart';
@@ -117,6 +115,8 @@ class _DeviceTypesTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.read(catalogControllerProvider.notifier);
+
     return _CatalogListScaffold(
       title: 'Device types',
       addLabel: 'Add type',
@@ -134,10 +134,7 @@ class _DeviceTypesTab extends ConsumerWidget {
           message: 'Delete ${item.name}?',
           action: () => _runCatalogAction(
             context,
-            ref,
-            () => ref
-                .read(catalogControllerProvider.notifier)
-                .deleteDeviceType(item.id),
+            () => controller.deleteDeviceType(item.id),
           ),
         ),
       ),
@@ -152,6 +149,8 @@ class _BrandsTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.read(catalogControllerProvider.notifier);
+
     return _CatalogListScaffold(
       title: 'Brands',
       addLabel: 'Add brand',
@@ -167,13 +166,8 @@ class _BrandsTab extends ConsumerWidget {
           context,
           title: 'Delete brand',
           message: 'Delete ${item.name}?',
-          action: () => _runCatalogAction(
-            context,
-            ref,
-            () => ref
-                .read(catalogControllerProvider.notifier)
-                .deleteBrand(item.id),
-          ),
+          action: () =>
+              _runCatalogAction(context, () => controller.deleteBrand(item.id)),
         ),
       ),
     );
@@ -191,6 +185,7 @@ class _ModelsTab extends ConsumerWidget {
       for (final item in state.deviceTypes) item.id: item.name,
     };
     final brandNames = {for (final item in state.brands) item.id: item.name};
+    final controller = ref.read(catalogControllerProvider.notifier);
 
     return _CatalogListScaffold(
       title: 'Device models',
@@ -219,10 +214,7 @@ class _ModelsTab extends ConsumerWidget {
           message: 'Delete ${item.name}?',
           action: () => _runCatalogAction(
             context,
-            ref,
-            () => ref
-                .read(catalogControllerProvider.notifier)
-                .deleteDeviceModel(item.id),
+            () => controller.deleteDeviceModel(item.id),
           ),
         ),
       ),
@@ -237,6 +229,8 @@ class _ComponentsTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.read(catalogControllerProvider.notifier);
+
     return _CatalogListScaffold(
       title: 'Components',
       addLabel: 'Add component',
@@ -254,10 +248,7 @@ class _ComponentsTab extends ConsumerWidget {
           message: 'Delete ${item.name}?',
           action: () => _runCatalogAction(
             context,
-            ref,
-            () => ref
-                .read(catalogControllerProvider.notifier)
-                .deleteComponent(item.id),
+            () => controller.deleteComponent(item.id),
           ),
         ),
       ),
@@ -272,6 +263,7 @@ class _CompatibilityTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.read(catalogControllerProvider.notifier);
     final selectedId = state.selectedCompatibilityDeviceTypeId;
     final compatibleIds = state.compatibleComponents
         .map((component) => component.id)
@@ -322,14 +314,11 @@ class _CompatibilityTab extends ConsumerWidget {
                     subtitle: Text(component.description ?? component.id),
                     onChanged: (value) => _runCatalogAction(
                       context,
-                      ref,
-                      () => ref
-                          .read(catalogControllerProvider.notifier)
-                          .setComponentCompatibility(
-                            deviceTypeId: selectedId,
-                            componentId: component.id,
-                            isCompatible: value ?? false,
-                          ),
+                      () => controller.setComponentCompatibility(
+                        deviceTypeId: selectedId,
+                        componentId: component.id,
+                        isCompatible: value ?? false,
+                      ),
                     ),
                   );
                 },
@@ -449,6 +438,7 @@ Future<void> _showDeviceTypeDialog(
   WidgetRef ref, {
   DeviceType? existing,
 }) async {
+  final controller = ref.read(catalogControllerProvider.notifier);
   final nameController = TextEditingController(text: existing?.name);
   final descriptionController = TextEditingController(
     text: existing?.description,
@@ -478,15 +468,12 @@ Future<void> _showDeviceTypeDialog(
     ],
     onSave: () => _runCatalogAction(
       context,
-      ref,
-      () => ref
-          .read(catalogControllerProvider.notifier)
-          .saveDeviceType(
-            id: existing?.id,
-            name: nameController.text,
-            description: descriptionController.text,
-            isActive: isActive,
-          ),
+      () => controller.saveDeviceType(
+        id: existing?.id,
+        name: nameController.text,
+        description: descriptionController.text,
+        isActive: isActive,
+      ),
     ),
   );
 }
@@ -496,6 +483,7 @@ Future<void> _showBrandDialog(
   WidgetRef ref, {
   Brand? existing,
 }) async {
+  final controller = ref.read(catalogControllerProvider.notifier);
   final nameController = TextEditingController(text: existing?.name);
   var isActive = existing?.isActive ?? true;
 
@@ -518,14 +506,11 @@ Future<void> _showBrandDialog(
     ],
     onSave: () => _runCatalogAction(
       context,
-      ref,
-      () => ref
-          .read(catalogControllerProvider.notifier)
-          .saveBrand(
-            id: existing?.id,
-            name: nameController.text,
-            isActive: isActive,
-          ),
+      () => controller.saveBrand(
+        id: existing?.id,
+        name: nameController.text,
+        isActive: isActive,
+      ),
     ),
   );
 }
@@ -535,6 +520,7 @@ Future<void> _showComponentDialog(
   WidgetRef ref, {
   Component? existing,
 }) async {
+  final controller = ref.read(catalogControllerProvider.notifier);
   final nameController = TextEditingController(text: existing?.name);
   final descriptionController = TextEditingController(
     text: existing?.description,
@@ -564,15 +550,12 @@ Future<void> _showComponentDialog(
     ],
     onSave: () => _runCatalogAction(
       context,
-      ref,
-      () => ref
-          .read(catalogControllerProvider.notifier)
-          .saveComponent(
-            id: existing?.id,
-            name: nameController.text,
-            description: descriptionController.text,
-            isActive: isActive,
-          ),
+      () => controller.saveComponent(
+        id: existing?.id,
+        name: nameController.text,
+        description: descriptionController.text,
+        isActive: isActive,
+      ),
     ),
   );
 }
@@ -583,6 +566,7 @@ Future<void> _showDeviceModelDialog(
   required CatalogState state,
   DeviceModel? existing,
 }) async {
+  final controller = ref.read(catalogControllerProvider.notifier);
   final nameController = TextEditingController(text: existing?.name);
   final modelCodeController = TextEditingController(text: existing?.modelCode);
   final alternativeTermsController = TextEditingController(
@@ -644,20 +628,15 @@ Future<void> _showDeviceModelDialog(
     ],
     onSave: () => _runCatalogAction(
       context,
-      ref,
-      () => ref
-          .read(catalogControllerProvider.notifier)
-          .saveDeviceModel(
-            id: existing?.id,
-            name: nameController.text,
-            modelCode: modelCodeController.text,
-            alternativeSearchTerms: _splitTerms(
-              alternativeTermsController.text,
-            ),
-            deviceTypeId: deviceTypeId,
-            brandId: brandId,
-            isActive: isActive,
-          ),
+      () => controller.saveDeviceModel(
+        id: existing?.id,
+        name: nameController.text,
+        modelCode: modelCodeController.text,
+        alternativeSearchTerms: _splitTerms(alternativeTermsController.text),
+        deviceTypeId: deviceTypeId,
+        brandId: brandId,
+        isActive: isActive,
+      ),
     ),
   );
 }
@@ -684,9 +663,11 @@ Future<void> _showEntityDialog(
           child: const Text('Cancel'),
         ),
         FilledButton.icon(
-          onPressed: () {
-            Navigator.of(context).pop();
-            unawaited(onSave());
+          onPressed: () async {
+            await onSave();
+            if (context.mounted) {
+              Navigator.of(context).pop();
+            }
           },
           icon: const Icon(Icons.save_outlined),
           label: const Text('Save'),
@@ -698,7 +679,6 @@ Future<void> _showEntityDialog(
 
 Future<void> _runCatalogAction(
   BuildContext context,
-  WidgetRef ref,
   Future<void> Function() action,
 ) async {
   try {

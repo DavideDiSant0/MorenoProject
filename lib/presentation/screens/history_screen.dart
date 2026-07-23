@@ -86,6 +86,7 @@ class _HistoryHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.read(historyControllerProvider.notifier);
     final urlCount = state.entries.fold<int>(
       0,
       (total, entry) => total + entry.suppliers.length,
@@ -133,10 +134,7 @@ class _HistoryHeader extends ConsumerWidget {
                     message: 'Delete all saved searches?',
                     action: () => _runHistoryAction(
                       context,
-                      ref,
-                      () => ref
-                          .read(historyControllerProvider.notifier)
-                          .clearHistory(),
+                      () => controller.clearHistory(),
                     ),
                   ),
             icon: const Icon(Icons.delete_sweep_outlined),
@@ -158,6 +156,7 @@ class _HistoryListPane extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.read(historyControllerProvider.notifier);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
       child: Column(
@@ -176,9 +175,7 @@ class _HistoryListPane extends ConsumerWidget {
                       final entry = entries[index];
                       return ListTile(
                         selected: entry.id == selectedEntryId,
-                        onTap: () => ref
-                            .read(historyControllerProvider.notifier)
-                            .selectEntry(entry.id),
+                        onTap: () => controller.selectEntry(entry.id),
                         title: Text(
                           entry.generatedQuery,
                           maxLines: 1,
@@ -207,6 +204,8 @@ class _HistoryDetailsPane extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.read(historyControllerProvider.notifier);
+
     return Padding(
       padding: const EdgeInsets.all(28),
       child: Column(
@@ -246,10 +245,7 @@ class _HistoryDetailsPane extends ConsumerWidget {
                   message: 'Delete this saved search?',
                   action: () => _runHistoryAction(
                     context,
-                    ref,
-                    () => ref
-                        .read(historyControllerProvider.notifier)
-                        .deleteEntry(entry.id),
+                    () => controller.deleteEntry(entry.id),
                   ),
                 ),
                 icon: const Icon(Icons.delete_outline),
@@ -332,6 +328,8 @@ Future<void> _confirmRepeat(
   SearchHistory entry,
   HistoryState state,
 ) async {
+  final controller = ref.read(historyControllerProvider.notifier);
+
   if (state.settings.requireConfirmation) {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -356,16 +354,11 @@ Future<void> _confirmRepeat(
     }
   }
 
-  await _runHistoryAction(
-    context,
-    ref,
-    () => ref.read(historyControllerProvider.notifier).repeatSelectedEntry(),
-  );
+  await _runHistoryAction(context, () => controller.repeatSelectedEntry());
 }
 
 Future<void> _runHistoryAction(
   BuildContext context,
-  WidgetRef ref,
   Future<void> Function() action,
 ) async {
   try {

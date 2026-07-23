@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repair_parts_finder/application/state/supplier_state.dart';
@@ -207,6 +205,7 @@ class _SupplierDetailsPane extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.read(supplierControllerProvider.notifier);
     final compatibleIds = state.compatibleDeviceTypes
         .map((deviceType) => deviceType.id)
         .toSet();
@@ -245,10 +244,7 @@ class _SupplierDetailsPane extends ConsumerWidget {
                     ? null
                     : () => _runSupplierAction(
                         context,
-                        ref,
-                        () => ref
-                            .read(supplierControllerProvider.notifier)
-                            .moveSupplier(supplier.id, -1),
+                        () => controller.moveSupplier(supplier.id, -1),
                       ),
                 icon: const Icon(Icons.arrow_upward),
               ),
@@ -260,10 +256,7 @@ class _SupplierDetailsPane extends ConsumerWidget {
                     ? null
                     : () => _runSupplierAction(
                         context,
-                        ref,
-                        () => ref
-                            .read(supplierControllerProvider.notifier)
-                            .moveSupplier(supplier.id, 1),
+                        () => controller.moveSupplier(supplier.id, 1),
                       ),
                 icon: const Icon(Icons.arrow_downward),
               ),
@@ -290,10 +283,7 @@ class _SupplierDetailsPane extends ConsumerWidget {
                   message: 'Delete ${supplier.name}?',
                   action: () => _runSupplierAction(
                     context,
-                    ref,
-                    () => ref
-                        .read(supplierControllerProvider.notifier)
-                        .deleteSupplier(supplier.id),
+                    () => controller.deleteSupplier(supplier.id),
                   ),
                 ),
                 icon: const Icon(Icons.delete_outline),
@@ -330,14 +320,11 @@ class _SupplierDetailsPane extends ConsumerWidget {
                         subtitle: Text(deviceType.description ?? deviceType.id),
                         onChanged: (value) => _runSupplierAction(
                           context,
-                          ref,
-                          () => ref
-                              .read(supplierControllerProvider.notifier)
-                              .setDeviceTypeCompatibility(
-                                supplierId: supplier.id,
-                                deviceTypeId: deviceType.id,
-                                isCompatible: value ?? false,
-                              ),
+                          () => controller.setDeviceTypeCompatibility(
+                            supplierId: supplier.id,
+                            deviceTypeId: deviceType.id,
+                            isCompatible: value ?? false,
+                          ),
                         ),
                       );
                     },
@@ -390,6 +377,7 @@ Future<void> _showSupplierDialog(
   required SupplierState state,
   Supplier? existing,
 }) async {
+  final controller = ref.read(supplierControllerProvider.notifier);
   final nameController = TextEditingController(text: existing?.name);
   final baseUrlController = TextEditingController(text: existing?.baseUrl);
   final urlTemplateController = TextEditingController(
@@ -458,27 +446,24 @@ Future<void> _showSupplierDialog(
           label: const Text('Test'),
         ),
         FilledButton.icon(
-          onPressed: () {
-            Navigator.of(dialogContext).pop();
-            unawaited(
-              _runSupplierAction(
-                context,
-                ref,
-                () => ref
-                    .read(supplierControllerProvider.notifier)
-                    .saveSupplier(
-                      id: existing?.id,
-                      name: nameController.text,
-                      baseUrl: baseUrlController.text,
-                      urlTemplate: urlTemplateController.text,
-                      displayOrder:
-                          int.tryParse(displayOrderController.text.trim()) ??
-                          state.suppliers.length,
-                      notes: notesController.text,
-                      isActive: isActive,
-                    ),
+          onPressed: () async {
+            await _runSupplierAction(
+              context,
+              () => controller.saveSupplier(
+                id: existing?.id,
+                name: nameController.text,
+                baseUrl: baseUrlController.text,
+                urlTemplate: urlTemplateController.text,
+                displayOrder:
+                    int.tryParse(displayOrderController.text.trim()) ??
+                    state.suppliers.length,
+                notes: notesController.text,
+                isActive: isActive,
               ),
             );
+            if (dialogContext.mounted) {
+              Navigator.of(dialogContext).pop();
+            }
           },
           icon: const Icon(Icons.save_outlined),
           label: const Text('Save'),
@@ -490,7 +475,6 @@ Future<void> _showSupplierDialog(
 
 Future<void> _runSupplierAction(
   BuildContext context,
-  WidgetRef ref,
   Future<void> Function() action,
 ) async {
   try {

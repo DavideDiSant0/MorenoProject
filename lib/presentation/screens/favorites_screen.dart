@@ -360,6 +360,8 @@ class _FavoriteDetailsPane extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.read(favoriteControllerProvider.notifier);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -397,10 +399,7 @@ class _FavoriteDetailsPane extends ConsumerWidget {
                 message: 'Delete ${favorite.name}?',
                 action: () => _runFavoriteAction(
                   context,
-                  ref,
-                  () => ref
-                      .read(favoriteControllerProvider.notifier)
-                      .deleteFavorite(favorite.id),
+                  () => controller.deleteFavorite(favorite.id),
                 ),
               ),
               icon: const Icon(Icons.delete_outline),
@@ -484,13 +483,14 @@ Future<void> _showSaveFavoriteDialog(
   BuildContext context,
   WidgetRef ref,
 ) async {
-  final controller = TextEditingController();
+  final favoriteController = ref.read(favoriteControllerProvider.notifier);
+  final nameController = TextEditingController();
   final name = await showDialog<String>(
     context: context,
     builder: (context) => AlertDialog(
       title: const Text('Save favorite'),
       content: TextField(
-        controller: controller,
+        controller: nameController,
         autofocus: true,
         decoration: const InputDecoration(labelText: 'Name'),
       ),
@@ -500,7 +500,7 @@ Future<void> _showSaveFavoriteDialog(
           child: const Text('Cancel'),
         ),
         FilledButton.icon(
-          onPressed: () => Navigator.of(context).pop(controller.text),
+          onPressed: () => Navigator.of(context).pop(nameController.text),
           icon: const Icon(Icons.star_border),
           label: const Text('Save'),
         ),
@@ -512,8 +512,7 @@ Future<void> _showSaveFavoriteDialog(
   }
   await _runFavoriteAction(
     context,
-    ref,
-    () => ref.read(favoriteControllerProvider.notifier).saveFavorite(name),
+    () => favoriteController.saveFavorite(name),
   );
 }
 
@@ -523,6 +522,8 @@ Future<void> _confirmLaunch(
   Favorite favorite,
   FavoriteState state,
 ) async {
+  final controller = ref.read(favoriteControllerProvider.notifier);
+
   if (state.settings.requireConfirmation) {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -548,16 +549,12 @@ Future<void> _confirmLaunch(
   }
   await _runFavoriteAction(
     context,
-    ref,
-    () => ref
-        .read(favoriteControllerProvider.notifier)
-        .launchFavorite(favorite.id),
+    () => controller.launchFavorite(favorite.id),
   );
 }
 
 Future<void> _runFavoriteAction(
   BuildContext context,
-  WidgetRef ref,
   Future<void> Function() action,
 ) async {
   try {

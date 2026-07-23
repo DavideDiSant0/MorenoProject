@@ -302,7 +302,6 @@ class _PreviewPane extends ConsumerWidget {
                 onPressed: state.hasCompleteSelection
                     ? () => _runSearchAction(
                         context,
-                        ref,
                         () => ref
                             .read(searchControllerProvider.notifier)
                             .generatePreview(),
@@ -395,6 +394,8 @@ Future<void> _confirmAndOpen(
   WidgetRef ref,
   SearchState state,
 ) async {
+  final controller = ref.read(searchControllerProvider.notifier);
+
   if (state.settings.requireConfirmation) {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -419,16 +420,11 @@ Future<void> _confirmAndOpen(
     }
   }
 
-  await _runSearchAction(
-    context,
-    ref,
-    () => ref.read(searchControllerProvider.notifier).openPreviewedUrls(),
-  );
+  await _runSearchAction(context, () => controller.openPreviewedUrls());
 }
 
 Future<void> _runSearchAction(
   BuildContext context,
-  WidgetRef ref,
   Future<void> Function() action,
 ) async {
   try {
