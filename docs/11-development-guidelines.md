@@ -141,7 +141,16 @@ flutter run -d windows
 ## Test Futuri
 
 - Unit test per value object, quando saranno introdotti.
-- Widget test CRUD per catalogo, fornitori, cronologia, preferiti e ricerca
-  completa.
+- Widget test aggiuntivi per i percorsi di errore UI meno frequenti.
 - Test di migrazione Drift quando lo schema cambiera' (dalla versione 3 in
   poi).
+
+## Test Di Regressione Rilascio
+
+- Stress test su 300 ricerche persistite con cancellazione a cascata.
+- Stress test su 1000 combinazioni di caratteri per l'URL encoding.
+- Test di riapertura del database reale su disco con seed idempotente.
+- Test di concorrenza per impostazioni e selezioni fornitore.
+- Test contro doppi comandi di apertura URL.
+- Widget test che mantengono aperti i dialog quando la validazione fallisce.
+- Test della query condivisa con termini alternativi e deduplicazione.

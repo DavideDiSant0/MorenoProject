@@ -6,6 +6,7 @@ import 'package:repair_parts_finder/application/dto/record_search_history_comman
 import 'package:repair_parts_finder/application/dto/search_selection.dart';
 import 'package:repair_parts_finder/application/state/favorite_state.dart';
 import 'package:repair_parts_finder/application/use_cases/app_settings_use_cases.dart';
+import 'package:repair_parts_finder/application/use_cases/build_search_query.dart';
 import 'package:repair_parts_finder/application/use_cases/catalog_use_cases.dart';
 import 'package:repair_parts_finder/application/use_cases/favorite_use_cases.dart';
 import 'package:repair_parts_finder/application/use_cases/open_external_url_use_case.dart';
@@ -37,6 +38,8 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
   late AppSettingsUseCases _appSettingsUseCases;
   late OpenExternalUrlUseCase _openExternalUrlUseCase;
   late UrlTemplateGenerator _urlTemplateGenerator;
+  Future<void> _pendingSelectionUpdate = Future<void>.value();
+  bool _isLaunchingFavorite = false;
 
   @override
   Future<FavoriteState> build() async {
@@ -62,7 +65,7 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
     );
   }
 
-  Future<void> refresh() async {
+  Future<void> refresh() => _enqueueSelectionUpdate(() async {
     final current = _currentState;
     state = const AsyncLoading();
     state = await AsyncValue.guard(
@@ -75,40 +78,42 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
         supplierIds: current?.selectedSupplierIds ?? const <String>{},
       ),
     );
-  }
+  });
 
-  Future<void> selectFavorite(String? favoriteId) async {
-    final current = _currentState;
-    state = AsyncData(
-      await _loadFavoriteState(
-        selectedFavoriteId: favoriteId,
-        selectedDeviceTypeId: current?.selectedDeviceTypeId,
-        selectedBrandId: current?.selectedBrandId,
-        selectedDeviceModelId: current?.selectedDeviceModelId,
-        selectedComponentId: current?.selectedComponentId,
-        supplierIds: current?.selectedSupplierIds ?? const <String>{},
-      ),
-    );
-  }
+  Future<void> selectFavorite(String? favoriteId) =>
+      _enqueueSelectionUpdate(() async {
+        final current = _currentState;
+        state = await AsyncValue.guard(
+          () => _loadFavoriteState(
+            selectedFavoriteId: favoriteId,
+            selectedDeviceTypeId: current?.selectedDeviceTypeId,
+            selectedBrandId: current?.selectedBrandId,
+            selectedDeviceModelId: current?.selectedDeviceModelId,
+            selectedComponentId: current?.selectedComponentId,
+            supplierIds: current?.selectedSupplierIds ?? const <String>{},
+          ),
+        );
+      });
 
-  Future<void> selectDeviceType(String? id) async {
-    final current = _currentState;
-    state = AsyncData(
-      await _loadFavoriteState(
-        selectedFavoriteId: current?.selectedFavoriteId,
-        selectedDeviceTypeId: id,
-        selectedBrandId: current?.selectedBrandId,
-        selectedDeviceModelId: null,
-        selectedComponentId: null,
-        supplierIds: const <String>{},
-      ),
-    );
-  }
+  Future<void> selectDeviceType(String? id) =>
+      _enqueueSelectionUpdate(() async {
+        final current = _currentState;
+        state = await AsyncValue.guard(
+          () => _loadFavoriteState(
+            selectedFavoriteId: current?.selectedFavoriteId,
+            selectedDeviceTypeId: id,
+            selectedBrandId: current?.selectedBrandId,
+            selectedDeviceModelId: null,
+            selectedComponentId: null,
+            supplierIds: const <String>{},
+          ),
+        );
+      });
 
-  Future<void> selectBrand(String? id) async {
+  Future<void> selectBrand(String? id) => _enqueueSelectionUpdate(() async {
     final current = _currentState;
-    state = AsyncData(
-      await _loadFavoriteState(
+    state = await AsyncValue.guard(
+      () => _loadFavoriteState(
         selectedFavoriteId: current?.selectedFavoriteId,
         selectedDeviceTypeId: current?.selectedDeviceTypeId,
         selectedBrandId: id,
@@ -117,26 +122,27 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
         supplierIds: current?.selectedSupplierIds ?? const <String>{},
       ),
     );
-  }
+  });
 
-  Future<void> selectDeviceModel(String? id) async {
-    final current = _currentState;
-    state = AsyncData(
-      await _loadFavoriteState(
-        selectedFavoriteId: current?.selectedFavoriteId,
-        selectedDeviceTypeId: current?.selectedDeviceTypeId,
-        selectedBrandId: current?.selectedBrandId,
-        selectedDeviceModelId: id,
-        selectedComponentId: current?.selectedComponentId,
-        supplierIds: current?.selectedSupplierIds ?? const <String>{},
-      ),
-    );
-  }
+  Future<void> selectDeviceModel(String? id) =>
+      _enqueueSelectionUpdate(() async {
+        final current = _currentState;
+        state = await AsyncValue.guard(
+          () => _loadFavoriteState(
+            selectedFavoriteId: current?.selectedFavoriteId,
+            selectedDeviceTypeId: current?.selectedDeviceTypeId,
+            selectedBrandId: current?.selectedBrandId,
+            selectedDeviceModelId: id,
+            selectedComponentId: current?.selectedComponentId,
+            supplierIds: current?.selectedSupplierIds ?? const <String>{},
+          ),
+        );
+      });
 
-  Future<void> selectComponent(String? id) async {
+  Future<void> selectComponent(String? id) => _enqueueSelectionUpdate(() async {
     final current = _currentState;
-    state = AsyncData(
-      await _loadFavoriteState(
+    state = await AsyncValue.guard(
+      () => _loadFavoriteState(
         selectedFavoriteId: current?.selectedFavoriteId,
         selectedDeviceTypeId: current?.selectedDeviceTypeId,
         selectedBrandId: current?.selectedBrandId,
@@ -145,32 +151,34 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
         supplierIds: current?.selectedSupplierIds ?? const <String>{},
       ),
     );
-  }
+  });
 
-  Future<void> setSupplierSelected(String supplierId, bool isSelected) async {
-    final current = _currentState;
-    if (current == null) {
-      return;
-    }
-    final supplierIds = {...current.selectedSupplierIds};
-    if (isSelected) {
-      supplierIds.add(supplierId);
-    } else {
-      supplierIds.remove(supplierId);
-    }
-    state = AsyncData(
-      await _loadFavoriteState(
-        selectedFavoriteId: current.selectedFavoriteId,
-        selectedDeviceTypeId: current.selectedDeviceTypeId,
-        selectedBrandId: current.selectedBrandId,
-        selectedDeviceModelId: current.selectedDeviceModelId,
-        selectedComponentId: current.selectedComponentId,
-        supplierIds: supplierIds,
-      ),
-    );
-  }
+  Future<void> setSupplierSelected(String supplierId, bool isSelected) =>
+      _enqueueSelectionUpdate(() async {
+        final current = _currentState;
+        if (current == null) {
+          return;
+        }
+        final supplierIds = {...current.selectedSupplierIds};
+        if (isSelected) {
+          supplierIds.add(supplierId);
+        } else {
+          supplierIds.remove(supplierId);
+        }
+        state = await AsyncValue.guard(
+          () => _loadFavoriteState(
+            selectedFavoriteId: current.selectedFavoriteId,
+            selectedDeviceTypeId: current.selectedDeviceTypeId,
+            selectedBrandId: current.selectedBrandId,
+            selectedDeviceModelId: current.selectedDeviceModelId,
+            selectedComponentId: current.selectedComponentId,
+            supplierIds: supplierIds,
+          ),
+        );
+      });
 
   Future<void> saveFavorite(String name) async {
+    await _pendingSelectionUpdate;
     final current = _requireCurrentState();
     if (!current.canSaveFavorite) {
       throw const ValidationException(
@@ -201,6 +209,7 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
   }
 
   Future<void> deleteFavorite(String favoriteId) async {
+    await _pendingSelectionUpdate;
     await _favoriteUseCases.deleteFavorite(favoriteId);
     final current = _currentState;
     state = AsyncData(
@@ -217,6 +226,12 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
   }
 
   Future<void> launchFavorite(String favoriteId) async {
+    await _pendingSelectionUpdate;
+    if (_isLaunchingFavorite) {
+      throw const ValidationException(
+        'L\'apertura del preferito e\' gia in corso.',
+      );
+    }
     final current = _requireCurrentState();
     final favorite = current.favorites.firstWhere(
       (favorite) => favorite.id == favoriteId,
@@ -231,63 +246,74 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
       );
     }
 
-    final prepared = await _prepareSearchUseCase(
-      SearchSelection(
-        deviceTypeId: favorite.deviceTypeId,
-        brandId: favorite.brandId,
-        deviceModelId: favorite.deviceModelId,
-        componentId: favorite.componentId,
-        supplierIds: favorite.supplierIds,
-      ),
-    );
-    final generatedQuery = _buildQuery(prepared);
-    final previewItems = _buildPreviewItems(prepared, generatedQuery);
-    final openedItems = <_OpenedFavoriteUrl>[];
-    for (final item in previewItems) {
-      try {
-        await _openExternalUrlUseCase(item.url);
-        openedItems.add(item.copyWith(openResult: 'opened'));
-      } catch (error) {
-        openedItems.add(item.copyWith(openResult: _messageFor(error)));
-      }
-    }
-
-    if (current.settings.historyEnabled) {
-      await _searchHistoryUseCases.recordSearch(
-        RecordSearchHistoryCommand(
-          deviceType: prepared.deviceType.name,
-          brand: prepared.brand.name,
-          deviceModel: prepared.deviceModel.name,
-          deviceModelCode: prepared.deviceModel.modelCode,
-          component: prepared.component.name,
-          generatedQuery: generatedQuery,
-          suppliers: [
-            for (final item in openedItems)
-              RecordSearchHistorySupplierCommand(
-                supplierId: item.supplierId,
-                supplierName: item.supplierName,
-                generatedUrl: item.url.toString(),
-                openResult: item.openResult,
-              ),
-          ],
+    _isLaunchingFavorite = true;
+    try {
+      final prepared = await _prepareSearchUseCase(
+        SearchSelection(
+          deviceTypeId: favorite.deviceTypeId,
+          brandId: favorite.brandId,
+          deviceModelId: favorite.deviceModelId,
+          componentId: favorite.componentId,
+          supplierIds: favorite.supplierIds,
         ),
       );
-    }
+      final generatedQuery = buildSearchQuery(prepared);
+      final previewItems = _buildPreviewItems(prepared, generatedQuery);
+      final openedItems = <_OpenedFavoriteUrl>[];
+      for (final item in previewItems) {
+        try {
+          await _openExternalUrlUseCase(item.url);
+          openedItems.add(item.copyWith(openResult: 'opened'));
+        } catch (error) {
+          openedItems.add(item.copyWith(openResult: _messageFor(error)));
+        }
+      }
 
-    state = AsyncData(
-      await _loadFavoriteState(
-        selectedFavoriteId: favorite.id,
-        selectedDeviceTypeId: current.selectedDeviceTypeId,
-        selectedBrandId: current.selectedBrandId,
-        selectedDeviceModelId: current.selectedDeviceModelId,
-        selectedComponentId: current.selectedComponentId,
-        supplierIds: current.selectedSupplierIds,
-        lastResultMessage: _openResultMessage(
-          openedItems,
-          historyEnabled: current.settings.historyEnabled,
+      if (current.settings.historyEnabled) {
+        await _searchHistoryUseCases.recordSearch(
+          RecordSearchHistoryCommand(
+            deviceType: prepared.deviceType.name,
+            brand: prepared.brand.name,
+            deviceModel: prepared.deviceModel.name,
+            deviceModelCode: prepared.deviceModel.modelCode,
+            component: prepared.component.name,
+            generatedQuery: generatedQuery,
+            suppliers: [
+              for (final item in openedItems)
+                RecordSearchHistorySupplierCommand(
+                  supplierId: item.supplierId,
+                  supplierName: item.supplierName,
+                  generatedUrl: item.url.toString(),
+                  openResult: item.openResult,
+                ),
+            ],
+          ),
+        );
+      }
+
+      state = AsyncData(
+        await _loadFavoriteState(
+          selectedFavoriteId: favorite.id,
+          selectedDeviceTypeId: current.selectedDeviceTypeId,
+          selectedBrandId: current.selectedBrandId,
+          selectedDeviceModelId: current.selectedDeviceModelId,
+          selectedComponentId: current.selectedComponentId,
+          supplierIds: current.selectedSupplierIds,
+          lastResultMessage: _openResultMessage(
+            openedItems,
+            historyEnabled: current.settings.historyEnabled,
+          ),
         ),
-      ),
-    );
+      );
+    } finally {
+      _isLaunchingFavorite = false;
+    }
+  }
+
+  Future<void> _enqueueSelectionUpdate(Future<void> Function() update) {
+    final operation = _pendingSelectionUpdate.then((_) => update());
+    _pendingSelectionUpdate = operation.catchError((Object _, StackTrace _) {});
+    return operation;
   }
 
   Future<FavoriteState> _loadFavoriteState({
@@ -410,15 +436,6 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
     ];
   }
 
-  String _buildQuery(PreparedSearch prepared) {
-    return [
-      prepared.brand.name,
-      prepared.deviceModel.name,
-      prepared.deviceModel.modelCode,
-      prepared.component.name,
-    ].whereType<String>().where((part) => part.trim().isNotEmpty).join(' ');
-  }
-
   List<Favorite> _sortFavorites(List<Favorite> favorites) {
     final sorted = [...favorites];
     sorted.sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -468,7 +485,9 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
   }
 
   String _messageFor(Object error) {
-    return error is AppException ? error.message : error.toString();
+    return error is AppException
+        ? error.message
+        : 'Errore inatteso durante l\'apertura.';
   }
 
   String _openResultMessage(

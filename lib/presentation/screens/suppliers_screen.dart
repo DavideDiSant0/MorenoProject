@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repair_parts_finder/application/state/supplier_state.dart';
+import 'package:repair_parts_finder/core/errors/validation_exception.dart';
 import 'package:repair_parts_finder/domain/entities/supplier.dart';
 import 'package:repair_parts_finder/presentation/providers/supplier_controller.dart';
 import 'package:repair_parts_finder/presentation/widgets/app_error_view.dart';
@@ -447,21 +448,19 @@ Future<void> _showSupplierDialog(
         ),
         FilledButton.icon(
           onPressed: () async {
-            await _runSupplierAction(
+            final saved = await _tryRunSupplierAction(
               context,
               () => controller.saveSupplier(
                 id: existing?.id,
                 name: nameController.text,
                 baseUrl: baseUrlController.text,
                 urlTemplate: urlTemplateController.text,
-                displayOrder:
-                    int.tryParse(displayOrderController.text.trim()) ??
-                    state.suppliers.length,
+                displayOrder: _parseDisplayOrder(displayOrderController.text),
                 notes: notesController.text,
                 isActive: isActive,
               ),
             );
-            if (dialogContext.mounted) {
+            if (saved && dialogContext.mounted) {
               Navigator.of(dialogContext).pop();
             }
           },
@@ -473,7 +472,17 @@ Future<void> _showSupplierDialog(
   );
 }
 
-Future<void> _runSupplierAction(
+int _parseDisplayOrder(String value) {
+  final displayOrder = int.tryParse(value.trim());
+  if (displayOrder == null || displayOrder < 0) {
+    throw const ValidationException(
+      'L\'ordine deve essere un numero intero maggiore o uguale a zero.',
+    );
+  }
+  return displayOrder;
+}
+
+Future<bool> _tryRunSupplierAction(
   BuildContext context,
   Future<void> Function() action,
 ) async {
@@ -484,13 +493,22 @@ Future<void> _runSupplierAction(
         context,
       ).showSnackBar(const SnackBar(content: Text('Suppliers updated')));
     }
+    return true;
   } catch (error) {
     if (context.mounted) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(describeError(error))));
     }
+    return false;
   }
+}
+
+Future<void> _runSupplierAction(
+  BuildContext context,
+  Future<void> Function() action,
+) async {
+  await _tryRunSupplierAction(context, action);
 }
 
 void _testSupplierTemplate(

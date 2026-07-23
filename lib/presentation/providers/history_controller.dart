@@ -16,6 +16,7 @@ class HistoryController extends AsyncNotifier<HistoryState> {
   late SearchHistoryUseCases _searchHistoryUseCases;
   late AppSettingsUseCases _appSettingsUseCases;
   late OpenExternalUrlUseCase _openExternalUrlUseCase;
+  bool _isRepeatingEntry = false;
 
   @override
   Future<HistoryState> build() async {
@@ -36,7 +37,9 @@ class HistoryController extends AsyncNotifier<HistoryState> {
   }
 
   Future<void> selectEntry(String? entryId) async {
-    state = AsyncData(await _loadHistoryState(selectedEntryId: entryId));
+    state = await AsyncValue.guard(
+      () => _loadHistoryState(selectedEntryId: entryId),
+    );
   }
 
   Future<void> deleteEntry(String entryId) async {
@@ -52,6 +55,11 @@ class HistoryController extends AsyncNotifier<HistoryState> {
   }
 
   Future<void> repeatSelectedEntry() async {
+    if (_isRepeatingEntry) {
+      throw const ValidationException(
+        'La ripetizione della ricerca e\' gia in corso.',
+      );
+    }
     final current = _requireCurrentState();
     final entry = current.selectedEntry;
     if (entry == null) {
@@ -64,26 +72,31 @@ class HistoryController extends AsyncNotifier<HistoryState> {
       );
     }
 
-    var openedCount = 0;
-    final errors = <String>[];
-    for (final supplier in entry.suppliers) {
-      try {
-        await _openExternalUrlUseCase(Uri.parse(supplier.generatedUrl));
-        openedCount++;
-      } catch (error) {
-        errors.add('${supplier.supplierName}: ${_messageFor(error)}');
+    _isRepeatingEntry = true;
+    try {
+      var openedCount = 0;
+      final errors = <String>[];
+      for (final supplier in entry.suppliers) {
+        try {
+          await _openExternalUrlUseCase(Uri.parse(supplier.generatedUrl));
+          openedCount++;
+        } catch (error) {
+          errors.add('${supplier.supplierName}: ${_messageFor(error)}');
+        }
       }
-    }
 
-    final message = errors.isEmpty
-        ? 'Repeated search: opened $openedCount URL'
-        : 'Opened $openedCount URL, ${errors.length} failed';
-    state = AsyncData(
-      await _loadHistoryState(
-        selectedEntryId: entry.id,
-        lastResultMessage: message,
-      ),
-    );
+      final message = errors.isEmpty
+          ? 'Repeated search: opened $openedCount URL'
+          : 'Opened $openedCount URL, ${errors.length} failed';
+      state = AsyncData(
+        await _loadHistoryState(
+          selectedEntryId: entry.id,
+          lastResultMessage: message,
+        ),
+      );
+    } finally {
+      _isRepeatingEntry = false;
+    }
   }
 
   Future<HistoryState> _loadHistoryState({
@@ -121,6 +134,8 @@ class HistoryController extends AsyncNotifier<HistoryState> {
   };
 
   String _messageFor(Object error) {
-    return error is AppException ? error.message : error.toString();
+    return error is AppException
+        ? error.message
+        : 'Errore inatteso durante l\'apertura.';
   }
 }

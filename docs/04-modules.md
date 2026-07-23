@@ -9,7 +9,8 @@ Implementato:
 - selezione modello;
 - selezione componente;
 - selezione fornitori;
-- generazione query;
+- generazione query, includendo i termini di ricerca alternativi distinti
+  configurati sul modello;
 - generazione URL;
 - anteprima;
 - apertura delle pagine;
@@ -18,6 +19,8 @@ Implementato:
 Regole:
 
 - le opzioni dipendenti vengono ricalcolate dal controller tramite casi d'uso;
+- la composizione della query e' centralizzata nell'application layer e
+  condivisa tra ricerca e rilancio dei preferiti;
 - i modelli dipendono da tipo dispositivo e marca;
 - componenti e fornitori dipendono dalla compatibilita del tipo dispositivo;
 - la UI non costruisce URL e non importa `url_launcher`;

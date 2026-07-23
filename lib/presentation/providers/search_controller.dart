@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repair_parts_finder/app/configuration/app_providers.dart';
-import 'package:repair_parts_finder/application/dto/prepared_search.dart';
 import 'package:repair_parts_finder/application/dto/record_search_history_command.dart';
 import 'package:repair_parts_finder/application/dto/search_selection.dart';
 import 'package:repair_parts_finder/application/state/search_state.dart';
 import 'package:repair_parts_finder/application/use_cases/app_settings_use_cases.dart';
+import 'package:repair_parts_finder/application/use_cases/build_search_query.dart';
 import 'package:repair_parts_finder/application/use_cases/catalog_use_cases.dart';
 import 'package:repair_parts_finder/application/use_cases/open_external_url_use_case.dart';
 import 'package:repair_parts_finder/application/use_cases/prepare_search_use_case.dart';
@@ -31,6 +31,8 @@ class SearchController extends AsyncNotifier<SearchState> {
   late AppSettingsUseCases _appSettingsUseCases;
   late OpenExternalUrlUseCase _openExternalUrlUseCase;
   late UrlTemplateGenerator _urlTemplateGenerator;
+  Future<void> _pendingSelectionUpdate = Future<void>.value();
+  bool _isOpeningUrls = false;
 
   @override
   Future<SearchState> build() async {
@@ -54,7 +56,7 @@ class SearchController extends AsyncNotifier<SearchState> {
     );
   }
 
-  Future<void> refresh() async {
+  Future<void> refresh() => _enqueueSelectionUpdate(() async {
     final current = _currentState;
     state = const AsyncLoading();
     state = await AsyncValue.guard(
@@ -66,25 +68,26 @@ class SearchController extends AsyncNotifier<SearchState> {
         supplierIds: current?.selectedSupplierIds ?? const <String>{},
       ),
     );
-  }
+  });
 
-  Future<void> selectDeviceType(String? id) async {
-    final current = _currentState;
-    state = AsyncData(
-      await _buildStateForSelection(
-        deviceTypeId: id,
-        brandId: current?.selectedBrandId,
-        deviceModelId: null,
-        componentId: null,
-        supplierIds: const <String>{},
-      ),
-    );
-  }
+  Future<void> selectDeviceType(String? id) =>
+      _enqueueSelectionUpdate(() async {
+        final current = _currentState;
+        state = await AsyncValue.guard(
+          () => _buildStateForSelection(
+            deviceTypeId: id,
+            brandId: current?.selectedBrandId,
+            deviceModelId: null,
+            componentId: null,
+            supplierIds: const <String>{},
+          ),
+        );
+      });
 
-  Future<void> selectBrand(String? id) async {
+  Future<void> selectBrand(String? id) => _enqueueSelectionUpdate(() async {
     final current = _currentState;
-    state = AsyncData(
-      await _buildStateForSelection(
+    state = await AsyncValue.guard(
+      () => _buildStateForSelection(
         deviceTypeId: current?.selectedDeviceTypeId,
         brandId: id,
         deviceModelId: null,
@@ -92,25 +95,26 @@ class SearchController extends AsyncNotifier<SearchState> {
         supplierIds: current?.selectedSupplierIds ?? const <String>{},
       ),
     );
-  }
+  });
 
-  Future<void> selectDeviceModel(String? id) async {
-    final current = _currentState;
-    state = AsyncData(
-      await _buildStateForSelection(
-        deviceTypeId: current?.selectedDeviceTypeId,
-        brandId: current?.selectedBrandId,
-        deviceModelId: id,
-        componentId: current?.selectedComponentId,
-        supplierIds: current?.selectedSupplierIds ?? const <String>{},
-      ),
-    );
-  }
+  Future<void> selectDeviceModel(String? id) =>
+      _enqueueSelectionUpdate(() async {
+        final current = _currentState;
+        state = await AsyncValue.guard(
+          () => _buildStateForSelection(
+            deviceTypeId: current?.selectedDeviceTypeId,
+            brandId: current?.selectedBrandId,
+            deviceModelId: id,
+            componentId: current?.selectedComponentId,
+            supplierIds: current?.selectedSupplierIds ?? const <String>{},
+          ),
+        );
+      });
 
-  Future<void> selectComponent(String? id) async {
+  Future<void> selectComponent(String? id) => _enqueueSelectionUpdate(() async {
     final current = _currentState;
-    state = AsyncData(
-      await _buildStateForSelection(
+    state = await AsyncValue.guard(
+      () => _buildStateForSelection(
         deviceTypeId: current?.selectedDeviceTypeId,
         brandId: current?.selectedBrandId,
         deviceModelId: current?.selectedDeviceModelId,
@@ -118,35 +122,37 @@ class SearchController extends AsyncNotifier<SearchState> {
         supplierIds: current?.selectedSupplierIds ?? const <String>{},
       ),
     );
-  }
+  });
 
-  Future<void> setSupplierSelected(String supplierId, bool isSelected) async {
-    final current = _currentState;
-    if (current == null) {
-      return;
-    }
-    final supplierIds = {...current.selectedSupplierIds};
-    if (isSelected) {
-      supplierIds.add(supplierId);
-    } else {
-      supplierIds.remove(supplierId);
-    }
-    state = AsyncData(
-      await _buildStateForSelection(
-        deviceTypeId: current.selectedDeviceTypeId,
-        brandId: current.selectedBrandId,
-        deviceModelId: current.selectedDeviceModelId,
-        componentId: current.selectedComponentId,
-        supplierIds: supplierIds,
-      ),
-    );
-  }
+  Future<void> setSupplierSelected(String supplierId, bool isSelected) =>
+      _enqueueSelectionUpdate(() async {
+        final current = _currentState;
+        if (current == null) {
+          return;
+        }
+        final supplierIds = {...current.selectedSupplierIds};
+        if (isSelected) {
+          supplierIds.add(supplierId);
+        } else {
+          supplierIds.remove(supplierId);
+        }
+        state = await AsyncValue.guard(
+          () => _buildStateForSelection(
+            deviceTypeId: current.selectedDeviceTypeId,
+            brandId: current.selectedBrandId,
+            deviceModelId: current.selectedDeviceModelId,
+            componentId: current.selectedComponentId,
+            supplierIds: supplierIds,
+          ),
+        );
+      });
 
   Future<void> generatePreview() async {
+    await _pendingSelectionUpdate;
     final current = _requireCurrentState();
     _ensureWithinPageLimit(current);
     final prepared = await _prepareSearchUseCase(_selectionFromState(current));
-    final generatedQuery = _buildQuery(prepared);
+    final generatedQuery = buildSearchQuery(prepared);
     final values = UrlTemplateValues(
       query: generatedQuery,
       deviceType: prepared.deviceType.name,
@@ -174,65 +180,82 @@ class SearchController extends AsyncNotifier<SearchState> {
   }
 
   Future<void> openPreviewedUrls() async {
+    await _pendingSelectionUpdate;
+    if (_isOpeningUrls) {
+      throw const ValidationException(
+        'L\'apertura delle pagine e\' gia in corso.',
+      );
+    }
     final current = _requireCurrentState();
     if (current.previewItems.isEmpty || current.generatedQuery == null) {
       throw const ValidationException('Generare prima l\'anteprima URL.');
     }
     _ensureWithinPageLimit(current);
 
-    final openedItems = <SearchPreviewItem>[];
-    for (final item in current.previewItems) {
-      try {
-        await _openExternalUrlUseCase(item.url);
-        openedItems.add(item.copyWith(openResult: 'opened'));
-      } catch (error) {
-        openedItems.add(item.copyWith(openResult: _messageFor(error)));
+    _isOpeningUrls = true;
+    try {
+      final openedItems = <SearchPreviewItem>[];
+      for (final item in current.previewItems) {
+        try {
+          await _openExternalUrlUseCase(item.url);
+          openedItems.add(item.copyWith(openResult: 'opened'));
+        } catch (error) {
+          openedItems.add(item.copyWith(openResult: _messageFor(error)));
+        }
       }
-    }
 
-    if (current.settings.historyEnabled) {
-      await _searchHistoryUseCases.recordSearch(
-        RecordSearchHistoryCommand(
-          deviceType: _nameForId(
-            current.deviceTypes,
-            current.selectedDeviceTypeId,
+      if (current.settings.historyEnabled) {
+        await _searchHistoryUseCases.recordSearch(
+          RecordSearchHistoryCommand(
+            deviceType: _nameForId(
+              current.deviceTypes,
+              current.selectedDeviceTypeId,
+            ),
+            brand: _nameForId(current.brands, current.selectedBrandId),
+            deviceModel: _nameForId(
+              current.deviceModels,
+              current.selectedDeviceModelId,
+            ),
+            deviceModelCode: _modelCodeForId(
+              current.deviceModels,
+              current.selectedDeviceModelId,
+            ),
+            component: _nameForId(
+              current.components,
+              current.selectedComponentId,
+            ),
+            generatedQuery: current.generatedQuery!,
+            suppliers: [
+              for (final item in openedItems)
+                RecordSearchHistorySupplierCommand(
+                  supplierId: item.supplierId,
+                  supplierName: item.supplierName,
+                  generatedUrl: item.url.toString(),
+                  openResult: item.openResult,
+                ),
+            ],
           ),
-          brand: _nameForId(current.brands, current.selectedBrandId),
-          deviceModel: _nameForId(
-            current.deviceModels,
-            current.selectedDeviceModelId,
+        );
+      }
+
+      state = AsyncData(
+        current.copyWith(
+          previewItems: openedItems,
+          lastResultMessage: _openResultMessage(
+            openedItems,
+            historyEnabled: current.settings.historyEnabled,
           ),
-          deviceModelCode: _modelCodeForId(
-            current.deviceModels,
-            current.selectedDeviceModelId,
-          ),
-          component: _nameForId(
-            current.components,
-            current.selectedComponentId,
-          ),
-          generatedQuery: current.generatedQuery!,
-          suppliers: [
-            for (final item in openedItems)
-              RecordSearchHistorySupplierCommand(
-                supplierId: item.supplierId,
-                supplierName: item.supplierName,
-                generatedUrl: item.url.toString(),
-                openResult: item.openResult,
-              ),
-          ],
         ),
       );
+    } finally {
+      _isOpeningUrls = false;
     }
+  }
 
-    state = AsyncData(
-      current.copyWith(
-        previewItems: openedItems,
-        lastResultMessage: _openResultMessage(
-          openedItems,
-          historyEnabled: current.settings.historyEnabled,
-        ),
-      ),
-    );
+  Future<void> _enqueueSelectionUpdate(Future<void> Function() update) {
+    final operation = _pendingSelectionUpdate.then((_) => update());
+    _pendingSelectionUpdate = operation.catchError((Object _, StackTrace _) {});
+    return operation;
   }
 
   Future<SearchState> _buildStateForSelection({
@@ -333,15 +356,6 @@ class SearchController extends AsyncNotifier<SearchState> {
     }
   }
 
-  String _buildQuery(PreparedSearch prepared) {
-    return [
-      prepared.brand.name,
-      prepared.deviceModel.name,
-      prepared.deviceModel.modelCode,
-      prepared.component.name,
-    ].whereType<String>().where((part) => part.trim().isNotEmpty).join(' ');
-  }
-
   SearchState? get _currentState => switch (state) {
     AsyncData(:final value) => value,
     _ => null,
@@ -413,7 +427,9 @@ class SearchController extends AsyncNotifier<SearchState> {
   }
 
   String _messageFor(Object error) {
-    return error is AppException ? error.message : error.toString();
+    return error is AppException
+        ? error.message
+        : 'Errore inatteso durante l\'apertura.';
   }
 
   String _openResultMessage(

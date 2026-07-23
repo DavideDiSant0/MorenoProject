@@ -13,6 +13,7 @@ final settingsControllerProvider =
 
 class SettingsController extends AsyncNotifier<AppSettings> {
   late AppSettingsUseCases _useCases;
+  Future<void> _pendingUpdate = Future<void>.value();
 
   @override
   Future<AppSettings> build() async {
@@ -20,24 +21,31 @@ class SettingsController extends AsyncNotifier<AppSettings> {
     return _useCases.getSettings();
   }
 
-  Future<void> refresh() async {
+  Future<void> refresh() => _enqueueUpdate(() async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(_useCases.getSettings);
-  }
+  });
 
-  Future<void> updateMaxPagesToOpen(int value) async {
+  Future<void> updateMaxPagesToOpen(int value) => _enqueueUpdate(() async {
     final current = _requireCurrentSettings();
     await _save(current.copyWith(maxPagesToOpen: value));
-  }
+  });
 
-  Future<void> updateRequireConfirmation(bool value) async {
-    final current = _requireCurrentSettings();
-    await _save(current.copyWith(requireConfirmation: value));
-  }
+  Future<void> updateRequireConfirmation(bool value) =>
+      _enqueueUpdate(() async {
+        final current = _requireCurrentSettings();
+        await _save(current.copyWith(requireConfirmation: value));
+      });
 
-  Future<void> updateHistoryEnabled(bool value) async {
+  Future<void> updateHistoryEnabled(bool value) => _enqueueUpdate(() async {
     final current = _requireCurrentSettings();
     await _save(current.copyWith(historyEnabled: value));
+  });
+
+  Future<void> _enqueueUpdate(Future<void> Function() update) {
+    final operation = _pendingUpdate.then((_) => update());
+    _pendingUpdate = operation.catchError((Object _, StackTrace _) {});
+    return operation;
   }
 
   Future<void> _save(AppSettings settings) async {

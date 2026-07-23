@@ -39,8 +39,8 @@ class CatalogController extends AsyncNotifier<CatalogState> {
     if (current == null) {
       return;
     }
-    state = AsyncData(
-      await _loadCatalogState(selectedDeviceTypeId: deviceTypeId),
+    state = await AsyncValue.guard(
+      () => _loadCatalogState(selectedDeviceTypeId: deviceTypeId),
     );
   }
 

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repair_parts_finder/app/configuration/app_providers.dart';
 import 'package:repair_parts_finder/core/errors/browser_launch_exception.dart';
+import 'package:repair_parts_finder/core/errors/validation_exception.dart';
 import 'package:repair_parts_finder/core/services/external_browser_service.dart';
 import 'package:repair_parts_finder/data/database/app_database.dart';
 import 'package:repair_parts_finder/data/seed/app_demo_data_seeder.dart';
@@ -178,6 +179,247 @@ void main() {
       'Opened 1 URL, 1 failed and saved to history',
     );
   });
+
+  test(
+    'aggiornamenti impostazioni concorrenti non perdono modifiche',
+    () async {
+      final container = buildContainer();
+      final controller = container.read(settingsControllerProvider.notifier);
+
+      await container.read(settingsControllerProvider.future);
+      await Future.wait([
+        controller.updateMaxPagesToOpen(12),
+        controller.updateRequireConfirmation(false),
+        controller.updateHistoryEnabled(false),
+      ]);
+
+      final settings = container.read(settingsControllerProvider).requireValue;
+      expect(settings.maxPagesToOpen, 12);
+      expect(settings.requireConfirmation, isFalse);
+      expect(settings.historyEnabled, isFalse);
+    },
+  );
+
+  test('selezioni fornitore concorrenti non perdono elementi', () async {
+    final container = buildContainer(seedDemoData: true);
+    final controller = container.read(searchControllerProvider.notifier);
+
+    await container.read(searchControllerProvider.future);
+    await controller.selectDeviceType(demoDeviceTypeSmartphoneId);
+    await controller.selectBrand(demoBrandAppleId);
+    await controller.selectDeviceModel(demoModelIphone13Id);
+    await controller.selectComponent(demoComponentDisplayId);
+
+    await Future.wait([
+      controller.setSupplierSelected(demoSupplierIfixitId, true),
+      controller.setSupplierSelected(demoSupplierEbayId, true),
+    ]);
+
+    expect(
+      container.read(searchControllerProvider).requireValue.selectedSupplierIds,
+      {demoSupplierIfixitId, demoSupplierEbayId},
+    );
+  });
+
+  test(
+    'selezioni fornitore concorrenti restano integre nei preferiti',
+    () async {
+      final container = buildContainer(seedDemoData: true);
+      final controller = container.read(favoriteControllerProvider.notifier);
+
+      await container.read(favoriteControllerProvider.future);
+      await controller.selectDeviceType(demoDeviceTypeSmartphoneId);
+      await controller.selectBrand(demoBrandAppleId);
+      await controller.selectDeviceModel(demoModelIphone13Id);
+      await controller.selectComponent(demoComponentDisplayId);
+
+      await Future.wait([
+        controller.setSupplierSelected(demoSupplierIfixitId, true),
+        controller.setSupplierSelected(demoSupplierEbayId, true),
+      ]);
+
+      expect(
+        container
+            .read(favoriteControllerProvider)
+            .requireValue
+            .selectedSupplierIds,
+        {demoSupplierIfixitId, demoSupplierEbayId},
+      );
+    },
+  );
+
+  test(
+    'salvataggio preferito attende la selezione fornitore pendente',
+    () async {
+      final container = buildContainer(seedDemoData: true);
+      final controller = container.read(favoriteControllerProvider.notifier);
+
+      await container.read(favoriteControllerProvider.future);
+      await controller.selectDeviceType(demoDeviceTypeSmartphoneId);
+      await controller.selectBrand(demoBrandAppleId);
+      await controller.selectDeviceModel(demoModelIphone13Id);
+      await controller.selectComponent(demoComponentDisplayId);
+
+      final supplierSelection = controller.setSupplierSelected(
+        demoSupplierIfixitId,
+        true,
+      );
+      await controller.saveFavorite('Concurrent favorite');
+      await supplierSelection;
+
+      final state = container.read(favoriteControllerProvider).requireValue;
+      final saved = state.favorites.firstWhere(
+        (favorite) => favorite.name == 'Concurrent favorite',
+      );
+      expect(saved.supplierIds, [demoSupplierIfixitId]);
+    },
+  );
+
+  test('un doppio comando di apertura non duplica URL e cronologia', () async {
+    final browser = BlockingExternalBrowserService();
+    final container = buildContainer(
+      seedDemoData: true,
+      browserService: browser,
+    );
+    final controller = container.read(searchControllerProvider.notifier);
+
+    await container.read(searchControllerProvider.future);
+    await controller.selectDeviceType(demoDeviceTypeSmartphoneId);
+    await controller.selectBrand(demoBrandAppleId);
+    await controller.selectDeviceModel(demoModelIphone13Id);
+    await controller.selectComponent(demoComponentDisplayId);
+    await controller.setSupplierSelected(demoSupplierIfixitId, true);
+    await controller.generatePreview();
+
+    final firstOpening = controller.openPreviewedUrls();
+    await browser.openStarted.future;
+    await expectLater(
+      controller.openPreviewedUrls(),
+      throwsA(isA<ValidationException>()),
+    );
+    browser.allowOpen.complete();
+    await firstOpening;
+
+    expect(browser.openedUrls, hasLength(1));
+    final database = await container.read(appDatabaseProvider.future);
+    expect(await database.searchHistoryDao.getAllEntries(), hasLength(1));
+  });
+
+  test('apertura attende una deselezione fornitore gia richiesta', () async {
+    final browser = FakeExternalBrowserService();
+    final container = buildContainer(
+      seedDemoData: true,
+      browserService: browser,
+    );
+    final controller = container.read(searchControllerProvider.notifier);
+
+    await container.read(searchControllerProvider.future);
+    await controller.selectDeviceType(demoDeviceTypeSmartphoneId);
+    await controller.selectBrand(demoBrandAppleId);
+    await controller.selectDeviceModel(demoModelIphone13Id);
+    await controller.selectComponent(demoComponentDisplayId);
+    await controller.setSupplierSelected(demoSupplierIfixitId, true);
+    await controller.generatePreview();
+
+    final deselection = controller.setSupplierSelected(
+      demoSupplierIfixitId,
+      false,
+    );
+    await expectLater(
+      controller.openPreviewedUrls(),
+      throwsA(isA<ValidationException>()),
+    );
+    await deselection;
+
+    expect(browser.openedUrls, isEmpty);
+    expect(
+      container.read(searchControllerProvider).requireValue.previewItems,
+      isEmpty,
+    );
+  });
+
+  test('cronologia disattivata non salva ricerche aperte', () async {
+    final browser = FakeExternalBrowserService();
+    final container = buildContainer(
+      seedDemoData: true,
+      browserService: browser,
+    );
+
+    await container.read(settingsControllerProvider.future);
+    await container
+        .read(settingsControllerProvider.notifier)
+        .updateHistoryEnabled(false);
+
+    final controller = container.read(searchControllerProvider.notifier);
+    await container.read(searchControllerProvider.future);
+    await controller.selectDeviceType(demoDeviceTypeSmartphoneId);
+    await controller.selectBrand(demoBrandAppleId);
+    await controller.selectDeviceModel(demoModelIphone13Id);
+    await controller.selectComponent(demoComponentDisplayId);
+    await controller.setSupplierSelected(demoSupplierIfixitId, true);
+    await controller.generatePreview();
+    await controller.openPreviewedUrls();
+
+    final database = await container.read(appDatabaseProvider.future);
+    expect(browser.openedUrls, hasLength(1));
+    expect(await database.searchHistoryDao.getAllEntries(), isEmpty);
+    expect(
+      container.read(searchControllerProvider).requireValue.lastResultMessage,
+      'Opened 1 URL',
+    );
+  });
+
+  test('limite pagine blocca la preview prima di aprire URL', () async {
+    final browser = FakeExternalBrowserService();
+    final container = buildContainer(
+      seedDemoData: true,
+      browserService: browser,
+    );
+
+    await container.read(settingsControllerProvider.future);
+    await container
+        .read(settingsControllerProvider.notifier)
+        .updateMaxPagesToOpen(1);
+
+    final controller = container.read(searchControllerProvider.notifier);
+    await container.read(searchControllerProvider.future);
+    await controller.selectDeviceType(demoDeviceTypeSmartphoneId);
+    await controller.selectBrand(demoBrandAppleId);
+    await controller.selectDeviceModel(demoModelIphone13Id);
+    await controller.selectComponent(demoComponentDisplayId);
+    await controller.setSupplierSelected(demoSupplierIfixitId, true);
+    await controller.setSupplierSelected(demoSupplierEbayId, true);
+
+    await expectLater(
+      controller.generatePreview(),
+      throwsA(isA<ValidationException>()),
+    );
+    expect(browser.openedUrls, isEmpty);
+    expect(
+      container.read(searchControllerProvider).requireValue.previewItems,
+      isEmpty,
+    );
+  });
+
+  test('riordino fornitori resta persistito dopo refresh', () async {
+    final container = buildContainer(seedDemoData: true);
+    final controller = container.read(supplierControllerProvider.notifier);
+
+    await container.read(supplierControllerProvider.future);
+    await controller.moveSupplier(demoSupplierEbayId, -1);
+    await controller.refresh();
+
+    final suppliers = container
+        .read(supplierControllerProvider)
+        .requireValue
+        .suppliers;
+    expect(suppliers.map((supplier) => supplier.id), [
+      demoSupplierIfixitId,
+      demoSupplierEbayId,
+      demoSupplierSosavId,
+    ]);
+    expect(suppliers.map((supplier) => supplier.displayOrder), [0, 1, 2]);
+  });
 }
 
 ProviderContainer buildContainer({
@@ -218,5 +460,20 @@ final class FakeExternalBrowserService implements ExternalBrowserService {
         'Non e\' stato possibile aprire il browser esterno.',
       );
     }
+  }
+}
+
+final class BlockingExternalBrowserService implements ExternalBrowserService {
+  final Completer<void> openStarted = Completer<void>();
+  final Completer<void> allowOpen = Completer<void>();
+  final List<Uri> openedUrls = [];
+
+  @override
+  Future<void> open(Uri url) async {
+    openedUrls.add(url);
+    if (!openStarted.isCompleted) {
+      openStarted.complete();
+    }
+    await allowOpen.future;
   }
 }

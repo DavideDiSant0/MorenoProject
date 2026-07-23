@@ -485,9 +485,9 @@ Future<void> _showSaveFavoriteDialog(
 ) async {
   final favoriteController = ref.read(favoriteControllerProvider.notifier);
   final nameController = TextEditingController();
-  final name = await showDialog<String>(
+  await showDialog<void>(
     context: context,
-    builder: (context) => AlertDialog(
+    builder: (dialogContext) => AlertDialog(
       title: const Text('Save favorite'),
       content: TextField(
         controller: nameController,
@@ -496,23 +496,24 @@ Future<void> _showSaveFavoriteDialog(
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(dialogContext).pop(),
           child: const Text('Cancel'),
         ),
         FilledButton.icon(
-          onPressed: () => Navigator.of(context).pop(nameController.text),
+          onPressed: () async {
+            final saved = await _tryRunFavoriteAction(
+              context,
+              () => favoriteController.saveFavorite(nameController.text),
+            );
+            if (saved && dialogContext.mounted) {
+              Navigator.of(dialogContext).pop();
+            }
+          },
           icon: const Icon(Icons.star_border),
           label: const Text('Save'),
         ),
       ],
     ),
-  );
-  if (name == null || !context.mounted) {
-    return;
-  }
-  await _runFavoriteAction(
-    context,
-    () => favoriteController.saveFavorite(name),
   );
 }
 
@@ -553,19 +554,28 @@ Future<void> _confirmLaunch(
   );
 }
 
-Future<void> _runFavoriteAction(
+Future<bool> _tryRunFavoriteAction(
   BuildContext context,
   Future<void> Function() action,
 ) async {
   try {
     await action();
+    return true;
   } catch (error) {
     if (context.mounted) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(describeError(error))));
     }
+    return false;
   }
+}
+
+Future<void> _runFavoriteAction(
+  BuildContext context,
+  Future<void> Function() action,
+) async {
+  await _tryRunFavoriteAction(context, action);
 }
 
 String _nameForId<T extends Object>(List<T> items, String id) {

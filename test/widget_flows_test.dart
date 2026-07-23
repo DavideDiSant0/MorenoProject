@@ -58,6 +58,119 @@ void main() {
   });
 
   testWidgets(
+    'Catalog brand, model, component and compatibility CRUD work from the UI',
+    (tester) async {
+      final harness = await pumpFlowApp(tester, seedDemoData: false);
+      await openDestination(tester, Icons.inventory_2_outlined);
+
+      await openCatalogTab(tester, 'Device types');
+      await tapFilledButton(tester, 'Add type');
+      await enterDialogTextFields(tester, ['Console', 'Game console.']);
+      await tapDialogFilledButton(tester, 'Save');
+      await pumpUntil(
+        tester,
+        () =>
+            harness.container
+                .read(catalogControllerProvider)
+                .value
+                ?.deviceTypes
+                .any((item) => item.name == 'Console') ??
+            false,
+      );
+      await openCatalogTab(tester, 'Device types');
+      await pumpUntilFound(tester, find.text('Console'));
+
+      await openCatalogTab(tester, 'Brands');
+      await tapFilledButton(tester, 'Add brand');
+      await enterDialogTextFields(tester, ['Nintendo']);
+      await tapDialogFilledButton(tester, 'Save');
+      await pumpUntil(
+        tester,
+        () =>
+            harness.container
+                .read(catalogControllerProvider)
+                .value
+                ?.brands
+                .any((item) => item.name == 'Nintendo') ??
+            false,
+      );
+      await openCatalogTab(tester, 'Brands');
+      await pumpUntilFound(tester, find.text('Nintendo'));
+
+      await openCatalogTab(tester, 'Components');
+      await tapFilledButton(tester, 'Add component');
+      await enterDialogTextFields(tester, ['Cooling fan', 'Internal fan.']);
+      await tapDialogFilledButton(tester, 'Save');
+      await pumpUntil(
+        tester,
+        () =>
+            harness.container
+                .read(catalogControllerProvider)
+                .value
+                ?.components
+                .any((item) => item.name == 'Cooling fan') ??
+            false,
+      );
+      await openCatalogTab(tester, 'Components');
+      await pumpUntilFound(tester, find.text('Cooling fan'));
+
+      await openCatalogTab(tester, 'Models');
+      await tapFilledButton(tester, 'Add model');
+      await enterDialogTextFields(tester, [
+        'Switch',
+        'HAC-001',
+        'NSW, Switch V1',
+      ]);
+      await tapDialogFilledButton(tester, 'Save');
+      await pumpUntil(
+        tester,
+        () =>
+            harness.container
+                .read(catalogControllerProvider)
+                .value
+                ?.deviceModels
+                .any((item) => item.name == 'Switch') ??
+            false,
+      );
+      await openCatalogTab(tester, 'Models');
+      await pumpUntilFound(tester, find.text('Switch'));
+
+      await openCatalogTab(tester, 'Compatibility');
+      final compatibility = find.widgetWithText(
+        CheckboxListTile,
+        'Cooling fan',
+      );
+      expect(tester.widget<CheckboxListTile>(compatibility).value, isFalse);
+      await tapVisible(tester, compatibility);
+      await pumpUntil(
+        tester,
+        () => tester.widget<CheckboxListTile>(compatibility).value == true,
+      );
+
+      await openCatalogTab(tester, 'Models');
+      await tapVisible(tester, find.byTooltip('Delete'));
+      await tapDialogFilledButton(tester, 'Delete');
+      await pumpUntilFound(tester, find.text('No device models yet.'));
+
+      await openCatalogTab(tester, 'Components');
+      await tapVisible(tester, find.byTooltip('Delete'));
+      await tapDialogFilledButton(tester, 'Delete');
+      await pumpUntilFound(tester, find.text('No components yet.'));
+
+      await openCatalogTab(tester, 'Brands');
+      await tapVisible(tester, find.byTooltip('Delete'));
+      await tapDialogFilledButton(tester, 'Delete');
+      await pumpUntilFound(tester, find.text('No brands yet.'));
+
+      await openCatalogTab(tester, 'Device types');
+      await tapVisible(tester, find.byTooltip('Delete'));
+      await tapDialogFilledButton(tester, 'Delete');
+      await pumpUntilFound(tester, find.text('No device types yet.'));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'Supplier CRUD, template test and compatibility work from the UI',
     (tester) async {
       await pumpFlowApp(tester);
@@ -128,6 +241,68 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('Catalog dialog stays open when validation fails', (
+    tester,
+  ) async {
+    await pumpFlowApp(tester, seedDemoData: false);
+    await openDestination(tester, Icons.inventory_2_outlined);
+    await openCatalogTab(tester, 'Device types');
+
+    await tapFilledButton(tester, 'Add type');
+    expect(find.text('Add device type'), findsOneWidget);
+    await tapDialogFilledButton(tester, 'Save');
+
+    expect(find.text('Add device type'), findsOneWidget);
+    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Supplier dialog stays open when validation fails', (
+    tester,
+  ) async {
+    await pumpFlowApp(tester);
+    await openDestination(tester, Icons.storefront_outlined);
+
+    await tapFilledButton(tester, 'Add');
+    await enterDialogTextFields(tester, [
+      'Unsafe supplier',
+      'https://supplier.example',
+      'javascript:alert({query})',
+      '3',
+      '',
+    ]);
+    await tapDialogFilledButton(tester, 'Save');
+
+    expect(find.text('Add supplier'), findsOneWidget);
+    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(
+      find.text('Il template URL deve usare solo HTTP o HTTPS.'),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Favorite dialog stays open when validation fails', (
+    tester,
+  ) async {
+    await pumpFlowApp(tester);
+    await openDestination(tester, Icons.star_border);
+
+    await chooseDropdown(tester, 0, 'Smartphone');
+    await chooseDropdown(tester, 1, 'Apple');
+    await chooseDropdown(tester, 2, 'iPhone 13');
+    await chooseDropdown(tester, 3, 'Display');
+    await tapVisible(tester, find.widgetWithText(FilterChip, 'iFixit'));
+
+    await tapFilledButton(tester, 'Save');
+    expect(find.text('Save favorite'), findsOneWidget);
+    await tapDialogFilledButton(tester, 'Save');
+
+    expect(find.text('Save favorite'), findsOneWidget);
+    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('Favorites can be saved, launched and deleted from the UI', (
     tester,

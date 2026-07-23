@@ -466,7 +466,7 @@ Future<void> _showDeviceTypeDialog(
         ),
       ),
     ],
-    onSave: () => _runCatalogAction(
+    onSave: () => _tryRunCatalogAction(
       context,
       () => controller.saveDeviceType(
         id: existing?.id,
@@ -504,7 +504,7 @@ Future<void> _showBrandDialog(
         ),
       ),
     ],
-    onSave: () => _runCatalogAction(
+    onSave: () => _tryRunCatalogAction(
       context,
       () => controller.saveBrand(
         id: existing?.id,
@@ -548,7 +548,7 @@ Future<void> _showComponentDialog(
         ),
       ),
     ],
-    onSave: () => _runCatalogAction(
+    onSave: () => _tryRunCatalogAction(
       context,
       () => controller.saveComponent(
         id: existing?.id,
@@ -626,7 +626,7 @@ Future<void> _showDeviceModelDialog(
         ),
       ),
     ],
-    onSave: () => _runCatalogAction(
+    onSave: () => _tryRunCatalogAction(
       context,
       () => controller.saveDeviceModel(
         id: existing?.id,
@@ -645,7 +645,7 @@ Future<void> _showEntityDialog(
   BuildContext context, {
   required String title,
   required List<Widget> fields,
-  required Future<void> Function() onSave,
+  required Future<bool> Function() onSave,
 }) {
   return showDialog<void>(
     context: context,
@@ -664,8 +664,8 @@ Future<void> _showEntityDialog(
         ),
         FilledButton.icon(
           onPressed: () async {
-            await onSave();
-            if (context.mounted) {
+            final saved = await onSave();
+            if (saved && context.mounted) {
               Navigator.of(context).pop();
             }
           },
@@ -677,7 +677,7 @@ Future<void> _showEntityDialog(
   );
 }
 
-Future<void> _runCatalogAction(
+Future<bool> _tryRunCatalogAction(
   BuildContext context,
   Future<void> Function() action,
 ) async {
@@ -688,13 +688,22 @@ Future<void> _runCatalogAction(
         context,
       ).showSnackBar(const SnackBar(content: Text('Catalog updated')));
     }
+    return true;
   } catch (error) {
     if (context.mounted) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(describeError(error))));
     }
+    return false;
   }
+}
+
+Future<void> _runCatalogAction(
+  BuildContext context,
+  Future<void> Function() action,
+) async {
+  await _tryRunCatalogAction(context, action);
 }
 
 List<String> _splitTerms(String value) {

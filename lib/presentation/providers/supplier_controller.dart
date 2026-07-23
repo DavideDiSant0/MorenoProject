@@ -35,7 +35,9 @@ class SupplierController extends AsyncNotifier<SupplierState> {
   }
 
   Future<void> selectSupplier(String? supplierId) async {
-    state = AsyncData(await _loadSupplierState(selectedSupplierId: supplierId));
+    state = await AsyncValue.guard(
+      () => _loadSupplierState(selectedSupplierId: supplierId),
+    );
   }
 
   Future<void> saveSupplier({
