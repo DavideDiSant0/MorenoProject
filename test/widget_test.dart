@@ -11,6 +11,11 @@ import 'package:repair_parts_finder/main.dart';
 
 void main() {
   testWidgets('Desktop shell smoke test', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1280, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
@@ -111,6 +116,124 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Favorites'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Search route fits in compact desktop viewport', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(640, 560);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
+
+    expect(find.text('Search'), findsWidgets);
+    expect(find.text('Selection'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Shell navigation fits in a short desktop window', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(640, 320);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('Catalog'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Search route fits in a tiny desktop window', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(420, 260);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
+
+    expect(find.text('Search'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Catalog route fits in compact desktop viewport', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(640, 560);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.inventory_2_outlined).first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Catalog'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Suppliers route fits in compact desktop viewport', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(640, 560);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.storefront_outlined).first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Suppliers'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('History route fits in compact desktop viewport', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(640, 560);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.history_outlined).first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('History'), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Settings route fits in compact desktop viewport', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(640, 560);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byIcon(Icons.settings_outlined).first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Settings'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 

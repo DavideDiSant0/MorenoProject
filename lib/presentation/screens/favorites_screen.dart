@@ -47,35 +47,48 @@ class _FavoritesContent extends ConsumerWidget {
       children: [
         _FavoritesHeader(state: state),
         Expanded(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                width: 390,
-                child: _FavoriteListPane(
-                  state: state,
-                  selectedFavoriteId: state.selectedFavoriteId,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final listPane = _FavoriteListPane(
+                state: state,
+                selectedFavoriteId: state.selectedFavoriteId,
+              );
+              final detailsPane = Padding(
+                padding: const EdgeInsets.all(28),
+                child: ListView(
+                  children: [
+                    _FavoriteBuilderPane(state: state),
+                    const SizedBox(height: 22),
+                    selectedFavorite == null
+                        ? const _EmptyFavoriteDetails()
+                        : _FavoriteDetailsPane(
+                            favorite: selectedFavorite,
+                            state: state,
+                          ),
+                  ],
                 ),
-              ),
-              const VerticalDivider(width: 1),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(28),
-                  child: ListView(
-                    children: [
-                      _FavoriteBuilderPane(state: state),
-                      const SizedBox(height: 22),
-                      selectedFavorite == null
-                          ? const _EmptyFavoriteDetails()
-                          : _FavoriteDetailsPane(
-                              favorite: selectedFavorite,
-                              state: state,
-                            ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+              );
+
+              if (constraints.maxWidth < 900) {
+                return ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    SizedBox(height: 380, child: listPane),
+                    const Divider(height: 1),
+                    SizedBox(height: 620, child: detailsPane),
+                  ],
+                );
+              }
+
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(width: 390, child: listPane),
+                  const VerticalDivider(width: 1),
+                  Expanded(child: detailsPane),
+                ],
+              );
+            },
           ),
         ),
       ],

@@ -42,23 +42,36 @@ class _HistoryContent extends ConsumerWidget {
       children: [
         _HistoryHeader(state: state),
         Expanded(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                width: 420,
-                child: _HistoryListPane(
-                  entries: state.entries,
-                  selectedEntryId: state.selectedEntryId,
-                ),
-              ),
-              const VerticalDivider(width: 1),
-              Expanded(
-                child: selectedEntry == null
-                    ? const _EmptyHistoryDetails()
-                    : _HistoryDetailsPane(entry: selectedEntry, state: state),
-              ),
-            ],
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final listPane = _HistoryListPane(
+                entries: state.entries,
+                selectedEntryId: state.selectedEntryId,
+              );
+              final detailsPane = selectedEntry == null
+                  ? const _EmptyHistoryDetails()
+                  : _HistoryDetailsPane(entry: selectedEntry, state: state);
+
+              if (constraints.maxWidth < 900) {
+                return ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    SizedBox(height: 380, child: listPane),
+                    const Divider(height: 1),
+                    SizedBox(height: 620, child: detailsPane),
+                  ],
+                );
+              }
+
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(width: 420, child: listPane),
+                  const VerticalDivider(width: 1),
+                  Expanded(child: detailsPane),
+                ],
+              );
+            },
           ),
         ),
       ],

@@ -43,26 +43,39 @@ class _SuppliersContent extends ConsumerWidget {
       children: [
         _SuppliersHeader(state: state),
         Expanded(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(
-                width: 380,
-                child: _SupplierListPane(
-                  state: state,
-                  selectedSupplier: selectedSupplier,
-                ),
-              ),
-              const VerticalDivider(width: 1),
-              Expanded(
-                child: selectedSupplier == null
-                    ? const _EmptySupplierDetails()
-                    : _SupplierDetailsPane(
-                        state: state,
-                        supplier: selectedSupplier,
-                      ),
-              ),
-            ],
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final listPane = _SupplierListPane(
+                state: state,
+                selectedSupplier: selectedSupplier,
+              );
+              final detailsPane = selectedSupplier == null
+                  ? const _EmptySupplierDetails()
+                  : _SupplierDetailsPane(
+                      state: state,
+                      supplier: selectedSupplier,
+                    );
+
+              if (constraints.maxWidth < 900) {
+                return ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    SizedBox(height: 380, child: listPane),
+                    const Divider(height: 1),
+                    SizedBox(height: 620, child: detailsPane),
+                  ],
+                );
+              }
+
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(width: 380, child: listPane),
+                  const VerticalDivider(width: 1),
+                  Expanded(child: detailsPane),
+                ],
+              );
+            },
           ),
         ),
       ],

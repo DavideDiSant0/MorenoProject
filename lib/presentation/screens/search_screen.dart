@@ -32,21 +32,61 @@ class _SearchContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _SearchHeader(state: state),
-        Expanded(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final body = _SearchBody(state: state);
+
+        if (constraints.maxHeight < 420) {
+          return ListView(
+            padding: EdgeInsets.zero,
             children: [
-              SizedBox(width: 430, child: _SelectionPane(state: state)),
-              const VerticalDivider(width: 1),
-              Expanded(child: _PreviewPane(state: state)),
+              _SearchHeader(state: state),
+              SizedBox(height: 1080, child: body),
             ],
-          ),
-        ),
-      ],
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _SearchHeader(state: state),
+            Expanded(child: body),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _SearchBody extends StatelessWidget {
+  const _SearchBody({required this.state});
+
+  final SearchState state;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 900) {
+          return ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              SizedBox(height: 520, child: _SelectionPane(state: state)),
+              const Divider(height: 1),
+              SizedBox(height: 540, child: _PreviewPane(state: state)),
+            ],
+          );
+        }
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(width: 430, child: _SelectionPane(state: state)),
+            const VerticalDivider(width: 1),
+            Expanded(child: _PreviewPane(state: state)),
+          ],
+        );
+      },
     );
   }
 }
