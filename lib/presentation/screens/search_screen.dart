@@ -109,26 +109,26 @@ class _SearchHeader extends ConsumerWidget {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Text(
-                  'Search',
+                  'Ricerca',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 HeaderMetricChip(
                   icon: Icons.devices_other,
-                  label: '${state.deviceTypes.length} device types',
+                  label: '${state.deviceTypes.length} tipi di dispositivo',
                 ),
                 HeaderMetricChip(
                   icon: Icons.storefront,
-                  label: '${state.suppliers.length} compatible suppliers',
+                  label: '${state.suppliers.length} fornitori compatibili',
                 ),
                 HeaderMetricChip(
                   icon: Icons.open_in_browser,
-                  label: 'max ${state.settings.maxPagesToOpen} pages',
+                  label: 'max ${state.settings.maxPagesToOpen} pagine',
                 ),
               ],
             ),
           ),
           IconButton(
-            tooltip: 'Refresh',
+            tooltip: 'Aggiorna',
             onPressed: () =>
                 ref.read(searchControllerProvider.notifier).refresh(),
             icon: const Icon(Icons.refresh),
@@ -150,10 +150,10 @@ class _SelectionPane extends ConsumerWidget {
       padding: const EdgeInsets.fromLTRB(28, 12, 24, 28),
       child: ListView(
         children: [
-          Text('Selection', style: Theme.of(context).textTheme.titleLarge),
+          Text('Selezione', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 16),
           _DropdownField(
-            label: 'Device type',
+            label: 'Tipo di dispositivo',
             value: state.selectedDeviceTypeId,
             items: [
               for (final item in state.deviceTypes)
@@ -167,7 +167,7 @@ class _SelectionPane extends ConsumerWidget {
           ),
           const SizedBox(height: 14),
           _DropdownField(
-            label: 'Brand',
+            label: 'Marca',
             value: state.selectedBrandId,
             items: [
               for (final item in state.brands)
@@ -181,7 +181,7 @@ class _SelectionPane extends ConsumerWidget {
           ),
           const SizedBox(height: 14),
           _DropdownField(
-            label: 'Model',
+            label: 'Modello',
             value: state.selectedDeviceModelId,
             items: [
               for (final item in state.deviceModels)
@@ -198,7 +198,7 @@ class _SelectionPane extends ConsumerWidget {
           ),
           const SizedBox(height: 14),
           _DropdownField(
-            label: 'Component',
+            label: 'Componente',
             value: state.selectedComponentId,
             items: [
               for (final item in state.components)
@@ -216,18 +216,18 @@ class _SelectionPane extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Suppliers',
+                  'Fornitori',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
-              Text('${state.selectedSupplierIds.length} selected'),
+              Text('${state.selectedSupplierIds.length} selezionati'),
             ],
           ),
           const SizedBox(height: 8),
           if (state.selectedDeviceTypeId == null)
-            const _InlineEmptyText('Select a device type first.')
+            const _InlineEmptyText('Seleziona prima un tipo di dispositivo.')
           else if (state.suppliers.isEmpty)
-            const _InlineEmptyText('No active compatible suppliers.')
+            const _InlineEmptyText('Nessun fornitore attivo compatibile.')
           else
             for (final supplier in state.suppliers)
               CheckboxListTile(
@@ -294,7 +294,7 @@ class _PreviewPane extends ConsumerWidget {
               SizedBox(
                 width: 180,
                 child: Text(
-                  'Preview',
+                  'Anteprima',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
@@ -308,14 +308,14 @@ class _PreviewPane extends ConsumerWidget {
                       )
                     : null,
                 icon: const Icon(Icons.visibility_outlined),
-                label: const Text('Preview'),
+                label: const Text('Anteprima'),
               ),
               FilledButton.icon(
                 onPressed: state.hasPreview
                     ? () => _confirmAndOpen(context, ref, state)
                     : null,
                 icon: const Icon(Icons.open_in_browser),
-                label: const Text('Open'),
+                label: const Text('Apri'),
               ),
             ],
           ),
@@ -324,7 +324,7 @@ class _PreviewPane extends ConsumerWidget {
           const SizedBox(height: 18),
           Expanded(
             child: state.previewItems.isEmpty
-                ? const Center(child: Text('No URL preview generated.'))
+                ? const Center(child: Text('Nessuna anteprima URL generata.'))
                 : ListView.separated(
                     itemCount: state.previewItems.length,
                     separatorBuilder: (context, index) =>
@@ -337,7 +337,7 @@ class _PreviewPane extends ConsumerWidget {
                         subtitle: SelectableText(item.url.toString()),
                         trailing: item.openResult == null
                             ? null
-                            : Text(item.openResult!),
+                            : Text(_formatOpenResult(item.openResult!)),
                       );
                     },
                   ),
@@ -364,11 +364,13 @@ class _QueryPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Generated query',
+            'Query generata',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
-          SelectableText(state.generatedQuery ?? 'Preview not generated yet.'),
+          SelectableText(
+            state.generatedQuery ?? 'Anteprima non ancora generata.',
+          ),
         ],
       ),
     );
@@ -400,17 +402,19 @@ Future<void> _confirmAndOpen(
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Open URLs'),
-        content: Text('Open ${state.previewItems.length} supplier pages?'),
+        title: const Text('Apri URL'),
+        content: Text(
+          'Aprire ${state.previewItems.length} pagine dei fornitori?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: const Text('Annulla'),
           ),
           FilledButton.icon(
             onPressed: () => Navigator.of(context).pop(true),
             icon: const Icon(Icons.open_in_browser),
-            label: const Text('Open'),
+            label: const Text('Apri'),
           ),
         ],
       ),
@@ -445,4 +449,8 @@ IconData _iconForOpenResult(String? openResult) {
   return openResult == 'opened'
       ? Icons.check_circle_outline
       : Icons.error_outline;
+}
+
+String _formatOpenResult(String openResult) {
+  return openResult == 'opened' ? 'Aperto' : openResult;
 }

@@ -45,11 +45,11 @@ class _CatalogContent extends ConsumerWidget {
           const TabBar(
             isScrollable: true,
             tabs: [
-              Tab(icon: Icon(Icons.devices_other), text: 'Device types'),
-              Tab(icon: Icon(Icons.sell_outlined), text: 'Brands'),
-              Tab(icon: Icon(Icons.phone_iphone), text: 'Models'),
-              Tab(icon: Icon(Icons.construction), text: 'Components'),
-              Tab(icon: Icon(Icons.hub_outlined), text: 'Compatibility'),
+              Tab(icon: Icon(Icons.devices_other), text: 'Tipi di dispositivo'),
+              Tab(icon: Icon(Icons.sell_outlined), text: 'Marche'),
+              Tab(icon: Icon(Icons.phone_iphone), text: 'Modelli'),
+              Tab(icon: Icon(Icons.construction), text: 'Componenti'),
+              Tab(icon: Icon(Icons.hub_outlined), text: 'Compatibilità'),
             ],
           ),
           Expanded(
@@ -85,22 +85,22 @@ class _CatalogHeader extends StatelessWidget {
         runSpacing: 10,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          Text('Catalog', style: textTheme.headlineSmall),
+          Text('Catalogo', style: textTheme.headlineSmall),
           HeaderMetricChip(
             icon: Icons.devices_other,
-            label: '${state.deviceTypes.length} types',
+            label: '${state.deviceTypes.length} tipi',
           ),
           HeaderMetricChip(
             icon: Icons.sell_outlined,
-            label: '${state.brands.length} brands',
+            label: '${state.brands.length} marche',
           ),
           HeaderMetricChip(
             icon: Icons.phone_iphone,
-            label: '${state.deviceModels.length} models',
+            label: '${state.deviceModels.length} modelli',
           ),
           HeaderMetricChip(
             icon: Icons.construction,
-            label: '${state.components.length} components',
+            label: '${state.components.length} componenti',
           ),
         ],
       ),
@@ -118,20 +118,20 @@ class _DeviceTypesTab extends ConsumerWidget {
     final controller = ref.read(catalogControllerProvider.notifier);
 
     return _CatalogListScaffold(
-      title: 'Device types',
-      addLabel: 'Add type',
+      title: 'Tipi di dispositivo',
+      addLabel: 'Aggiungi tipo',
       onAdd: () => _showDeviceTypeDialog(context, ref),
       child: _EntityList<DeviceType>(
         items: state.deviceTypes,
-        emptyText: 'No device types yet.',
+        emptyText: 'Nessun tipo di dispositivo ancora.',
         titleBuilder: (item) => item.name,
-        subtitleBuilder: (item) => item.description ?? 'No description',
+        subtitleBuilder: (item) => item.description ?? 'Nessuna descrizione',
         isActive: (item) => item.isActive,
         onEdit: (item) => _showDeviceTypeDialog(context, ref, existing: item),
         onDelete: (item) => confirmAndRun(
           context,
-          title: 'Delete device type',
-          message: 'Delete ${item.name}?',
+          title: 'Elimina tipo di dispositivo',
+          message: 'Eliminare ${item.name}?',
           action: () => _runCatalogAction(
             context,
             () => controller.deleteDeviceType(item.id),
@@ -152,20 +152,20 @@ class _BrandsTab extends ConsumerWidget {
     final controller = ref.read(catalogControllerProvider.notifier);
 
     return _CatalogListScaffold(
-      title: 'Brands',
-      addLabel: 'Add brand',
+      title: 'Marche',
+      addLabel: 'Aggiungi marca',
       onAdd: () => _showBrandDialog(context, ref),
       child: _EntityList<Brand>(
         items: state.brands,
-        emptyText: 'No brands yet.',
+        emptyText: 'Nessuna marca ancora.',
         titleBuilder: (item) => item.name,
         subtitleBuilder: (item) => item.id,
         isActive: (item) => item.isActive,
         onEdit: (item) => _showBrandDialog(context, ref, existing: item),
         onDelete: (item) => confirmAndRun(
           context,
-          title: 'Delete brand',
-          message: 'Delete ${item.name}?',
+          title: 'Elimina marca',
+          message: 'Eliminare ${item.name}?',
           action: () =>
               _runCatalogAction(context, () => controller.deleteBrand(item.id)),
         ),
@@ -188,16 +188,16 @@ class _ModelsTab extends ConsumerWidget {
     final controller = ref.read(catalogControllerProvider.notifier);
 
     return _CatalogListScaffold(
-      title: 'Device models',
-      addLabel: 'Add model',
+      title: 'Modelli di dispositivo',
+      addLabel: 'Aggiungi modello',
       onAdd: state.deviceTypes.isEmpty || state.brands.isEmpty
           ? null
           : () => _showDeviceModelDialog(context, ref, state: state),
       child: _EntityList<DeviceModel>(
         items: state.deviceModels,
         emptyText: state.deviceTypes.isEmpty || state.brands.isEmpty
-            ? 'Add at least one device type and one brand before models.'
-            : 'No device models yet.',
+            ? 'Aggiungi almeno un tipo di dispositivo e una marca prima dei modelli.'
+            : 'Nessun modello di dispositivo ancora.',
         titleBuilder: (item) => item.name,
         subtitleBuilder: (item) {
           final type = deviceTypeNames[item.deviceTypeId] ?? item.deviceTypeId;
@@ -210,8 +210,8 @@ class _ModelsTab extends ConsumerWidget {
             _showDeviceModelDialog(context, ref, state: state, existing: item),
         onDelete: (item) => confirmAndRun(
           context,
-          title: 'Delete model',
-          message: 'Delete ${item.name}?',
+          title: 'Elimina modello',
+          message: 'Eliminare ${item.name}?',
           action: () => _runCatalogAction(
             context,
             () => controller.deleteDeviceModel(item.id),
@@ -232,20 +232,20 @@ class _ComponentsTab extends ConsumerWidget {
     final controller = ref.read(catalogControllerProvider.notifier);
 
     return _CatalogListScaffold(
-      title: 'Components',
-      addLabel: 'Add component',
+      title: 'Componenti',
+      addLabel: 'Aggiungi componente',
       onAdd: () => _showComponentDialog(context, ref),
       child: _EntityList<Component>(
         items: state.components,
-        emptyText: 'No components yet.',
+        emptyText: 'Nessun componente ancora.',
         titleBuilder: (item) => item.name,
-        subtitleBuilder: (item) => item.description ?? 'No description',
+        subtitleBuilder: (item) => item.description ?? 'Nessuna descrizione',
         isActive: (item) => item.isActive,
         onEdit: (item) => _showComponentDialog(context, ref, existing: item),
         onDelete: (item) => confirmAndRun(
           context,
-          title: 'Delete component',
-          message: 'Delete ${item.name}?',
+          title: 'Elimina componente',
+          message: 'Eliminare ${item.name}?',
           action: () => _runCatalogAction(
             context,
             () => controller.deleteComponent(item.id),
@@ -275,7 +275,7 @@ class _CompatibilityTab extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Device/component compatibility',
+            'Compatibilità dispositivo/componente',
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 16),
@@ -283,7 +283,9 @@ class _CompatibilityTab extends ConsumerWidget {
             constraints: const BoxConstraints(maxWidth: 420),
             child: DropdownButtonFormField<String>(
               initialValue: selectedId,
-              decoration: const InputDecoration(labelText: 'Device type'),
+              decoration: const InputDecoration(
+                labelText: 'Tipo di dispositivo',
+              ),
               items: [
                 for (final item in state.deviceTypes)
                   DropdownMenuItem(value: item.id, child: Text(item.name)),
@@ -297,9 +299,13 @@ class _CompatibilityTab extends ConsumerWidget {
           ),
           const SizedBox(height: 20),
           if (selectedId == null)
-            const Text('Add a device type before configuring compatibility.')
+            const Text(
+              'Aggiungi un tipo di dispositivo prima di configurare la compatibilità.',
+            )
           else if (state.components.isEmpty)
-            const Text('Add components before configuring compatibility.')
+            const Text(
+              'Aggiungi componenti prima di configurare la compatibilità.',
+            )
           else
             Expanded(
               child: ListView.separated(
@@ -416,12 +422,12 @@ class _EntityList<T> extends StatelessWidget {
             spacing: 4,
             children: [
               IconButton(
-                tooltip: 'Edit',
+                tooltip: 'Modifica',
                 onPressed: () => onEdit(item),
                 icon: const Icon(Icons.edit_outlined),
               ),
               IconButton(
-                tooltip: 'Delete',
+                tooltip: 'Elimina',
                 onPressed: () => onDelete(item),
                 icon: const Icon(Icons.delete_outline),
               ),
@@ -447,21 +453,23 @@ Future<void> _showDeviceTypeDialog(
 
   await _showEntityDialog(
     context,
-    title: existing == null ? 'Add device type' : 'Edit device type',
+    title: existing == null
+        ? 'Aggiungi tipo di dispositivo'
+        : 'Modifica tipo di dispositivo',
     fields: [
       TextField(
         controller: nameController,
         autofocus: true,
-        decoration: const InputDecoration(labelText: 'Name'),
+        decoration: const InputDecoration(labelText: 'Nome'),
       ),
       TextField(
         controller: descriptionController,
-        decoration: const InputDecoration(labelText: 'Description'),
+        decoration: const InputDecoration(labelText: 'Descrizione'),
       ),
       StatefulBuilder(
         builder: (context, setState) => SwitchListTile(
           value: isActive,
-          title: const Text('Active'),
+          title: const Text('Attivo'),
           onChanged: (value) => setState(() => isActive = value),
         ),
       ),
@@ -489,17 +497,17 @@ Future<void> _showBrandDialog(
 
   await _showEntityDialog(
     context,
-    title: existing == null ? 'Add brand' : 'Edit brand',
+    title: existing == null ? 'Aggiungi marca' : 'Modifica marca',
     fields: [
       TextField(
         controller: nameController,
         autofocus: true,
-        decoration: const InputDecoration(labelText: 'Name'),
+        decoration: const InputDecoration(labelText: 'Nome'),
       ),
       StatefulBuilder(
         builder: (context, setState) => SwitchListTile(
           value: isActive,
-          title: const Text('Active'),
+          title: const Text('Attivo'),
           onChanged: (value) => setState(() => isActive = value),
         ),
       ),
@@ -529,21 +537,21 @@ Future<void> _showComponentDialog(
 
   await _showEntityDialog(
     context,
-    title: existing == null ? 'Add component' : 'Edit component',
+    title: existing == null ? 'Aggiungi componente' : 'Modifica componente',
     fields: [
       TextField(
         controller: nameController,
         autofocus: true,
-        decoration: const InputDecoration(labelText: 'Name'),
+        decoration: const InputDecoration(labelText: 'Nome'),
       ),
       TextField(
         controller: descriptionController,
-        decoration: const InputDecoration(labelText: 'Description'),
+        decoration: const InputDecoration(labelText: 'Descrizione'),
       ),
       StatefulBuilder(
         builder: (context, setState) => SwitchListTile(
           value: isActive,
-          title: const Text('Active'),
+          title: const Text('Attivo'),
           onChanged: (value) => setState(() => isActive = value),
         ),
       ),
@@ -578,21 +586,21 @@ Future<void> _showDeviceModelDialog(
 
   await _showEntityDialog(
     context,
-    title: existing == null ? 'Add model' : 'Edit model',
+    title: existing == null ? 'Aggiungi modello' : 'Modifica modello',
     fields: [
       TextField(
         controller: nameController,
         autofocus: true,
-        decoration: const InputDecoration(labelText: 'Name'),
+        decoration: const InputDecoration(labelText: 'Nome'),
       ),
       TextField(
         controller: modelCodeController,
-        decoration: const InputDecoration(labelText: 'Model code'),
+        decoration: const InputDecoration(labelText: 'Codice modello'),
       ),
       StatefulBuilder(
         builder: (context, setState) => DropdownButtonFormField<String>(
           initialValue: deviceTypeId,
-          decoration: const InputDecoration(labelText: 'Device type'),
+          decoration: const InputDecoration(labelText: 'Tipo di dispositivo'),
           items: [
             for (final item in state.deviceTypes)
               DropdownMenuItem(value: item.id, child: Text(item.name)),
@@ -603,7 +611,7 @@ Future<void> _showDeviceModelDialog(
       StatefulBuilder(
         builder: (context, setState) => DropdownButtonFormField<String>(
           initialValue: brandId,
-          decoration: const InputDecoration(labelText: 'Brand'),
+          decoration: const InputDecoration(labelText: 'Marca'),
           items: [
             for (final item in state.brands)
               DropdownMenuItem(value: item.id, child: Text(item.name)),
@@ -614,14 +622,14 @@ Future<void> _showDeviceModelDialog(
       TextField(
         controller: alternativeTermsController,
         decoration: const InputDecoration(
-          labelText: 'Alternative terms',
-          helperText: 'Separate terms with commas.',
+          labelText: 'Termini alternativi',
+          helperText: 'Separa i termini con virgole.',
         ),
       ),
       StatefulBuilder(
         builder: (context, setState) => SwitchListTile(
           value: isActive,
-          title: const Text('Active'),
+          title: const Text('Attivo'),
           onChanged: (value) => setState(() => isActive = value),
         ),
       ),
@@ -660,7 +668,7 @@ Future<void> _showEntityDialog(
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const Text('Annulla'),
         ),
         FilledButton.icon(
           onPressed: () async {
@@ -670,7 +678,7 @@ Future<void> _showEntityDialog(
             }
           },
           icon: const Icon(Icons.save_outlined),
-          label: const Text('Save'),
+          label: const Text('Salva'),
         ),
       ],
     ),
@@ -686,7 +694,7 @@ Future<bool> _tryRunCatalogAction(
     if (context.mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Catalog updated')));
+      ).showSnackBar(const SnackBar(content: Text('Catalogo aggiornato')));
     }
     return true;
   } catch (error) {

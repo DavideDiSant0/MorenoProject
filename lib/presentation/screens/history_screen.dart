@@ -103,35 +103,35 @@ class _HistoryHeader extends ConsumerWidget {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Text(
-                  'History',
+                  'Cronologia',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 HeaderMetricChip(
                   icon: Icons.history,
-                  label: '${state.entries.length} searches',
+                  label: '${state.entries.length} ricerche',
                 ),
                 HeaderMetricChip(icon: Icons.link, label: '$urlCount URLs'),
                 HeaderMetricChip(
                   icon: Icons.open_in_browser,
-                  label: 'max ${state.settings.maxPagesToOpen} pages',
+                  label: 'max ${state.settings.maxPagesToOpen} pagine',
                 ),
               ],
             ),
           ),
           IconButton(
-            tooltip: 'Refresh',
+            tooltip: 'Aggiorna',
             onPressed: () =>
                 ref.read(historyControllerProvider.notifier).refresh(),
             icon: const Icon(Icons.refresh),
           ),
           IconButton(
-            tooltip: 'Clear history',
+            tooltip: 'Svuota cronologia',
             onPressed: state.entries.isEmpty
                 ? null
                 : () => confirmAndRun(
                     context,
-                    title: 'Clear history',
-                    message: 'Delete all saved searches?',
+                    title: 'Svuota cronologia',
+                    message: 'Eliminare tutte le ricerche salvate?',
                     action: () => _runHistoryAction(
                       context,
                       () => controller.clearHistory(),
@@ -162,11 +162,14 @@ class _HistoryListPane extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Saved searches', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            'Ricerche salvate',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 12),
           Expanded(
             child: entries.isEmpty
-                ? const Center(child: Text('No saved searches yet.'))
+                ? const Center(child: Text('Nessuna ricerca salvata ancora.'))
                 : ListView.separated(
                     itemCount: entries.length,
                     separatorBuilder: (context, index) =>
@@ -183,7 +186,7 @@ class _HistoryListPane extends ConsumerWidget {
                         ),
                         subtitle: Text(
                           '${formatDateTime(entry.searchedAt)}  ·  '
-                          '${entry.suppliers.length} suppliers',
+                          '${entry.suppliers.length} fornitori',
                         ),
                         leading: const Icon(Icons.manage_search),
                       );
@@ -235,14 +238,14 @@ class _HistoryDetailsPane extends ConsumerWidget {
               FilledButton.icon(
                 onPressed: () => _confirmRepeat(context, ref, entry, state),
                 icon: const Icon(Icons.replay),
-                label: const Text('Repeat'),
+                label: const Text('Ripeti'),
               ),
               IconButton(
-                tooltip: 'Delete',
+                tooltip: 'Elimina',
                 onPressed: () => confirmAndRun(
                   context,
-                  title: 'Delete search',
-                  message: 'Delete this saved search?',
+                  title: 'Elimina ricerca',
+                  message: 'Eliminare questa ricerca salvata?',
                   action: () => _runHistoryAction(
                     context,
                     () => controller.deleteEntry(entry.id),
@@ -256,7 +259,7 @@ class _HistoryDetailsPane extends ConsumerWidget {
           _SnapshotPanel(entry: entry),
           const SizedBox(height: 18),
           Text(
-            'Opened suppliers',
+            'Fornitori aperti',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
@@ -272,7 +275,7 @@ class _HistoryDetailsPane extends ConsumerWidget {
                   subtitle: SelectableText(supplier.generatedUrl),
                   trailing: supplier.openResult == null
                       ? null
-                      : Text(supplier.openResult!),
+                      : Text(_formatOpenResult(supplier.openResult!)),
                 );
               },
             ),
@@ -318,7 +321,9 @@ class _EmptyHistoryDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Open a saved search to see details.'));
+    return const Center(
+      child: Text('Apri una ricerca salvata per vederne i dettagli.'),
+    );
   }
 }
 
@@ -334,17 +339,19 @@ Future<void> _confirmRepeat(
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Repeat search'),
-        content: Text('Open ${entry.suppliers.length} saved supplier URLs?'),
+        title: const Text('Ripeti ricerca'),
+        content: Text(
+          'Aprire ${entry.suppliers.length} URL dei fornitori salvati?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: const Text('Annulla'),
           ),
           FilledButton.icon(
             onPressed: () => Navigator.of(context).pop(true),
             icon: const Icon(Icons.replay),
-            label: const Text('Repeat'),
+            label: const Text('Ripeti'),
           ),
         ],
       ),
@@ -355,6 +362,10 @@ Future<void> _confirmRepeat(
   }
 
   await _runHistoryAction(context, () => controller.repeatSelectedEntry());
+}
+
+String _formatOpenResult(String openResult) {
+  return openResult == 'opened' ? 'Aperto' : openResult;
 }
 
 Future<void> _runHistoryAction(

@@ -174,7 +174,7 @@ class SearchController extends AsyncNotifier<SearchState> {
       current.copyWith(
         previewItems: previewItems,
         generatedQuery: generatedQuery,
-        lastResultMessage: 'Preview ready',
+        lastResultMessage: 'Anteprima pronta',
       ),
     );
   }
@@ -375,7 +375,11 @@ class SearchController extends AsyncNotifier<SearchState> {
       DeviceModel(:final id) => id,
       Component(:final id) => id,
       Supplier(:final id) => id,
-      _ => throw ArgumentError.value(item, 'item', 'Unsupported search item.'),
+      _ => throw ArgumentError.value(
+        item,
+        'item',
+        'Elemento di ricerca non supportato.',
+      ),
     };
   }
 
@@ -441,9 +445,11 @@ class SearchController extends AsyncNotifier<SearchState> {
         .length;
     final failedCount = openedItems.length - openedCount;
     final baseMessage = failedCount == 0
-        ? 'Opened $openedCount URL'
-        : 'Opened $openedCount URL, $failedCount failed';
-    return historyEnabled ? '$baseMessage and saved to history' : baseMessage;
+        ? 'Aperti $openedCount URL'
+        : 'Aperti $openedCount URL, $failedCount non riusciti';
+    return historyEnabled
+        ? '$baseMessage e salvati nella cronologia'
+        : baseMessage;
   }
 }
 

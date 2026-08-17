@@ -4,37 +4,37 @@ import 'package:flutter/material.dart';
 enum AppDestination {
   search(
     path: '/search',
-    label: 'Search',
+    label: 'Ricerca',
     icon: Icons.search_outlined,
     selectedIcon: Icons.search,
   ),
   catalog(
     path: '/catalog',
-    label: 'Catalog',
+    label: 'Catalogo',
     icon: Icons.inventory_2_outlined,
     selectedIcon: Icons.inventory_2,
   ),
   suppliers(
     path: '/suppliers',
-    label: 'Suppliers',
+    label: 'Fornitori',
     icon: Icons.storefront_outlined,
     selectedIcon: Icons.storefront,
   ),
   history(
     path: '/history',
-    label: 'History',
+    label: 'Cronologia',
     icon: Icons.history_outlined,
     selectedIcon: Icons.history,
   ),
   favorites(
     path: '/favorites',
-    label: 'Favorites',
+    label: 'Preferiti',
     icon: Icons.star_border,
     selectedIcon: Icons.star,
   ),
   settings(
     path: '/settings',
-    label: 'Settings',
+    label: 'Impostazioni',
     icon: Icons.settings_outlined,
     selectedIcon: Icons.settings,
   );

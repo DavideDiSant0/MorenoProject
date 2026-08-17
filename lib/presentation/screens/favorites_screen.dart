@@ -114,26 +114,26 @@ class _FavoritesHeader extends ConsumerWidget {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Text(
-                  'Favorites',
+                  'Preferiti',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 HeaderMetricChip(
                   icon: Icons.star,
-                  label: '${state.favorites.length} saved',
+                  label: '${state.favorites.length} salvati',
                 ),
                 HeaderMetricChip(
                   icon: Icons.storefront,
-                  label: '${state.suppliers.length} compatible suppliers',
+                  label: '${state.suppliers.length} fornitori compatibili',
                 ),
                 HeaderMetricChip(
                   icon: Icons.open_in_browser,
-                  label: 'max ${state.settings.maxPagesToOpen} pages',
+                  label: 'max ${state.settings.maxPagesToOpen} pagine',
                 ),
               ],
             ),
           ),
           IconButton(
-            tooltip: 'Refresh',
+            tooltip: 'Aggiorna',
             onPressed: () =>
                 ref.read(favoriteControllerProvider.notifier).refresh(),
             icon: const Icon(Icons.refresh),
@@ -161,13 +161,13 @@ class _FavoriteListPane extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Saved combinations',
+            'Combinazioni salvate',
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 12),
           Expanded(
             child: state.favorites.isEmpty
-                ? const Center(child: Text('No favorites yet.'))
+                ? const Center(child: Text('Nessun preferito ancora.'))
                 : ListView.separated(
                     itemCount: state.favorites.length,
                     separatorBuilder: (context, index) =>
@@ -216,7 +216,7 @@ class _FavoriteBuilderPane extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(
-                  'New favorite',
+                  'Nuovo preferito',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
@@ -225,7 +225,7 @@ class _FavoriteBuilderPane extends ConsumerWidget {
                     ? () => _showSaveFavoriteDialog(context, ref)
                     : null,
                 icon: const Icon(Icons.star_border),
-                label: const Text('Save'),
+                label: const Text('Salva'),
               ),
             ],
           ),
@@ -235,7 +235,7 @@ class _FavoriteBuilderPane extends ConsumerWidget {
             runSpacing: 12,
             children: [
               _SizedDropdownField(
-                label: 'Device type',
+                label: 'Tipo di dispositivo',
                 value: state.selectedDeviceTypeId,
                 items: [
                   for (final item in state.deviceTypes)
@@ -248,7 +248,7 @@ class _FavoriteBuilderPane extends ConsumerWidget {
                           .selectDeviceType(value),
               ),
               _SizedDropdownField(
-                label: 'Brand',
+                label: 'Marca',
                 value: state.selectedBrandId,
                 items: [
                   for (final item in state.brands)
@@ -261,7 +261,7 @@ class _FavoriteBuilderPane extends ConsumerWidget {
                           .selectBrand(value),
               ),
               _SizedDropdownField(
-                label: 'Model',
+                label: 'Modello',
                 value: state.selectedDeviceModelId,
                 items: [
                   for (final item in state.deviceModels)
@@ -277,7 +277,7 @@ class _FavoriteBuilderPane extends ConsumerWidget {
                           .selectDeviceModel(value),
               ),
               _SizedDropdownField(
-                label: 'Component',
+                label: 'Componente',
                 value: state.selectedComponentId,
                 items: [
                   for (final item in state.components)
@@ -295,14 +295,14 @@ class _FavoriteBuilderPane extends ConsumerWidget {
           ),
           const SizedBox(height: 14),
           Text(
-            'Preferred suppliers',
+            'Fornitori preferiti',
             style: Theme.of(context).textTheme.labelLarge,
           ),
           const SizedBox(height: 6),
           if (state.selectedDeviceTypeId == null)
-            const Text('Select a device type first.')
+            const Text('Seleziona prima un tipo di dispositivo.')
           else if (state.suppliers.isEmpty)
-            const Text('No active compatible suppliers.')
+            const Text('Nessun fornitore attivo compatibile.')
           else
             Wrap(
               spacing: 8,
@@ -382,21 +382,21 @@ class _FavoriteDetailsPane extends ConsumerWidget {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 6),
-                  Text('Saved ${formatDateTime(favorite.createdAt)}'),
+                  Text('Salvato il ${formatDateTime(favorite.createdAt)}'),
                 ],
               ),
             ),
             FilledButton.icon(
               onPressed: () => _confirmLaunch(context, ref, favorite, state),
               icon: const Icon(Icons.play_arrow_outlined),
-              label: const Text('Launch'),
+              label: const Text('Apri'),
             ),
             IconButton(
-              tooltip: 'Delete',
+              tooltip: 'Elimina',
               onPressed: () => confirmAndRun(
                 context,
-                title: 'Delete favorite',
-                message: 'Delete ${favorite.name}?',
+                title: 'Elimina preferito',
+                message: 'Eliminare ${favorite.name}?',
                 action: () => _runFavoriteAction(
                   context,
                   () => controller.deleteFavorite(favorite.id),
@@ -410,14 +410,14 @@ class _FavoriteDetailsPane extends ConsumerWidget {
         _FavoriteSnapshotPanel(favorite: favorite, state: state),
         const SizedBox(height: 16),
         Text(
-          'Preferred suppliers',
+          'Fornitori preferiti',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
         if (favorite.supplierIds.isEmpty)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 14),
-            child: Text('No suppliers saved in this favorite.'),
+            child: Text('Nessun fornitore salvato in questo preferito.'),
           )
         else
           ListView.separated(
@@ -474,7 +474,7 @@ class _EmptyFavoriteDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('Save or select a favorite to see details.'),
+      child: Text('Salva o seleziona un preferito per vederne i dettagli.'),
     );
   }
 }
@@ -488,16 +488,16 @@ Future<void> _showSaveFavoriteDialog(
   await showDialog<void>(
     context: context,
     builder: (dialogContext) => AlertDialog(
-      title: const Text('Save favorite'),
+      title: const Text('Salva preferito'),
       content: TextField(
         controller: nameController,
         autofocus: true,
-        decoration: const InputDecoration(labelText: 'Name'),
+        decoration: const InputDecoration(labelText: 'Nome'),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(dialogContext).pop(),
-          child: const Text('Cancel'),
+          child: const Text('Annulla'),
         ),
         FilledButton.icon(
           onPressed: () async {
@@ -510,7 +510,7 @@ Future<void> _showSaveFavoriteDialog(
             }
           },
           icon: const Icon(Icons.star_border),
-          label: const Text('Save'),
+          label: const Text('Salva'),
         ),
       ],
     ),
@@ -529,17 +529,19 @@ Future<void> _confirmLaunch(
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Launch favorite'),
-        content: Text('Open ${favorite.supplierIds.length} supplier pages?'),
+        title: const Text('Apri preferito'),
+        content: Text(
+          'Aprire ${favorite.supplierIds.length} pagine dei fornitori?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: const Text('Annulla'),
           ),
           FilledButton.icon(
             onPressed: () => Navigator.of(context).pop(true),
             icon: const Icon(Icons.play_arrow_outlined),
-            label: const Text('Launch'),
+            label: const Text('Apri'),
           ),
         ],
       ),

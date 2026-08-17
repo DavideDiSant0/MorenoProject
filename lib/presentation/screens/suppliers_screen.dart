@@ -100,18 +100,18 @@ class _SuppliersHeader extends StatelessWidget {
         runSpacing: 10,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          Text('Suppliers', style: Theme.of(context).textTheme.headlineSmall),
+          Text('Fornitori', style: Theme.of(context).textTheme.headlineSmall),
           HeaderMetricChip(
             icon: Icons.storefront,
-            label: '${state.suppliers.length} total',
+            label: '${state.suppliers.length} totali',
           ),
           HeaderMetricChip(
             icon: Icons.check_circle_outline,
-            label: '$activeCount active',
+            label: '$activeCount attivi',
           ),
           HeaderMetricChip(
             icon: Icons.devices_other,
-            label: '${state.deviceTypes.length} device types',
+            label: '${state.deviceTypes.length} tipi di dispositivo',
           ),
         ],
       ),
@@ -139,7 +139,7 @@ class _SupplierListPane extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Supplier list',
+                  'Elenco fornitori',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
@@ -147,14 +147,14 @@ class _SupplierListPane extends ConsumerWidget {
                 onPressed: () =>
                     _showSupplierDialog(context, ref, state: state),
                 icon: const Icon(Icons.add),
-                label: const Text('Add'),
+                label: const Text('Aggiungi'),
               ),
             ],
           ),
           const SizedBox(height: 12),
           Expanded(
             child: state.suppliers.isEmpty
-                ? const Center(child: Text('No suppliers yet.'))
+                ? const Center(child: Text('Nessun fornitore ancora.'))
                 : ListView.separated(
                     itemCount: state.suppliers.length,
                     separatorBuilder: (context, index) =>
@@ -240,7 +240,7 @@ class _SupplierDetailsPane extends ConsumerWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'Move up',
+                tooltip: 'Sposta su',
                 onPressed: supplierIndex <= 0
                     ? null
                     : () => _runSupplierAction(
@@ -250,7 +250,7 @@ class _SupplierDetailsPane extends ConsumerWidget {
                 icon: const Icon(Icons.arrow_upward),
               ),
               IconButton(
-                tooltip: 'Move down',
+                tooltip: 'Sposta giù',
                 onPressed:
                     supplierIndex == -1 ||
                         supplierIndex >= state.suppliers.length - 1
@@ -262,12 +262,12 @@ class _SupplierDetailsPane extends ConsumerWidget {
                 icon: const Icon(Icons.arrow_downward),
               ),
               IconButton(
-                tooltip: 'Test template',
+                tooltip: 'Prova template',
                 onPressed: () => _testSupplierTemplate(context, ref, supplier),
                 icon: const Icon(Icons.play_arrow_outlined),
               ),
               IconButton(
-                tooltip: 'Edit',
+                tooltip: 'Modifica',
                 onPressed: () => _showSupplierDialog(
                   context,
                   ref,
@@ -277,11 +277,11 @@ class _SupplierDetailsPane extends ConsumerWidget {
                 icon: const Icon(Icons.edit_outlined),
               ),
               IconButton(
-                tooltip: 'Delete',
+                tooltip: 'Elimina',
                 onPressed: () => confirmAndRun(
                   context,
-                  title: 'Delete supplier',
-                  message: 'Delete ${supplier.name}?',
+                  title: 'Elimina fornitore',
+                  message: 'Eliminare ${supplier.name}?',
                   action: () => _runSupplierAction(
                     context,
                     () => controller.deleteSupplier(supplier.id),
@@ -295,7 +295,7 @@ class _SupplierDetailsPane extends ConsumerWidget {
           _TemplatePanel(supplier: supplier),
           const SizedBox(height: 24),
           Text(
-            'Device type compatibility',
+            'Compatibilità con i tipi di dispositivo',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
@@ -303,7 +303,7 @@ class _SupplierDetailsPane extends ConsumerWidget {
             child: state.deviceTypes.isEmpty
                 ? const Center(
                     child: Text(
-                      'Add device types before configuring suppliers.',
+                      'Aggiungi tipi di dispositivo prima di configurare i fornitori.',
                     ),
                   )
                 : ListView.separated(
@@ -348,12 +348,12 @@ class _TemplatePanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('URL template', style: Theme.of(context).textTheme.titleMedium),
+          Text('Template URL', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           SelectableText(supplier.urlTemplate),
           if (supplier.notes != null) ...[
             const SizedBox(height: 12),
-            Text('Notes', style: Theme.of(context).textTheme.labelLarge),
+            Text('Note', style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: 4),
             Text(supplier.notes!),
           ],
@@ -368,7 +368,7 @@ class _EmptySupplierDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Add a supplier to start.'));
+    return const Center(child: Text('Aggiungi un fornitore per iniziare.'));
   }
 }
 
@@ -393,7 +393,9 @@ Future<void> _showSupplierDialog(
   await showDialog<void>(
     context: context,
     builder: (dialogContext) => AlertDialog(
-      title: Text(existing == null ? 'Add supplier' : 'Edit supplier'),
+      title: Text(
+        existing == null ? 'Aggiungi fornitore' : 'Modifica fornitore',
+      ),
       content: SizedBox(
         width: 520,
         child: SingleChildScrollView(
@@ -403,31 +405,33 @@ Future<void> _showSupplierDialog(
               TextField(
                 controller: nameController,
                 autofocus: true,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: const InputDecoration(labelText: 'Nome'),
               ),
               TextField(
                 controller: baseUrlController,
-                decoration: const InputDecoration(labelText: 'Base URL'),
+                decoration: const InputDecoration(labelText: 'URL di base'),
               ),
               TextField(
                 controller: urlTemplateController,
-                decoration: const InputDecoration(labelText: 'URL template'),
+                decoration: const InputDecoration(labelText: 'Template URL'),
               ),
               TextField(
                 controller: displayOrderController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Display order'),
+                decoration: const InputDecoration(
+                  labelText: 'Ordine di visualizzazione',
+                ),
               ),
               TextField(
                 controller: notesController,
                 minLines: 2,
                 maxLines: 4,
-                decoration: const InputDecoration(labelText: 'Notes'),
+                decoration: const InputDecoration(labelText: 'Note'),
               ),
               StatefulBuilder(
                 builder: (context, setState) => SwitchListTile(
                   value: isActive,
-                  title: const Text('Active'),
+                  title: const Text('Attivo'),
                   onChanged: (value) => setState(() => isActive = value),
                 ),
               ),
@@ -438,13 +442,13 @@ Future<void> _showSupplierDialog(
       actions: [
         TextButton(
           onPressed: () => Navigator.of(dialogContext).pop(),
-          child: const Text('Cancel'),
+          child: const Text('Annulla'),
         ),
         TextButton.icon(
           onPressed: () =>
               _testTemplateText(context, ref, urlTemplateController.text),
           icon: const Icon(Icons.play_arrow_outlined),
-          label: const Text('Test'),
+          label: const Text('Prova'),
         ),
         FilledButton.icon(
           onPressed: () async {
@@ -465,7 +469,7 @@ Future<void> _showSupplierDialog(
             }
           },
           icon: const Icon(Icons.save_outlined),
-          label: const Text('Save'),
+          label: const Text('Salva'),
         ),
       ],
     ),
@@ -491,7 +495,7 @@ Future<bool> _tryRunSupplierAction(
     if (context.mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Suppliers updated')));
+      ).showSnackBar(const SnackBar(content: Text('Fornitori aggiornati')));
     }
     return true;
   } catch (error) {
@@ -527,7 +531,7 @@ void _testTemplateText(BuildContext context, WidgetRef ref, String template) {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Generated URL'),
+        title: const Text('URL generato'),
         content: SelectableText(uri.toString()),
         actions: [
           FilledButton(

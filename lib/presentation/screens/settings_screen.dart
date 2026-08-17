@@ -38,12 +38,12 @@ class _SettingsContent extends ConsumerWidget {
           children: [
             Expanded(
               child: Text(
-                'Settings',
+                'Impostazioni',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
             ),
             IconButton(
-              tooltip: 'Refresh',
+              tooltip: 'Aggiorna',
               onPressed: () =>
                   ref.read(settingsControllerProvider.notifier).refresh(),
               icon: const Icon(Icons.refresh),
@@ -52,15 +52,17 @@ class _SettingsContent extends ConsumerWidget {
         ),
         const SizedBox(height: 20),
         _SettingsPanel(
-          title: 'Opening',
+          title: 'Apertura',
           children: [
             _MaxPagesControl(settings: settings),
             const Divider(height: 28),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               secondary: const Icon(Icons.fact_check_outlined),
-              title: const Text('Require confirmation'),
-              subtitle: const Text('Ask before opening supplier pages.'),
+              title: const Text('Richiedi conferma'),
+              subtitle: const Text(
+                'Chiedi conferma prima di aprire le pagine dei fornitori.',
+              ),
               value: settings.requireConfirmation,
               onChanged: (value) => _runSettingsAction(
                 context,
@@ -74,13 +76,15 @@ class _SettingsContent extends ConsumerWidget {
         ),
         const SizedBox(height: 18),
         _SettingsPanel(
-          title: 'History',
+          title: 'Cronologia',
           children: [
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               secondary: const Icon(Icons.history),
-              title: const Text('Save search history'),
-              subtitle: const Text('Record searches after opening URLs.'),
+              title: const Text('Salva la cronologia delle ricerche'),
+              subtitle: const Text(
+                'Registra le ricerche dopo l’apertura degli URL.',
+              ),
               value: settings.historyEnabled,
               onChanged: (value) => _runSettingsAction(
                 context,
@@ -135,11 +139,11 @@ class _MaxPagesControl extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Maximum pages to open',
+                'Numero massimo di pagine da aprire',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 4),
-              Text('${settings.maxPagesToOpen} supplier pages'),
+              Text('${settings.maxPagesToOpen} pagine dei fornitori'),
               Slider(
                 value: settings.maxPagesToOpen.toDouble(),
                 min: 1,

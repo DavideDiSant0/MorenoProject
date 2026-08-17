@@ -18,12 +18,12 @@ Future<void> confirmAndRun(
       actions: [
         TextButton(
           onPressed: () => Navigator.of(dialogContext).pop(false),
-          child: const Text('Cancel'),
+          child: const Text('Annulla'),
         ),
         FilledButton.icon(
           onPressed: () => Navigator.of(dialogContext).pop(true),
           icon: const Icon(Icons.delete_outline),
-          label: const Text('Delete'),
+          label: const Text('Elimina'),
         ),
       ],
     ),

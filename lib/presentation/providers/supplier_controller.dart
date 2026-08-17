@@ -123,12 +123,12 @@ class SupplierController extends AsyncNotifier<SupplierState> {
     return _supplierUseCases.testTemplate(
       template,
       const UrlTemplateValues(
-        query: 'iPhone 12 screen',
+        query: 'iPhone 12 schermo',
         deviceType: 'Smartphone',
         brand: 'Apple',
         model: 'iPhone 12',
         modelCode: 'A2403',
-        component: 'Screen',
+        component: 'Schermo',
       ),
     );
   }

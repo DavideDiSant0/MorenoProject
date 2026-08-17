@@ -176,7 +176,7 @@ void main() {
     );
     expect(
       state.lastResultMessage,
-      'Opened 1 URL, 1 failed and saved to history',
+      'Aperti 1 URL, 1 non riusciti e salvati nella cronologia',
     );
   });
 
@@ -365,7 +365,7 @@ void main() {
     expect(await database.searchHistoryDao.getAllEntries(), isEmpty);
     expect(
       container.read(searchControllerProvider).requireValue.lastResultMessage,
-      'Opened 1 URL',
+      'Aperti 1 URL',
     );
   });
 

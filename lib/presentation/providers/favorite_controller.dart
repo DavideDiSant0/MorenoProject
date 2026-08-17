@@ -203,7 +203,7 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
         selectedDeviceModelId: current.selectedDeviceModelId,
         selectedComponentId: current.selectedComponentId,
         supplierIds: current.selectedSupplierIds,
-        lastResultMessage: 'Favorite saved',
+        lastResultMessage: 'Preferito salvato',
       ),
     );
   }
@@ -220,7 +220,7 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
         selectedDeviceModelId: current?.selectedDeviceModelId,
         selectedComponentId: current?.selectedComponentId,
         supplierIds: current?.selectedSupplierIds ?? const <String>{},
-        lastResultMessage: 'Favorite deleted',
+        lastResultMessage: 'Preferito eliminato',
       ),
     );
   }
@@ -479,7 +479,7 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
       _ => throw ArgumentError.value(
         item,
         'item',
-        'Unsupported favorite item.',
+        'Elemento preferito non supportato.',
       ),
     };
   }
@@ -499,9 +499,11 @@ class FavoriteController extends AsyncNotifier<FavoriteState> {
         .length;
     final failedCount = openedItems.length - openedCount;
     final baseMessage = failedCount == 0
-        ? 'Favorite launched: opened $openedCount URL'
-        : 'Favorite launched: opened $openedCount URL, $failedCount failed';
-    return historyEnabled ? '$baseMessage and saved to history' : baseMessage;
+        ? 'Preferito aperto: $openedCount URL aperti'
+        : 'Preferito aperto: $openedCount URL aperti, $failedCount non riusciti';
+    return historyEnabled
+        ? '$baseMessage e salvati nella cronologia'
+        : baseMessage;
   }
 }
 

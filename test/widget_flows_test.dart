@@ -16,13 +16,13 @@ void main() {
   testWidgets('Catalog device type CRUD works from the UI', (tester) async {
     final harness = await pumpFlowApp(tester, seedDemoData: false);
     await openDestination(tester, Icons.inventory_2_outlined);
-    await openCatalogTab(tester, 'Device types');
+    await openCatalogTab(tester, 'Tipi di dispositivo');
 
-    expect(find.text('No device types yet.'), findsOneWidget);
+    expect(find.text('Nessun tipo di dispositivo ancora.'), findsOneWidget);
 
-    await tapFilledButton(tester, 'Add type');
+    await tapFilledButton(tester, 'Aggiungi tipo');
     await enterDialogTextFields(tester, ['Console', 'Home repair consoles.']);
-    await tapDialogFilledButton(tester, 'Save');
+    await tapDialogFilledButton(tester, 'Salva');
 
     await pumpUntil(tester, () {
       final state = harness.container.read(catalogControllerProvider);
@@ -31,28 +31,31 @@ void main() {
             (deviceType) => deviceType.name == 'Console',
           );
     });
-    await openCatalogTab(tester, 'Device types');
+    await openCatalogTab(tester, 'Tipi di dispositivo');
     await pumpUntilFound(tester, find.text('Console'));
     expect(find.text('Home repair consoles.'), findsOneWidget);
 
-    await tapVisible(tester, find.byTooltip('Edit'));
+    await tapVisible(tester, find.byTooltip('Modifica'));
     await enterDialogTextFields(tester, [
       'Console Pro',
       'Premium console repairs.',
     ]);
-    await tapDialogFilledButton(tester, 'Save');
+    await tapDialogFilledButton(tester, 'Salva');
 
-    await openCatalogTab(tester, 'Device types');
+    await openCatalogTab(tester, 'Tipi di dispositivo');
     await pumpUntilFound(tester, find.text('Console Pro'));
     expect(find.text('Premium console repairs.'), findsOneWidget);
     expect(find.text('Console'), findsNothing);
 
-    await tapVisible(tester, find.byTooltip('Delete'));
-    expect(find.text('Delete device type'), findsOneWidget);
-    await tapDialogFilledButton(tester, 'Delete');
+    await tapVisible(tester, find.byTooltip('Elimina'));
+    expect(find.text('Elimina tipo di dispositivo'), findsOneWidget);
+    await tapDialogFilledButton(tester, 'Elimina');
 
-    await openCatalogTab(tester, 'Device types');
-    await pumpUntilFound(tester, find.text('No device types yet.'));
+    await openCatalogTab(tester, 'Tipi di dispositivo');
+    await pumpUntilFound(
+      tester,
+      find.text('Nessun tipo di dispositivo ancora.'),
+    );
     expect(find.text('Console Pro'), findsNothing);
     expect(tester.takeException(), isNull);
   });
@@ -63,10 +66,10 @@ void main() {
       final harness = await pumpFlowApp(tester, seedDemoData: false);
       await openDestination(tester, Icons.inventory_2_outlined);
 
-      await openCatalogTab(tester, 'Device types');
-      await tapFilledButton(tester, 'Add type');
+      await openCatalogTab(tester, 'Tipi di dispositivo');
+      await tapFilledButton(tester, 'Aggiungi tipo');
       await enterDialogTextFields(tester, ['Console', 'Game console.']);
-      await tapDialogFilledButton(tester, 'Save');
+      await tapDialogFilledButton(tester, 'Salva');
       await pumpUntil(
         tester,
         () =>
@@ -77,13 +80,13 @@ void main() {
                 .any((item) => item.name == 'Console') ??
             false,
       );
-      await openCatalogTab(tester, 'Device types');
+      await openCatalogTab(tester, 'Tipi di dispositivo');
       await pumpUntilFound(tester, find.text('Console'));
 
-      await openCatalogTab(tester, 'Brands');
-      await tapFilledButton(tester, 'Add brand');
+      await openCatalogTab(tester, 'Marche');
+      await tapFilledButton(tester, 'Aggiungi marca');
       await enterDialogTextFields(tester, ['Nintendo']);
-      await tapDialogFilledButton(tester, 'Save');
+      await tapDialogFilledButton(tester, 'Salva');
       await pumpUntil(
         tester,
         () =>
@@ -94,13 +97,13 @@ void main() {
                 .any((item) => item.name == 'Nintendo') ??
             false,
       );
-      await openCatalogTab(tester, 'Brands');
+      await openCatalogTab(tester, 'Marche');
       await pumpUntilFound(tester, find.text('Nintendo'));
 
-      await openCatalogTab(tester, 'Components');
-      await tapFilledButton(tester, 'Add component');
+      await openCatalogTab(tester, 'Componenti');
+      await tapFilledButton(tester, 'Aggiungi componente');
       await enterDialogTextFields(tester, ['Cooling fan', 'Internal fan.']);
-      await tapDialogFilledButton(tester, 'Save');
+      await tapDialogFilledButton(tester, 'Salva');
       await pumpUntil(
         tester,
         () =>
@@ -111,17 +114,17 @@ void main() {
                 .any((item) => item.name == 'Cooling fan') ??
             false,
       );
-      await openCatalogTab(tester, 'Components');
+      await openCatalogTab(tester, 'Componenti');
       await pumpUntilFound(tester, find.text('Cooling fan'));
 
-      await openCatalogTab(tester, 'Models');
-      await tapFilledButton(tester, 'Add model');
+      await openCatalogTab(tester, 'Modelli');
+      await tapFilledButton(tester, 'Aggiungi modello');
       await enterDialogTextFields(tester, [
         'Switch',
         'HAC-001',
         'NSW, Switch V1',
       ]);
-      await tapDialogFilledButton(tester, 'Save');
+      await tapDialogFilledButton(tester, 'Salva');
       await pumpUntil(
         tester,
         () =>
@@ -132,10 +135,10 @@ void main() {
                 .any((item) => item.name == 'Switch') ??
             false,
       );
-      await openCatalogTab(tester, 'Models');
+      await openCatalogTab(tester, 'Modelli');
       await pumpUntilFound(tester, find.text('Switch'));
 
-      await openCatalogTab(tester, 'Compatibility');
+      await openCatalogTab(tester, 'Compatibilità');
       final compatibility = find.widgetWithText(
         CheckboxListTile,
         'Cooling fan',
@@ -147,25 +150,31 @@ void main() {
         () => tester.widget<CheckboxListTile>(compatibility).value == true,
       );
 
-      await openCatalogTab(tester, 'Models');
-      await tapVisible(tester, find.byTooltip('Delete'));
-      await tapDialogFilledButton(tester, 'Delete');
-      await pumpUntilFound(tester, find.text('No device models yet.'));
+      await openCatalogTab(tester, 'Modelli');
+      await tapVisible(tester, find.byTooltip('Elimina'));
+      await tapDialogFilledButton(tester, 'Elimina');
+      await pumpUntilFound(
+        tester,
+        find.text('Nessun modello di dispositivo ancora.'),
+      );
 
-      await openCatalogTab(tester, 'Components');
-      await tapVisible(tester, find.byTooltip('Delete'));
-      await tapDialogFilledButton(tester, 'Delete');
-      await pumpUntilFound(tester, find.text('No components yet.'));
+      await openCatalogTab(tester, 'Componenti');
+      await tapVisible(tester, find.byTooltip('Elimina'));
+      await tapDialogFilledButton(tester, 'Elimina');
+      await pumpUntilFound(tester, find.text('Nessun componente ancora.'));
 
-      await openCatalogTab(tester, 'Brands');
-      await tapVisible(tester, find.byTooltip('Delete'));
-      await tapDialogFilledButton(tester, 'Delete');
-      await pumpUntilFound(tester, find.text('No brands yet.'));
+      await openCatalogTab(tester, 'Marche');
+      await tapVisible(tester, find.byTooltip('Elimina'));
+      await tapDialogFilledButton(tester, 'Elimina');
+      await pumpUntilFound(tester, find.text('Nessuna marca ancora.'));
 
-      await openCatalogTab(tester, 'Device types');
-      await tapVisible(tester, find.byTooltip('Delete'));
-      await tapDialogFilledButton(tester, 'Delete');
-      await pumpUntilFound(tester, find.text('No device types yet.'));
+      await openCatalogTab(tester, 'Tipi di dispositivo');
+      await tapVisible(tester, find.byTooltip('Elimina'));
+      await tapDialogFilledButton(tester, 'Elimina');
+      await pumpUntilFound(
+        tester,
+        find.text('Nessun tipo di dispositivo ancora.'),
+      );
       expect(tester.takeException(), isNull);
     },
   );
@@ -176,7 +185,7 @@ void main() {
       await pumpFlowApp(tester);
       await openDestination(tester, Icons.storefront_outlined);
 
-      await tapFilledButton(tester, 'Add');
+      await tapFilledButton(tester, 'Aggiungi');
       await enterDialogTextFields(tester, [
         'Parts Lab',
         'https://parts.example',
@@ -185,17 +194,17 @@ void main() {
         'Widget-tested supplier.',
       ]);
 
-      await tapDialogTextButton(tester, 'Test');
-      expect(find.text('Generated URL'), findsOneWidget);
+      await tapDialogTextButton(tester, 'Prova');
+      expect(find.text('URL generato'), findsOneWidget);
       expect(
         find.text(
-          'https://parts.example/search?q=iPhone%2012%20screen&brand=Apple',
+          'https://parts.example/search?q=iPhone%2012%20schermo&brand=Apple',
         ),
         findsOneWidget,
       );
       await tapDialogFilledButton(tester, 'OK');
 
-      await tapDialogFilledButton(tester, 'Save');
+      await tapDialogFilledButton(tester, 'Salva');
       await pumpUntilFound(tester, find.text('Parts Lab'));
 
       expect(find.text('Widget-tested supplier.'), findsOneWidget);
@@ -220,7 +229,7 @@ void main() {
         isTrue,
       );
 
-      await tapVisible(tester, find.byTooltip('Edit'));
+      await tapVisible(tester, find.byTooltip('Modifica'));
       await enterDialogTextFields(tester, [
         'Parts Lab EU',
         'https://parts.example',
@@ -228,14 +237,14 @@ void main() {
         '3',
         'Widget-tested supplier.',
       ]);
-      await tapDialogFilledButton(tester, 'Save');
+      await tapDialogFilledButton(tester, 'Salva');
 
       await pumpUntilFound(tester, find.text('Parts Lab EU'));
       expect(find.text('Parts Lab'), findsNothing);
 
-      await tapVisible(tester, find.byTooltip('Delete'));
-      expect(find.text('Delete supplier'), findsOneWidget);
-      await tapDialogFilledButton(tester, 'Delete');
+      await tapVisible(tester, find.byTooltip('Elimina'));
+      expect(find.text('Elimina fornitore'), findsOneWidget);
+      await tapDialogFilledButton(tester, 'Elimina');
 
       await pumpUntilGone(tester, find.text('Parts Lab EU'));
       expect(tester.takeException(), isNull);
@@ -247,13 +256,13 @@ void main() {
   ) async {
     await pumpFlowApp(tester, seedDemoData: false);
     await openDestination(tester, Icons.inventory_2_outlined);
-    await openCatalogTab(tester, 'Device types');
+    await openCatalogTab(tester, 'Tipi di dispositivo');
 
-    await tapFilledButton(tester, 'Add type');
-    expect(find.text('Add device type'), findsOneWidget);
-    await tapDialogFilledButton(tester, 'Save');
+    await tapFilledButton(tester, 'Aggiungi tipo');
+    expect(find.text('Aggiungi tipo di dispositivo'), findsOneWidget);
+    await tapDialogFilledButton(tester, 'Salva');
 
-    expect(find.text('Add device type'), findsOneWidget);
+    expect(find.text('Aggiungi tipo di dispositivo'), findsOneWidget);
     expect(find.byType(AlertDialog), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -264,7 +273,7 @@ void main() {
     await pumpFlowApp(tester);
     await openDestination(tester, Icons.storefront_outlined);
 
-    await tapFilledButton(tester, 'Add');
+    await tapFilledButton(tester, 'Aggiungi');
     await enterDialogTextFields(tester, [
       'Unsafe supplier',
       'https://supplier.example',
@@ -272,9 +281,9 @@ void main() {
       '3',
       '',
     ]);
-    await tapDialogFilledButton(tester, 'Save');
+    await tapDialogFilledButton(tester, 'Salva');
 
-    expect(find.text('Add supplier'), findsOneWidget);
+    expect(find.text('Aggiungi fornitore'), findsOneWidget);
     expect(find.byType(AlertDialog), findsOneWidget);
     expect(
       find.text('Il template URL deve usare solo HTTP o HTTPS.'),
@@ -295,11 +304,11 @@ void main() {
     await chooseDropdown(tester, 3, 'Display');
     await tapVisible(tester, find.widgetWithText(FilterChip, 'iFixit'));
 
-    await tapFilledButton(tester, 'Save');
-    expect(find.text('Save favorite'), findsOneWidget);
-    await tapDialogFilledButton(tester, 'Save');
+    await tapFilledButton(tester, 'Salva');
+    expect(find.text('Salva preferito'), findsOneWidget);
+    await tapDialogFilledButton(tester, 'Salva');
 
-    expect(find.text('Save favorite'), findsOneWidget);
+    expect(find.text('Salva preferito'), findsOneWidget);
     expect(find.byType(AlertDialog), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -317,27 +326,27 @@ void main() {
     await chooseDropdown(tester, 3, 'Display');
     await tapVisible(tester, find.widgetWithText(FilterChip, 'iFixit'));
 
-    await tapFilledButton(tester, 'Save');
-    expect(find.text('Save favorite'), findsOneWidget);
+    await tapFilledButton(tester, 'Salva');
+    expect(find.text('Salva preferito'), findsOneWidget);
     await enterDialogTextFields(tester, ['Bench favorite']);
-    await tapDialogFilledButton(tester, 'Save');
+    await tapDialogFilledButton(tester, 'Salva');
 
     await pumpUntilFound(tester, find.text('Bench favorite'));
 
-    await tapFilledButton(tester, 'Launch');
-    expect(find.text('Launch favorite'), findsOneWidget);
-    await tapDialogFilledButton(tester, 'Launch');
+    await tapFilledButton(tester, 'Apri');
+    expect(find.text('Apri preferito'), findsOneWidget);
+    await tapDialogFilledButton(tester, 'Apri');
 
     await pumpUntil(tester, () => browser.openedUrls.length == 1);
     expect(browser.openedUrls.single.host, 'www.ifixit.com');
     expect(
-      find.text('Favorite launched: opened 1 URL and saved to history'),
+      find.text('Preferito aperto: 1 URL aperti e salvati nella cronologia'),
       findsOneWidget,
     );
 
-    await tapVisible(tester, find.byTooltip('Delete'));
-    expect(find.text('Delete favorite'), findsOneWidget);
-    await tapDialogFilledButton(tester, 'Delete');
+    await tapVisible(tester, find.byTooltip('Elimina'));
+    expect(find.text('Elimina preferito'), findsOneWidget);
+    await tapDialogFilledButton(tester, 'Elimina');
 
     await pumpUntilGone(tester, find.text('Bench favorite'));
     expect(tester.takeException(), isNull);
@@ -359,18 +368,18 @@ void main() {
       find.widgetWithText(CheckboxListTile, 'eBay Ricambi'),
     );
 
-    await tapFilledButton(tester, 'Preview');
+    await tapFilledButton(tester, 'Anteprima');
 
-    await pumpUntilFound(tester, find.text('Preview ready'));
+    await pumpUntilFound(tester, find.text('Anteprima pronta'));
     expect(find.text('Apple iPhone 13 A2633 Display'), findsWidgets);
     expect(find.text('iFixit'), findsWidgets);
     expect(find.text('eBay Ricambi'), findsWidgets);
     expect(find.textContaining('www.ifixit.com/Search'), findsOneWidget);
     expect(find.textContaining('www.ebay.it/sch/i.html'), findsOneWidget);
 
-    await tapFilledButton(tester, 'Open');
-    expect(find.text('Open URLs'), findsOneWidget);
-    await tapDialogFilledButton(tester, 'Open');
+    await tapFilledButton(tester, 'Apri');
+    expect(find.text('Apri URL'), findsOneWidget);
+    await tapDialogFilledButton(tester, 'Apri');
 
     await pumpUntil(tester, () => browser.openedUrls.length == 2);
     expect(
@@ -380,28 +389,31 @@ void main() {
         'https://www.ebay.it/sch/i.html?_nkw=Apple%20iPhone%2013%20A2633%20Display',
       ]),
     );
-    expect(find.text('Opened 2 URL and saved to history'), findsOneWidget);
-    expect(find.text('opened'), findsNWidgets(2));
+    expect(
+      find.text('Aperti 2 URL e salvati nella cronologia'),
+      findsOneWidget,
+    );
+    expect(find.text('Aperto'), findsNWidgets(2));
 
     await openDestination(tester, Icons.history_outlined);
 
-    await pumpUntilFound(tester, find.text('Saved searches'));
+    await pumpUntilFound(tester, find.text('Ricerche salvate'));
     expect(find.text('Apple iPhone 13 A2633 Display'), findsWidgets);
-    expect(find.textContaining('2 suppliers'), findsOneWidget);
+    expect(find.textContaining('2 fornitori'), findsOneWidget);
     expect(find.textContaining('www.ifixit.com/Search'), findsOneWidget);
 
-    await tapFilledButton(tester, 'Repeat');
-    expect(find.text('Repeat search'), findsOneWidget);
-    await tapDialogFilledButton(tester, 'Repeat');
+    await tapFilledButton(tester, 'Ripeti');
+    expect(find.text('Ripeti ricerca'), findsOneWidget);
+    await tapDialogFilledButton(tester, 'Ripeti');
 
     await pumpUntil(tester, () => browser.openedUrls.length == 4);
-    expect(find.text('Repeated search: opened 2 URL'), findsOneWidget);
+    expect(find.text('Ricerca ripetuta: aperti 2 URL'), findsOneWidget);
 
-    await tapVisible(tester, find.byTooltip('Delete'));
-    expect(find.text('Delete search'), findsOneWidget);
-    await tapDialogFilledButton(tester, 'Delete');
+    await tapVisible(tester, find.byTooltip('Elimina'));
+    expect(find.text('Elimina ricerca'), findsOneWidget);
+    await tapDialogFilledButton(tester, 'Elimina');
 
-    await pumpUntilFound(tester, find.text('No saved searches yet.'));
+    await pumpUntilFound(tester, find.text('Nessuna ricerca salvata ancora.'));
     expect(tester.takeException(), isNull);
   });
 }

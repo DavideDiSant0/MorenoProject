@@ -21,9 +21,9 @@ void main() {
 
     expect(find.byType(MaterialApp), findsOneWidget);
     expect(find.byType(NavigationRail), findsOneWidget);
-    expect(find.text('Search'), findsWidgets);
-    expect(find.text('Selection'), findsOneWidget);
-    expect(find.text('No URL preview generated.'), findsOneWidget);
+    expect(find.text('Ricerca'), findsWidgets);
+    expect(find.text('Selezione'), findsOneWidget);
+    expect(find.text('Nessuna anteprima URL generata.'), findsOneWidget);
   });
 
   testWidgets('Navigation rail opens catalog route', (
@@ -37,11 +37,11 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Catalog').first);
+    await tester.tap(find.text('Catalogo').first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Catalog'), findsWidgets);
-    expect(find.text('Device types'), findsWidgets);
+    expect(find.text('Catalogo'), findsWidgets);
+    expect(find.text('Tipi di dispositivo'), findsWidgets);
   });
 
   testWidgets('Navigation rail opens suppliers route', (
@@ -55,11 +55,11 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Suppliers').first);
+    await tester.tap(find.text('Fornitori').first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Suppliers'), findsWidgets);
-    expect(find.text('Supplier list'), findsOneWidget);
+    expect(find.text('Fornitori'), findsWidgets);
+    expect(find.text('Elenco fornitori'), findsOneWidget);
     expect(find.text('iFixit'), findsWidgets);
   });
 
@@ -74,12 +74,12 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('History').first);
+    await tester.tap(find.text('Cronologia').first);
     await tester.pumpAndSettle();
 
-    expect(find.text('History'), findsWidgets);
-    expect(find.text('Saved searches'), findsOneWidget);
-    expect(find.text('No saved searches yet.'), findsOneWidget);
+    expect(find.text('Cronologia'), findsWidgets);
+    expect(find.text('Ricerche salvate'), findsOneWidget);
+    expect(find.text('Nessuna ricerca salvata ancora.'), findsOneWidget);
   });
 
   testWidgets('Navigation rail opens favorites route', (
@@ -96,8 +96,8 @@ void main() {
     await tester.tap(find.byIcon(Icons.star_border).first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Favorites'), findsWidgets);
-    expect(find.text('Saved combinations'), findsOneWidget);
+    expect(find.text('Preferiti'), findsWidgets);
+    expect(find.text('Combinazioni salvate'), findsOneWidget);
     expect(find.text('iPhone 13 display'), findsWidgets);
   });
 
@@ -115,7 +115,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.star_border).first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Favorites'), findsWidgets);
+    expect(find.text('Preferiti'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 
@@ -130,8 +130,8 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('Search'), findsWidgets);
-    expect(find.text('Selection'), findsOneWidget);
+    expect(find.text('Ricerca'), findsWidgets);
+    expect(find.text('Selezione'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -146,7 +146,7 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    expect(find.byTooltip('Catalog'), findsOneWidget);
+    expect(find.byTooltip('Catalogo'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -161,7 +161,7 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('Search'), findsWidgets);
+    expect(find.text('Ricerca'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 
@@ -179,7 +179,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.inventory_2_outlined).first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Catalog'), findsWidgets);
+    expect(find.text('Catalogo'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 
@@ -197,7 +197,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.storefront_outlined).first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Suppliers'), findsWidgets);
+    expect(find.text('Fornitori'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 
@@ -215,7 +215,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.history_outlined).first);
     await tester.pumpAndSettle();
 
-    expect(find.text('History'), findsWidgets);
+    expect(find.text('Cronologia'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 
@@ -233,7 +233,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.settings_outlined).first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Settings'), findsWidgets);
+    expect(find.text('Impostazioni'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 
@@ -248,13 +248,13 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Settings').first);
+    await tester.tap(find.text('Impostazioni').first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Settings'), findsWidgets);
-    expect(find.text('Maximum pages to open'), findsOneWidget);
-    expect(find.text('Require confirmation'), findsOneWidget);
-    expect(find.text('Save search history'), findsOneWidget);
+    expect(find.text('Impostazioni'), findsWidgets);
+    expect(find.text('Numero massimo di pagine da aprire'), findsOneWidget);
+    expect(find.text('Richiedi conferma'), findsOneWidget);
+    expect(find.text('Salva la cronologia delle ricerche'), findsOneWidget);
   });
 
   testWidgets('Settings route updates history preference', (
@@ -268,22 +268,22 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Settings').first);
+    await tester.tap(find.text('Impostazioni').first);
     await tester.pumpAndSettle();
 
     final historySwitch = find.widgetWithText(
       SwitchListTile,
-      'Save search history',
+      'Salva la cronologia delle ricerche',
     );
 
     expect(tester.widget<SwitchListTile>(historySwitch).value, isTrue);
 
-    await tester.tap(find.text('Save search history'));
+    await tester.tap(find.text('Salva la cronologia delle ricerche'));
     await tester.pumpAndSettle();
 
     expect(tester.widget<SwitchListTile>(historySwitch).value, isFalse);
 
-    await tester.tap(find.byTooltip('Refresh'));
+    await tester.tap(find.byTooltip('Aggiorna'));
     await tester.pumpAndSettle();
 
     expect(tester.widget<SwitchListTile>(historySwitch).value, isFalse);

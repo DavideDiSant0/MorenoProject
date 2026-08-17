@@ -50,7 +50,7 @@ class HistoryController extends AsyncNotifier<HistoryState> {
   Future<void> clearHistory() async {
     await _searchHistoryUseCases.clearHistory();
     state = AsyncData(
-      await _loadHistoryState(lastResultMessage: 'History cleared'),
+      await _loadHistoryState(lastResultMessage: 'Cronologia svuotata'),
     );
   }
 
@@ -86,8 +86,8 @@ class HistoryController extends AsyncNotifier<HistoryState> {
       }
 
       final message = errors.isEmpty
-          ? 'Repeated search: opened $openedCount URL'
-          : 'Opened $openedCount URL, ${errors.length} failed';
+          ? 'Ricerca ripetuta: aperti $openedCount URL'
+          : 'Aperti $openedCount URL, ${errors.length} non riusciti';
       state = AsyncData(
         await _loadHistoryState(
           selectedEntryId: entry.id,
